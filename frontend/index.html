@@ -11,7 +11,7 @@
       try {
         var theme = localStorage.getItem("st_active_theme_v2") || localStorage.getItem("st_theme") || "light";
         document.documentElement.setAttribute("data-theme", theme);
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
 
@@ -321,7 +321,8 @@
             </div>
 
             <div style="margin-top: 1.75rem;">
-              <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm" style="text-decoration: none !important;">📍 Get Showroom Directions ➔</a>
+              <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm"
+                style="text-decoration: none !important;">📍 Get Showroom Directions ➔</a>
             </div>
           </div>
         </div>
@@ -439,7 +440,9 @@
           </p>
           <div class="explore-cta-actions"
             style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.75rem;">
-            <a href="shop.html" onclick="if(window.storefront){event.preventDefault();window.storefront.navigateToPage('explore');}else{window.location.href='shop.html';}" class="btn btn-gold btn-lg" id="homeBottomExploreBtn"
+            <a href="shop.html"
+              onclick="if(window.storefront){event.preventDefault();window.storefront.navigateToPage('explore');}else{window.location.href='shop.html';}"
+              class="btn btn-gold btn-lg" id="homeBottomExploreBtn"
               style="font-weight: 800; min-width: 240px; text-decoration: none;">
               Explore All Collections ➔
             </a>
@@ -760,7 +763,7 @@
           <div class="form-group" style="margin-bottom: 0.9rem;">
             <label
               style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">Your
-              Full Name *</label>
+              Full Name</label>
             <input type="text" id="notifyCustomerName" class="form-control" placeholder="e.g. Ananya Sundaram"
               required />
           </div>
@@ -768,7 +771,7 @@
           <div class="form-group" style="margin-bottom: 0.9rem;">
             <label
               style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">WhatsApp
-              / Mobile Number *</label>
+              / Mobile Number</label>
             <div style="display: flex; gap: 0.5rem;">
               <span
                 style="display: flex; align-items: center; padding: 0 0.75rem; background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-main);">🇮🇳
@@ -883,7 +886,8 @@
         </div>
 
         <!-- Dynamic QR Code Container Wrapped in Clickable UPI Deep Link for Google Pay -->
-        <a id="upiQrLink" href="upi://pay?pa=srinivasatextiles@hdfcbank&pn=Srinivasa%20Textiles&am=1&cu=INR&tn=Order_ST" class="upi-qr-img-link" title="Click to Pay directly via Google Pay / Any UPI App">
+        <a id="upiQrLink" href="upi://pay?pa=srinivasatextiles@hdfcbank&pn=Srinivasa%20Textiles&am=1&cu=INR&tn=Order_ST"
+          class="upi-qr-img-link" title="Click to Pay directly via Google Pay / Any UPI App">
           <div class="upi-qr-img" id="upiQrContainer">
             <div class="upi-scan-laser"></div>
             <img id="upiQrDynamicImg" src="assets/images/upi_qr.png" alt="Srinivasa Textiles Official UPI QR Code" />
