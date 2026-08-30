@@ -904,37 +904,31 @@
   <div class="admin-lock-overlay active" id="adminLockOverlay">
     <div class="admin-lock-card">
       <div class="lock-brand-icon">👑</div>
-      <h2 style="font-family: var(--font-serif-display); color: #FFF2B2; margin-bottom: 0.25rem; font-size: 1.5rem;">
-        Srinivasa Textiles</h2>
-      <p
-        style="color: var(--color-gold-light); font-size: 0.8rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">
-        Store Owner Security Portal</p>
+      <h2 class="lock-title">Srinivasa Textiles</h2>
+      <p class="lock-subtitle">Store Owner Security Portal</p>
 
-      <div
-        style="background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: var(--radius-sm); padding: 0.85rem; margin-bottom: 1.25rem; text-align: left;">
-        <span style="font-size: 0.8rem; color: #FFF6EC; display: block; font-weight: 600;">🔒 Restricted Owner
-          Access</span>
-        <span style="font-size: 0.725rem; color: var(--text-muted); display: block; margin-top: 0.2rem;">
+      <div class="lock-info-box">
+        <span class="lock-info-header">🔒 Restricted Owner Access</span>
+        <span class="lock-info-desc">
           Patron feedback, real-time inventory, sales, and GST invoicing are strictly protected for the Store Owner.
         </span>
       </div>
 
       <div id="adminLockErrorMsg"
-        style="display: none; background: rgba(239, 68, 68, 0.2); border: 1px solid #DC2626; color: #FCA5A5; padding: 0.65rem; border-radius: var(--radius-sm); font-size: 0.8rem; margin-bottom: 1rem;">
+        style="display: none; background: rgba(239, 68, 68, 0.2); border: 1px solid #DC2626; color: #DC2626; padding: 0.65rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem;">
       </div>
 
       <form id="adminLockLoginForm">
         <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
-          <label style="color: #FFF6EC; font-size: 0.8rem; font-weight: 600;">Owner ID / Username</label>
+          <label for="adminLockUsernameInput">Owner ID / Username</label>
           <input type="text" id="adminLockUsernameInput" class="form-control"
             placeholder="Enter owner username (e.g. admin)" required />
         </div>
 
         <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-            <label style="color: #FFF6EC; font-size: 0.8rem; font-weight: 600; margin: 0;">Security Passcode</label>
-            <button type="button" id="toggleAdminLockPassBtn"
-              style="background: none; border: none; color: var(--color-gold); cursor: pointer; font-size: 0.75rem;">
+            <label for="adminLockPassInput" style="margin: 0;">Security Passcode</label>
+            <button type="button" id="toggleAdminLockPassBtn" class="pass-toggle-btn">
               👁️ Show
             </button>
           </div>
@@ -943,13 +937,13 @@
         </div>
 
         <button type="submit" class="btn btn-gold btn-lg"
-          style="width: 100%; font-weight: 700; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);">
+          style="width: 100%; font-weight: 800; box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45); letter-spacing: 0.04em;">
           <span>🔓</span> Unlock Owner Console
         </button>
       </form>
 
       <div style="margin-top: 1.25rem;">
-        <a href="index.html" style="color: var(--text-muted); font-size: 0.75rem; text-decoration: none;">
+        <a href="index.html" class="return-link">
           ← Return to Public Storefront
         </a>
       </div>
