@@ -1281,6 +1281,7 @@ textarea {
   .header-actions {
     display: flex !important;
     align-items: center !important;
+    justify-content: flex-end !important;
     gap: 0.3rem !important;
     flex-shrink: 0 !important;
   }
@@ -1290,19 +1291,18 @@ textarea {
     display: none !important;
   }
 
-  .mobile-menu-btn {
-    display: inline-flex !important;
-  }
-
+  /* Exactly Sized 34px Round Action Icons on Mobile in Perfect Alignment */
   .search-trigger-btn,
   .wishlist-btn,
   .cart-btn,
   .theme-toggle-btn,
   .mobile-menu-btn {
     width: 34px !important;
-    height: 34px !important;
     min-width: 34px !important;
-    font-size: 0.95rem !important;
+    max-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
     border-radius: 50% !important;
     padding: 0 !important;
     display: inline-flex !important;
@@ -1310,12 +1310,46 @@ textarea {
     justify-content: center !important;
     margin: 0 !important;
     flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
   }
 
+  .theme-toggle-btn {
+    background: var(--bg-surface-alt) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--color-primary) !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  [data-theme="dark"] .theme-toggle-btn {
+    background: #222631 !important;
+    border-color: #374151 !important;
+    color: var(--color-gold) !important;
+  }
+
+  .theme-toggle-btn .theme-label {
+    display: none !important;
+  }
+
+  .theme-toggle-btn .theme-icon,
   .theme-toggle-btn span {
     display: inline-block !important;
     font-size: 1rem !important;
     line-height: 1 !important;
+    margin: 0 !important;
+  }
+
+  /* 3-Lines (☰) Right Corner Menu Button */
+  .mobile-menu-btn {
+    display: inline-flex !important;
+    background: var(--color-gold-gradient) !important;
+    color: #2D0310 !important;
+    border: 1.5px solid var(--color-gold) !important;
+    font-size: 1.25rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.35) !important;
+    cursor: pointer !important;
   }
 
   /* Hide bulky desktop department bar on mobile in favor of 3-line menu */
