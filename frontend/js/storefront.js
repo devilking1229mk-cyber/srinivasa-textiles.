@@ -214,6 +214,52 @@ class StorefrontController {
       });
     }
 
+    // Mobile Navigation & Department Drawer (3-Lines Menu)
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const mobileNavDrawer = document.getElementById("mobileNavDrawer");
+    const mobileNavOverlay = document.getElementById("mobileNavOverlay");
+    const mobileNavCloseBtn = document.getElementById("mobileNavCloseBtn");
+
+    if (mobileMenuBtn && mobileNavDrawer && mobileNavOverlay) {
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileNavDrawer.classList.add("active");
+        mobileNavOverlay.classList.add("active");
+      });
+    }
+
+    if (mobileNavCloseBtn && mobileNavDrawer && mobileNavOverlay) {
+      mobileNavCloseBtn.addEventListener("click", () => {
+        mobileNavDrawer.classList.remove("active");
+        mobileNavOverlay.classList.remove("active");
+      });
+    }
+
+    if (mobileNavOverlay) {
+      mobileNavOverlay.addEventListener("click", () => {
+        mobileNavDrawer?.classList.remove("active");
+        mobileNavOverlay?.classList.remove("active");
+      });
+    }
+
+    document.querySelectorAll(".mobile-dept-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const page = btn.getAttribute("data-page");
+        mobileNavDrawer?.classList.remove("active");
+        mobileNavOverlay?.classList.remove("active");
+        if (page) this.navigateToPage(page);
+      });
+    });
+
+    const mobileFeedbackBtn = document.getElementById("mobileFeedbackBtn");
+    if (mobileFeedbackBtn) {
+      mobileFeedbackBtn.addEventListener("click", () => {
+        mobileNavDrawer?.classList.remove("active");
+        mobileNavOverlay?.classList.remove("active");
+        const feedbackModal = document.getElementById("feedbackModal");
+        if (feedbackModal) feedbackModal.classList.add("active");
+      });
+    }
+
     // Coupon Code in Cart
     const applyCouponBtn = document.getElementById("applyCouponBtn");
     const couponInput = document.getElementById("cartCouponInput");

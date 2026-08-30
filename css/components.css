@@ -4,6 +4,174 @@
    ========================================================================== */
 
 /* ==========================================================================
+   MOBILE NAVIGATION & DEPARTMENTS DRAWER (3-Line Menu)
+   ========================================================================== */
+.mobile-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 320px;
+  max-width: 85vw;
+  height: 100%;
+  background: var(--bg-surface);
+  z-index: 10000;
+  box-shadow: 5px 0 30px rgba(0, 0, 0, 0.4);
+  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1.5px solid var(--color-gold);
+}
+
+.mobile-nav-drawer.active {
+  left: 0;
+}
+
+.mobile-nav-header {
+  padding: 1.25rem 1rem;
+  background: var(--bg-surface-alt);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-nav-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-nav-title h3 {
+  font-family: var(--font-serif-display);
+  font-size: 1.15rem;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+[data-theme="dark"] .mobile-nav-title h3 {
+  color: #FFF2B2;
+}
+
+.mobile-nav-title small {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+.mobile-nav-body {
+  padding: 1.25rem 1rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.mobile-nav-section-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-gold-dark);
+  margin-bottom: 0.65rem;
+  text-transform: uppercase;
+}
+
+[data-theme="dark"] .mobile-nav-section-title {
+  color: var(--color-gold);
+}
+
+.mobile-dept-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mobile-dept-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-dept-btn:hover,
+.mobile-dept-btn.active {
+  background: var(--color-gold-gradient);
+  color: #2D0310;
+  border-color: var(--color-gold);
+  font-weight: 800;
+}
+
+.mobile-dept-btn.highlight-combo {
+  border-color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.12);
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 1.25rem 0;
+}
+
+.mobile-drawer-action-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(122, 12, 46, 0.1));
+  border: 1.5px solid var(--color-gold);
+  color: var(--text-heading);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.mobile-drawer-action-btn:hover {
+  background: var(--color-gold-gradient);
+  color: #2D0310;
+}
+
+.mobile-nav-info-card {
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.mobile-nav-info-card strong {
+  display: block;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+[data-theme="dark"] .mobile-nav-info-card strong {
+  color: var(--color-gold);
+}
+
+.mobile-nav-info-card p {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
    PREDICTIVE SEARCH OVERLAY MODAL (Hidden by default, shown ONLY on click)
    ========================================================================== */
 .search-bar-modal {

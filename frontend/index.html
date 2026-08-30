@@ -179,19 +179,19 @@
               </svg>
             </div>
             <div class="brand-text">
-              <h1>SRINIVASA</h1>
-              <span>TEXTILES • ESTD 1978</span>
+              <h1>SRINIVASA TEXTILES</h1>
+              <span>ESTD 1978 • KANCHIPURAM</span>
             </div>
           </a>
 
-          <!-- Nav Actions & "Shop by Age & Height" Button -->
+          <!-- Nav Actions -->
           <div class="header-actions">
-            <!-- Patron Voice & Feedback Trigger -->
+            <!-- Patron Voice & Feedback Trigger (Desktop) -->
             <button class="feedback-nav-btn" id="feedbackTriggerBtn" title="Share Your Patron Feedback & Reviews">
               <span>🌟</span> Share Feedback
             </button>
 
-            <!-- Clean Predictive Search Trigger (Click to open Search Modal) -->
+            <!-- Clean Predictive Search Trigger -->
             <button class="search-trigger-btn" id="searchTriggerBtn" title="Search Textiles">
               🔍
             </button>
@@ -208,12 +208,16 @@
               🛍️
               <span class="badge-count" id="headerCartBadge">0</span>
             </button>
-            <div class="top-bar-controls">
-              <!-- Dark / Light Mode Switcher -->
-              <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Mode">
-                <span>🌙</span> Dark
-              </button>
-            </div>
+
+            <!-- Dark / Light Mode Switcher -->
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Mode">
+              <span>🌙</span>
+            </button>
+
+            <!-- Mobile 3-Lines (☰) Navigation & Departments Menu -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Departments Menu" title="Browse Departments &amp; Feedback">
+              ☰
+            </button>
           </div>
         </div>
       </div>
@@ -525,6 +529,54 @@
   <!-- ==========================================================================
        MODALS & DRAWERS
        ========================================================================== -->
+
+  <!-- Mobile Navigation & Department Drawer (3-Line Menu for Mobile UI) -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
+    <div class="mobile-nav-header">
+      <div class="mobile-nav-title">
+        <span style="font-size: 1.3rem;">🏛️</span>
+        <div>
+          <h3>Srinivasa Textiles</h3>
+          <small>Handloom Master Weavers • Estd 1978</small>
+        </div>
+      </div>
+      <button class="pdp-close-btn" id="mobileNavCloseBtn" title="Close Menu">✕</button>
+    </div>
+
+    <div class="mobile-nav-body">
+      <div class="mobile-nav-section-title">✨ BROWSE DEPARTMENTS</div>
+      <ul class="mobile-dept-list">
+        <li><button class="mobile-dept-btn active" data-page="explore">🏠 All Collections (Explore)</button></li>
+        <li><button class="mobile-dept-btn highlight-combo" data-page="family">👨‍👩‍👧‍👦 Family Combos &amp; Matching Sets</button></li>
+        <li><button class="mobile-dept-btn" data-page="women">👩 Women's Sarees &amp; Ethnic</button></li>
+        <li><button class="mobile-dept-btn" data-page="girls">👧 Girls (Pattu Pavadai 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="boys">👦 Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="men">👨 Men's Silk &amp; Dhotis</button></li>
+        <li><button class="mobile-dept-btn" data-page="infants">🍼 Infants &amp; Newborn (0-2Y)</button></li>
+      </ul>
+
+      <div class="mobile-nav-divider"></div>
+
+      <!-- Patron Feedback Session inside Mobile Drawer -->
+      <div class="mobile-nav-section-title">🌟 PATRON REVIEWS &amp; FEEDBACK</div>
+      <button class="mobile-drawer-action-btn mobile-feedback-trigger-btn" id="mobileFeedbackBtn">
+        <span>🌟</span> Share Your Patron Review &amp; Feedback
+      </button>
+
+      <div class="mobile-nav-divider"></div>
+
+      <div class="mobile-nav-section-title">📍 FLAGSHIP SHOWROOM &amp; SUPPORT</div>
+      <div class="mobile-nav-info-card">
+        <strong>🏛️ Kanchipuram Emporium</strong>
+        <p>108 Raja Veedhi, Temple District, Kanchipuram - 631501</p>
+        <div style="margin-top: 0.65rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-xs" style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📍 Directions</a>
+          <a href="tel:+919840054321" class="btn btn-outline btn-xs" style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📞 Call Support</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-overlay" id="mobileNavOverlay"></div>
 
   <!-- PREDICTIVE SEARCH OVERLAY MODAL (Hidden by default, shown ONLY when search button is clicked) -->
   <div class="search-bar-modal" id="searchBarModal" role="dialog" aria-modal="true">
