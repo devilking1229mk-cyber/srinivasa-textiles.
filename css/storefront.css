@@ -568,8 +568,8 @@
 
 /* Responsive */
 @media (max-width: 992px) {
-  .hero-title { font-size: 2.6rem; }
-  .gender-gateways-grid { grid-template-columns: 1fr 1fr; }
+  .hero-title { font-size: 2.4rem; }
+  .gender-gateways-grid { grid-template-columns: repeat(2, 1fr); }
   .occasions-grid { grid-template-columns: 1fr; }
   .family-combo-banner { grid-template-columns: 1fr; }
   .heritage-story-grid { grid-template-columns: 1fr; }
@@ -577,10 +577,90 @@
   .hero-stats-row { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 600px) {
-  .hero-title { font-size: 2rem; }
-  .gender-gateways-grid { grid-template-columns: 1fr; }
-  .hero-stats-row { grid-template-columns: 1fr; }
+@media (max-width: 680px) {
+  .hero-title { font-size: 1.85rem; }
+  .gender-gateways-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+  .gateway-card { height: 160px; }
+  .gateway-card h3 { font-size: 1rem; }
+  .gateway-card p { font-size: 0.72rem; }
+  .hero-stats-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+  /* App-Style 2-Column Mobile Product Grid */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+
+  .product-image-box {
+    height: 185px !important;
+  }
+
+  .product-card-body {
+    padding: 0.65rem 0.5rem !important;
+  }
+
+  .product-title {
+    font-size: 0.825rem !important;
+    line-height: 1.35 !important;
+    height: 2.7em !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .product-subtitle {
+    display: none !important;
+  }
+
+  .product-badges {
+    margin-bottom: 0.35rem !important;
+  }
+
+  .badge-silk-mark {
+    font-size: 0.65rem !important;
+    padding: 0.15rem 0.35rem !important;
+  }
+
+  .price-row {
+    gap: 0.35rem !important;
+    margin-bottom: 0.5rem !important;
+    align-items: baseline !important;
+    flex-wrap: wrap !important;
+  }
+
+  .current-price {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+  }
+
+  .mrp-price {
+    font-size: 0.75rem !important;
+  }
+
+  .discount-badge {
+    font-size: 0.65rem !important;
+    padding: 0.1rem 0.35rem !important;
+  }
+
+  .quick-add-btn {
+    padding: 0.5rem 0.35rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    width: 100% !important;
+  }
+
+  .card-actions-quick {
+    top: 0.35rem !important;
+    right: 0.35rem !important;
+  }
+
+  .quick-action-btn {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.85rem !important;
+  }
 }
 
 /* ==========================================================================
