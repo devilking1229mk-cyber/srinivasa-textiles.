@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # 1. Python Flask REST API Engine
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: srinivasa_backend_api
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    networks:
+      - srinivasa_network
+
+  # 2. Nginx High-Performance Web Server & Reverse Proxy
+  frontend:
+    image: nginx:alpine
+    container_name: srinivasa_web_server
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+    networks:
+      - srinivasa_network
+
+networks:
+  srinivasa_network:
+    driver: bridge

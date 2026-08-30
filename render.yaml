@@ -1,0 +1,20 @@
+services:
+  # Python Flask Backend Web Service
+  - type: web
+    name: srinivasa-backend-api
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "python backend/app.py"
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SQLITE_DB_PATH
+        value: database/srinivasa.db
