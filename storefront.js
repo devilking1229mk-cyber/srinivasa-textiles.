@@ -361,21 +361,17 @@ class StorefrontController {
     const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
     const isHomePage = !isShopPage && (window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/") || window.location.pathname.endsWith("/frontend") || window.location.pathname === "");
 
-    const inFrontendSubdir = window.location.pathname.includes("/frontend/");
-    const shopTarget = inFrontendSubdir ? "shop.html" : "frontend/shop.html";
-    const homeTarget = inFrontendSubdir ? "index.html" : "frontend/index.html";
-
     // If destination is home and we are not on index.html, navigate there
     if (pageKey === "home") {
       if (!isHomePage) {
-        window.location.href = homeTarget;
+        window.location.href = "index.html";
         return;
       }
     } else {
       // If destination is a shop page and we are not on shop.html, navigate there
       if (!isShopPage) {
         const destHash = pageKey === "family" ? "family-combos" : pageKey;
-        window.location.href = shopTarget + "#" + destHash;
+        window.location.href = "shop.html#" + destHash;
         return;
       }
     }

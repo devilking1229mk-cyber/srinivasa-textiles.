@@ -39,105 +39,6 @@
 <body>
 
   <!-- ==========================================================================
-       ROYAL HERITAGE OPENING LOGO ANIMATION & SPLASH SCREEN
-       ========================================================================== -->
-  <div id="sitePreloader" class="site-preloader" aria-label="Loading Srinivasa Textiles" role="status">
-    <div class="preloader-curtain preloader-curtain-left"></div>
-    <div class="preloader-curtain preloader-curtain-right"></div>
-
-    <div class="preloader-backdrop-glow"></div>
-    <div class="preloader-pattern-overlay"></div>
-
-    <div class="preloader-content">
-      <!-- Animated Golden Silk Crest Logo -->
-      <div class="preloader-logo-wrap">
-        <div class="preloader-aura-ring ring-outer"></div>
-        <div class="preloader-aura-ring ring-mid"></div>
-        <div class="preloader-logo-crest">
-          <svg class="preloader-crest-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background Mandala & Sacred Weave Geometry -->
-            <circle class="svg-orbit" cx="50" cy="50" r="44" stroke="url(#preloaderGoldGrad)" stroke-width="1.5"
-              stroke-dasharray="6 4" />
-            <circle class="svg-orbit-inner" cx="50" cy="50" r="36" stroke="url(#preloaderGoldGrad)" stroke-width="1.2"
-              opacity="0.8" />
-            <polygon points="50,10 90,50 50,90 10,50" stroke="url(#preloaderGoldGrad)" stroke-width="1.5" opacity="0.6"
-              fill="none" />
-            <polygon points="50,14 86,50 50,86 14,50" stroke="url(#preloaderGoldGradLight)" stroke-width="1"
-              opacity="0.4" fill="none" />
-
-            <!-- Traditional Handloom Warp & Weft Threads -->
-            <path class="svg-thread t1" d="M20 50 L80 50" stroke="url(#preloaderGoldGrad)" stroke-width="2"
-              stroke-linecap="round" />
-            <path class="svg-thread t2" d="M50 20 L50 80" stroke="url(#preloaderGoldGrad)" stroke-width="2"
-              stroke-linecap="round" />
-            <path class="svg-thread t3" d="M28 28 L72 72" stroke="url(#preloaderGoldGradLight)" stroke-width="1.5"
-              stroke-linecap="round" />
-            <path class="svg-thread t4" d="M72 28 L28 72" stroke="url(#preloaderGoldGradLight)" stroke-width="1.5"
-              stroke-linecap="round" />
-
-            <!-- Central Royal Core & Weaving Shuttle -->
-            <circle class="svg-core-pulse" cx="50" cy="50" r="14" fill="url(#preloaderCrimsonGrad)"
-              stroke="url(#preloaderGoldGrad)" stroke-width="2" />
-            <path d="M41 50 Q50 37 59 50 Q50 63 41 50 Z" fill="url(#preloaderGoldGrad)" />
-            <circle cx="50" cy="50" r="3.5" fill="#FFF2B2" />
-
-            <defs>
-              <linearGradient id="preloaderGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#FFF5CF" />
-                <stop offset="50%" stop-color="#D4AF37" />
-                <stop offset="100%" stop-color="#9E781B" />
-              </linearGradient>
-              <linearGradient id="preloaderGoldGradLight" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D4AF37" />
-                <stop offset="100%" stop-color="#FFFBE6" />
-              </linearGradient>
-              <radialGradient id="preloaderCrimsonGrad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#9E163E" />
-                <stop offset="100%" stop-color="#4D051B" />
-              </radialGradient>
-            </defs>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Royal Typography -->
-      <div class="preloader-brand-text">
-        <h1 class="preloader-brand-title">SRINIVASA</h1>
-        <div class="preloader-brand-divider">
-          <span class="p-line"></span>
-          <span class="p-ornament">❖</span>
-          <span class="p-line"></span>
-        </div>
-        <p class="preloader-brand-sub">TEXTILES • MASTER WEAVERS</p>
-        <span class="preloader-since">ESTD 1978 • KANCHIPURAM HERITAGE</span>
-      </div>
-
-      <!-- Silk Thread Weaving Progress Line -->
-      <div class="preloader-progress-box">
-        <div class="preloader-progress-bar">
-          <div class="preloader-progress-fill" id="preloaderProgressFill"></div>
-        </div>
-        <span class="preloader-status-text" id="preloaderStatusText">Weaving Pure Heritage Silk...</span>
-      </div>
-
-      <!-- Certification Badge -->
-      <div class="preloader-cert-badge">
-        <span class="cert-icon">✨</span>
-        <span>100% Certified Pure Silk Mark Guaranteed</span>
-      </div>
-
-      <!-- Grand Enter Store Action Button -->
-      <div class="preloader-action-wrap">
-        <button class="preloader-enter-btn" id="preloaderEnterBtn" aria-label="Enter Srinivasa Textiles Store">
-          <span>ENTER STORE</span>
-          <span class="btn-arrow">➔</span>
-        </button>
-        <span class="preloader-hint-text">Click to explore pure handloom collections</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
        TOP ANNOUNCEMENT BAR & THEME SWITCHER
        ========================================================================== -->
   <aside class="announcement-bar" aria-label="Heritage Quote & Announcement">
@@ -208,6 +109,7 @@
               🛍️
               <span class="badge-count" id="headerCartBadge">0</span>
             </button>
+
             <div class="top-bar-controls">
               <!-- Dark / Light Mode Switcher -->
               <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Mode">
@@ -217,111 +119,147 @@
           </div>
         </div>
       </div>
+
+      <!-- Universal Family Department Navigation Bar (Dedicated Multi-Gender Routing) -->
+      <nav class="department-nav-bar" aria-label="Department Navigation">
+        <div class="container">
+          <ul class="dept-menu">
+            <li><button class="dept-link active" data-page="explore">🏠 All Departments (Explore)</button></li>
+            <li><button class="dept-link highlight-combo" data-page="family">👨‍👩‍👧‍👦 Family Combos &amp;
+                Sets</button></li>
+            <li><button class="dept-link" data-page="women">👩 Women's Sarees &amp; Ethnic</button></li>
+            <li><button class="dept-link" data-page="girls">👧 Girls (Pattu Pavadai 2-14Y)</button></li>
+            <li><button class="dept-link" data-page="boys">👦 Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
+            <li><button class="dept-link" data-page="men">👨 Men's Silk &amp; Dhotis</button></li>
+            <li><button class="dept-link" data-page="infants">🍼 Infants &amp; Newborn (0-2Y)</button></li>
+          </ul>
+        </div>
+      </nav>
     </header>
 
-
-
-    <!-- ==========================================================================
-         HOME SECTION 1: HERO SPOTLIGHT (Brand Heritage & Trust)
-         ========================================================================== -->
-    <section class="hero-section home-only-section" aria-label="Hero Spotlight">
-      <div class="hero-overlay"></div>
+    <!-- DEDICATED GENDER / CATEGORY PAGE BANNER -->
+    <div class="dept-page-banner" id="deptPageBanner" style="display: none;">
       <div class="container">
-        <div class="hero-content">
-          <div class="hero-pill">
-            <span>✨ Master Weavers &amp; Complete Family Textile Emporium • Estd 1978</span>
+        <div class="dept-page-banner-inner">
+          <div class="dept-page-info">
+            <div class="dept-breadcrumb">
+              <a href="#home">Home</a>
+              <span class="breadcrumb-sep">/</span>
+              <span id="deptBreadcrumbName">Department</span>
+            </div>
+            <h2 id="deptPageTitle">Department Collection</h2>
+            <p id="deptPageDesc">Explore handcrafted master weaves curated specifically for this category.</p>
           </div>
-
-          <h2 class="hero-title">
-            SRINIVASA TEXTILES<br>
-            <span class="gold-text" style="font-size: 0.7em; display: block; margin-top: 0.5rem;">Sacred Handlooms for
-              the Entire Family</span>
-          </h2>
-
-          <p class="hero-desc">
-            Directly from our heritage pit-looms in Kanchipuram. Weaving royal bridal silks, coordinated family matching
-            sets, scratch-free girls' pattu pavadai, men's pure mulberry silk dhotis, and organic baby muslins for three
-            generations.
-          </p>
-
-          <div class="hero-stats-row">
-            <div class="hero-stat-item">
-              <span class="hero-stat-number">48+ Years</span>
-              <span class="hero-stat-label">Weaving Legacy</span>
-            </div>
-            <div class="hero-stat-item">
-              <span class="hero-stat-number">10,000+</span>
-              <span class="hero-stat-label">Artisan Looms</span>
-            </div>
-            <div class="hero-stat-item">
-              <span class="hero-stat-number">100% SMOI</span>
-              <span class="hero-stat-label">Certified Pure Silk</span>
-            </div>
-            <div class="hero-stat-item">
-              <span class="hero-stat-number">50,000+</span>
-              <span class="hero-stat-label">Happy Families</span>
-            </div>
+          <div class="dept-page-action">
+            <button class="btn btn-outline-gold btn-sm back-to-home-btn"
+              onclick="window.storefront.navigateToPage('home')">
+              ← Back to All Family Home
+            </button>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+
+
 
     <!-- ==========================================================================
-         HOME SECTION 2: TEXTILE'S BUILDING & SHOWROOM ARCHITECTURE
+         EXPLORE SECTION 1: GENDER STORE GATEWAYS (Magazine-Quality Cards)
          ========================================================================== -->
-    <section class="section home-only-section"
-      style="background: var(--bg-surface); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <!-- ==========================================================================
+         EXPLORE SECTION 1: GENDER STORE GATEWAYS (Magazine-Quality Cards)
+         ========================================================================== -->
+    <section class="section explore-only-section" style="padding-bottom: 2rem; display: none;" id="exploreSection">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Flagship Establishment</span>
-          <h2 class="section-title">Our Grand Heritage Showroom &amp; Emporium</h2>
-          <p class="section-subtitle">Located in the sacred temple city of Kanchipuram, our multi-storey emporium
-            welcomes families from across India and worldwide.</p>
+          <span class="section-tag">✨ Complete Family Handloom Emporium</span>
+          <h2 class="section-title">Explore All Collections &amp; Departments</h2>
+          <p class="section-subtitle">Discover handcrafted heirloom silks, matching family milestone bundles, and
+            scratch-free festive apparel organized across separate curated collections.</p>
           <div class="section-divider"><span class="section-divider-motif">✦</span></div>
         </div>
 
-        <div class="building-showcase-grid">
-          <div class="building-media-card">
-            <img src="assets/images/textile_building.jpg"
-              alt="Srinivasa Textiles Grand Showroom Building in Kanchipuram" />
-            <div class="building-badge">
-              <strong>🏛️ Kanchipuram Flagship Emporium</strong>
-              <span>108 Raja Veedhi, Temple District • Estd 1978</span>
+        <div class="gender-gateways-grid">
+          <!-- 1. Women Gateway -->
+          <div class="gender-gateway-card" data-page="women">
+            <img src="assets/images/hero_banner.jpg" alt="Women's Sarees & Ethnic" />
+            <div class="gender-badge-pill">✨ Bridal &amp; Festive</div>
+            <div class="gender-gateway-overlay">
+              <h3>👩 Women's Store</h3>
+              <p>Pure Kanchipuram Korvai, Banarasi Katan &amp; French Linen</p>
+              <div class="gateway-bottom-action">
+                <span class="gateway-price-tag">From ₹8,490</span>
+                <span class="gateway-enter-btn">Explore Sarees ➔</span>
+              </div>
             </div>
           </div>
 
-          <div class="building-content">
-            <span class="section-tag" style="margin-bottom: 0.75rem;">A Sacred Destination</span>
-            <h3
-              style="font-family: var(--font-serif-display); font-size: 1.85rem; color: var(--color-primary); margin-bottom: 1rem;">
-              Where Tradition Meets Timeless Elegance
-            </h3>
-            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.25rem;">
-              Step inside our iconic Dravidian architectural showroom. Designed with carved teakwood pillars,
-              air-conditioned family drape lounges, and private bridal silk consultation chambers, every visit is a
-              celebration of South Indian heritage.
-            </p>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
-              <div
-                style="background: var(--bg-surface-alt); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-                <strong style="display: block; color: var(--color-gold); font-size: 0.9rem; margin-bottom: 0.25rem;">🏰
-                  4-Storey Showroom</strong>
-                <span style="font-size: 0.775rem; color: var(--text-muted);">Dedicated floors for Women, Men, Kids &amp;
-                  Babies</span>
-              </div>
-              <div
-                style="background: var(--bg-surface-alt); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-                <strong
-                  style="display: block; color: var(--color-success); font-size: 0.9rem; margin-bottom: 0.25rem;">👨‍👩‍👧‍👦
-                  Family Color Lounge</strong>
-                <span style="font-size: 0.775rem; color: var(--text-muted);">Specialized lighting to test zari luster
-                  &amp; matching dyes</span>
+          <!-- 2. Men Gateway -->
+          <div class="gender-gateway-card" data-page="men">
+            <img src="assets/images/mens_silk_dhoti.jpg" alt="Men's Silk & Dhotis" />
+            <div class="gender-badge-pill">👔 Pure Mulberry Silk</div>
+            <div class="gender-gateway-overlay">
+              <h3>👨 Men's Store</h3>
+              <p>Wedding Silk Shirts, 8-Muzham Gold Zari Dhotis &amp; Shawls</p>
+              <div class="gateway-bottom-action">
+                <span class="gateway-price-tag">From ₹14,500</span>
+                <span class="gateway-enter-btn">Explore Men's ➔</span>
               </div>
             </div>
+          </div>
 
-            <div style="margin-top: 1.75rem;">
-              <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm" style="text-decoration: none !important;">📍 Get Showroom Directions ➔</a>
+          <!-- 3. Girls Gateway -->
+          <div class="gender-gateway-card" data-page="girls">
+            <img src="assets/images/kids_pattu_pavadai.jpg" alt="Girls Pattu Pavadai" />
+            <div class="gender-badge-pill">🛡️ Soft Inner-Lining</div>
+            <div class="gender-gateway-overlay">
+              <h3>👧 Girls' Store (2-14Y)</h3>
+              <p>Pure Silk Pattu Pavadai &amp; Lehengas with Soft Cotton Lining</p>
+              <div class="gateway-bottom-action">
+                <span class="gateway-price-tag">From ₹8,900</span>
+                <span class="gateway-enter-btn">Explore Girls' ➔</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Boys Gateway -->
+          <div class="gender-gateway-card" data-page="boys">
+            <img src="assets/images/boys_kurta_dhoti.jpg" alt="Boys Kurta Dhoti" />
+            <div class="gender-badge-pill">⚡ Ready-to-Wear Elastic</div>
+            <div class="gender-gateway-overlay">
+              <h3>👦 Boys' Store (2-14Y)</h3>
+              <p>Silk Jacquard Kurtas &amp; Elastic Waist Dhoti Pants</p>
+              <div class="gateway-bottom-action">
+                <span class="gateway-price-tag">From ₹5,990</span>
+                <span class="gateway-enter-btn">Explore Boys' ➔</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Infants Gateway -->
+          <div class="gender-gateway-card" data-page="infants">
+            <img src="assets/images/infant_organic_jhabla.jpg" alt="Infants Organic Muslin" />
+            <div class="gender-badge-pill">🌿 100% GOTS Organic</div>
+            <div class="gender-gateway-overlay">
+              <h3>🍼 Infants &amp; Newborn</h3>
+              <p>100% Organic Muslin Cotton Jhablas, Swaddles &amp; Rompers</p>
+              <div class="gateway-bottom-action">
+                <span class="gateway-price-tag">From ₹2,490</span>
+                <span class="gateway-enter-btn">Explore Baby ➔</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Family Combos Gateway -->
+          <div class="gender-gateway-card" data-page="family">
+            <img src="assets/images/family_matching_combo.jpg" alt="Family Matching Sets" />
+            <div class="gender-badge-pill">👨‍👩‍👧‍👦 Save up to 20%</div>
+            <div class="gender-gateway-overlay">
+              <h3>👨‍👩‍👧‍👦 Family Combos</h3>
+              <p>4-Piece Coordinated Festival Ensembles in Matched Dyes</p>
+              <div class="gateway-bottom-action">
+                <span class="gateway-price-tag">From ₹18,900</span>
+                <span class="gateway-enter-btn">Explore Combos ➔</span>
+              </div>
             </div>
           </div>
         </div>
@@ -329,129 +267,389 @@
     </section>
 
     <!-- ==========================================================================
-         HOME SECTION 3: TEXTILE OWNER & MASTER WEAVER SHOWCASE
+         EXPLORE COLLECTION 1: FAMILY MATCHING COMBOS
          ========================================================================== -->
-    <section class="section home-only-section" style="background: var(--bg-surface-alt);">
+    <section class="section explore-only-section" id="familyCombosSection"
+      style="padding-top: 1rem; padding-bottom: 2.5rem; display: none;">
       <div class="container">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="section-tag" style="margin-bottom: 0.35rem;">👨‍👩‍👧‍👦 Collection 01</span>
+            <h3
+              style="font-family: var(--font-serif-display); font-size: 1.85rem; color: var(--color-primary); margin: 0;">
+              Coordinated Family Matching Sets</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Harmonized ceremonial dye
+              batches for Father, Mother, Son &amp; Daughter.</p>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="window.storefront.navigateToPage('family')">View All Family
+            Combos ➔</button>
+        </div>
+
+        <div class="family-combo-banner">
+          <div class="combo-banner-image">
+            <img src="assets/images/family_matching_combo.jpg" alt="Srinivasa Family Matching Festive Silk Ensemble" />
+          </div>
+
+          <div class="combo-banner-content">
+            <span class="combo-badge-tag">👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE</span>
+            <h3>Samanvaya 4-Piece Grand Muhurtham Family Bundle</h3>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.65;">
+              Coordinated Kanchipuram Crimson &amp; Gold silk attire for Father, Mother, Son, and Daughter. Single-click
+              bundle saves over ₹13,500.
+            </p>
+
+            <ul class="combo-features-list">
+              <li>✨ Mother: Rajasi Heavy Gold Zari Kanchipuram Silk Saree</li>
+              <li>👧 Daughter: Matching Mayuri Pattu Pavadai with Soft Cotton Lining</li>
+              <li>👨 Father: Pure Mulberry Silk Shirt &amp; 8-Muzham Dhoti Set</li>
+              <li>👦 Son: Royal Silk Jacquard Kurta &amp; Elastic Dhoti Pant</li>
+            </ul>
+
+            <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem;">
+              <span style="font-size: 2rem; font-weight: 800; color: var(--color-primary);">₹58,500</span>
+              <span style="font-size: 1.1rem; color: var(--text-muted); text-decoration: line-through;">₹72,000</span>
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--color-success);">Save ₹13,500 (19%
+                OFF)</span>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <button class="btn btn-gold btn-lg" onclick="window.storefront.openPDP('ST-FAM-010')">Inspect Family
+                Bundle ➔</button>
+              <button class="btn btn-outline-gold" onclick="window.storefront.navigateToPage('family')">View All
+                Combos</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         EXPLORE SECTION: GRAND FESTIVE & MILESTONE OFFERS SESSION
+         ========================================================================== -->
+    <section class="section festive-offers-section explore-only-section" id="festiveOffersSection"
+      style="display: none;">
+      <div class="container">
+
+        <!-- Festive Section Header -->
         <div class="section-header">
-          <span class="section-tag">Master Weaver &amp; Founder</span>
-          <h2 class="section-title">Meet Our Founder &amp; Master Draper</h2>
-          <p class="section-subtitle">Dedicated to preserving the authenticity of pure pit-loom weaving and scratch-free
-            comfort for all generations.</p>
+          <span class="section-tag festive-section-tag">🎉 Limited Time Festive Specials 2026</span>
+          <h2 class="section-title">Grand Festive &amp; Wedding Handloom Offers</h2>
+          <p class="section-subtitle">Celebrate your family milestones with exclusive seasonal vouchers, complimentary
+            silver-tested purity certificates, and festive combo savings up to 22%.</p>
           <div class="section-divider"><span class="section-divider-motif">✦</span></div>
         </div>
 
-        <div class="owner-showcase-grid">
-          <div class="owner-media-box">
-            <img src="assets/images/artisan_loom.jpg" alt="Shri Srinivasa Mudaliar, Master Weaver and Founder" />
-            <div class="building-badge">
-              <strong>Shri Srinivasa Mudaliar</strong>
-              <span>Founder &amp; Master Weaver • 48 Years at the Loom</span>
+        <!-- Interactive Click-to-Copy Festival Vouchers -->
+        <div class="festive-vouchers-grid">
+          <!-- Voucher 1 -->
+          <div class="festive-voucher-card">
+            <span class="festive-voucher-badge">Family Bundle Special</span>
+            <div class="festive-voucher-content">
+              <h4>Flat 20% Off Family Combos</h4>
+              <p>Valid on all 4-piece and 2-piece synchronized color-matched festive ensembles.</p>
+            </div>
+            <div class="festive-code-row">
+              <span class="festive-code-text">FESTIVE20</span>
+              <button type="button" class="festive-copy-btn"
+                onclick="navigator.clipboard?.writeText('FESTIVE20'); window.storefront.showToast('Copied voucher code FESTIVE20!', 'success');">Copy
+                Code</button>
             </div>
           </div>
 
-          <div class="owner-content">
-            <span class="section-tag" style="margin-bottom: 0.75rem;">The Founder's Promise</span>
-            <h3
-              style="font-family: var(--font-serif-display); font-size: 1.85rem; color: var(--color-primary); margin-bottom: 0.75rem;">
-              "Every thread of silk we weave carries the sanctity of our family's blessing."
-            </h3>
-
-            <div class="owner-quote-box">
-              "When I founded Srinivasa Textiles in 1978, our singular goal was to ensure that when a family dresses for
-              a wedding or milestone festival, every member—from the grandparent in pure mulberry silk to the newborn in
-              organic muslin—experiences supreme purity and scratch-free comfort."
+          <!-- Voucher 2 -->
+          <div class="festive-voucher-card">
+            <span class="festive-voucher-badge">Bridal Trousseau</span>
+            <div class="festive-voucher-content">
+              <h4>Flat 15% Off Bridal Korvai</h4>
+              <p>Exclusive on Pure Kanchipuram 3-ply bridal silks + Complimentary pure muslin saree cover.</p>
             </div>
-
-            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;">
-              Under Shri Srinivasa's stewardship, over 10,000 artisan weaver families have been supported across
-              Kanchipuram and Arani. Every silk saree is tested for certified SMOI Silk Mark silver-tested zari purity.
-            </p>
-
-            <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;">
-              <span class="cert-pill cert-pill-gold">✨ SMOI Silk Mark Certified</span>
-              <span class="cert-pill cert-pill-emerald">🛡️ Soft Cotton Inner-Lining Guarantee</span>
-              <span class="cert-pill cert-pill-emerald">🌿 GOTS Organic Newborn Muslin</span>
+            <div class="festive-code-row">
+              <span class="festive-code-text">BRIDAL15</span>
+              <button type="button" class="festive-copy-btn"
+                onclick="navigator.clipboard?.writeText('BRIDAL15'); window.storefront.showToast('Copied voucher code BRIDAL15!', 'success');">Copy
+                Code</button>
             </div>
           </div>
+
+          <!-- Voucher 3 -->
+          <div class="festive-voucher-card">
+            <span class="festive-voucher-badge">Kids Celebration</span>
+            <div class="festive-voucher-content">
+              <h4>₹1,000 Off Kids Wear</h4>
+              <p>On all scratch-free Girls' Pattu Pavadai &amp; Boys' Dhoti orders over ₹5,000.</p>
+            </div>
+            <div class="festive-code-row">
+              <span class="festive-code-text">KIDSGIFT</span>
+              <button type="button" class="festive-copy-btn"
+                onclick="navigator.clipboard?.writeText('KIDSGIFT'); window.storefront.showToast('Copied voucher code KIDSGIFT!', 'success');">Copy
+                Code</button>
+            </div>
+          </div>
+
+          <!-- Voucher 4 -->
+          <div class="festive-voucher-card">
+            <span class="festive-voucher-badge">Prepaid Privilege</span>
+            <div class="festive-voucher-content">
+              <h4>Instant ₹500 + Free Air Delivery</h4>
+              <p>Instant cashback discount on UPI / Card payments with free insured courier.</p>
+            </div>
+            <div class="festive-code-row">
+              <span class="festive-code-text">PREPAID500</span>
+              <button type="button" class="festive-copy-btn"
+                onclick="navigator.clipboard?.writeText('PREPAID500'); window.storefront.showToast('Copied voucher code PREPAID500!', 'success');">Copy
+                Code</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Festive Deal Cards Grid -->
+        <div class="festive-deals-grid">
+          <!-- Deal 1 -->
+          <div class="festive-deal-card">
+            <div class="festive-deal-media">
+              <img src="assets/images/family_matching_combo.jpg" alt="Family Matching Festive Deal" />
+              <span class="festive-deal-badge">🔥 Save ₹13,500</span>
+            </div>
+            <div class="festive-deal-body">
+              <div>
+                <h4 class="festive-deal-title">Samanvaya 4-Piece Grand Muhurtham Combo</h4>
+                <p class="festive-deal-desc">Pure Kanchipuram Crimson &amp; Gold attire for Father, Mother, Son &amp;
+                  Daughter in unified dye baths.</p>
+              </div>
+              <div>
+                <div class="festive-price-row">
+                  <span class="festive-price-current">₹58,500</span>
+                  <span class="festive-price-original">₹72,000</span>
+                  <span class="festive-price-save">(19% OFF)</span>
+                </div>
+                <button class="btn btn-gold btn-sm" style="width: 100%;"
+                  onclick="window.storefront.openPDP('ST-FAM-010')">Inspect Festive Deal ➔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal 2 -->
+          <div class="festive-deal-card">
+            <div class="festive-deal-media">
+              <img src="assets/images/hero_banner.jpg" alt="Mother and Daughter Festive Pair" />
+              <span class="festive-deal-badge">✨ Save ₹8,100</span>
+            </div>
+            <div class="festive-deal-body">
+              <div>
+                <h4 class="festive-deal-title">Vatsalya Mother &amp; Daughter Silk Pair</h4>
+                <p class="festive-deal-desc">Matching Bridal Saree (Mother) &amp; Stitched Silk Pattu Pavadai (Daughter)
+                  with soft cotton underside.</p>
+              </div>
+              <div>
+                <div class="festive-price-row">
+                  <span class="festive-price-current">₹39,900</span>
+                  <span class="festive-price-original">₹48,000</span>
+                  <span class="festive-price-save">(17% OFF)</span>
+                </div>
+                <button class="btn btn-gold btn-sm" style="width: 100%;"
+                  onclick="window.storefront.openPDP('ST-FAM-012')">Inspect Festive Deal ➔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal 3 -->
+          <div class="festive-deal-card">
+            <div class="festive-deal-media">
+              <img src="assets/images/mens_silk_dhoti.jpg" alt="Father and Son Wedding Pair" />
+              <span class="festive-deal-badge">👔 Save ₹5,100</span>
+            </div>
+            <div class="festive-deal-body">
+              <div>
+                <h4 class="festive-deal-title">Pithamaha Father &amp; Son Silk Wedding Pair</h4>
+                <p class="festive-deal-desc">Matching Pure Mulberry Silk Shirt &amp; 8-Muzham Dhoti with Boys' Silk
+                  Jacquard Kurta &amp; Elastic Dhoti.</p>
+              </div>
+              <div>
+                <div class="festive-price-row">
+                  <span class="festive-price-current">₹19,900</span>
+                  <span class="festive-price-original">₹25,000</span>
+                  <span class="festive-price-save">(20% OFF)</span>
+                </div>
+                <button class="btn btn-gold btn-sm" style="width: 100%;"
+                  onclick="window.storefront.openPDP('ST-FAM-013')">Inspect Festive Deal ➔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal 4 -->
+          <div class="festive-deal-card">
+            <div class="festive-deal-media">
+              <img src="assets/images/infant_organic_jhabla.jpg" alt="Newborn Organic Muslin Festive Box" />
+              <span class="festive-deal-badge">🌿 Save ₹710</span>
+            </div>
+            <div class="festive-deal-body">
+              <div>
+                <h4 class="festive-deal-title">GOTS Organic Newborn 3-Piece Festive Hamper</h4>
+                <p class="festive-deal-desc">100% Organic Muslin Cotton Jhabla, Swaddle Blanket &amp; Cap with
+                  hypoallergenic herbal natural dyes.</p>
+              </div>
+              <div>
+                <div class="festive-price-row">
+                  <span class="festive-price-current">₹2,490</span>
+                  <span class="festive-price-original">₹3,200</span>
+                  <span class="festive-price-save">(22% OFF)</span>
+                </div>
+                <button class="btn btn-gold btn-sm" style="width: 100%;"
+                  onclick="window.storefront.openPDP('ST-INF-050')">Inspect Festive Deal ➔</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Festive Patron Perks Strip -->
+        <div class="festive-perks-bar">
+          <div class="festive-perk-item">
+            <span class="festive-perk-icon">✈️</span>
+            <div class="festive-perk-text">
+              <strong>Free Insured Air Delivery</strong>
+              <span>On all family orders over ₹1,999</span>
+            </div>
+          </div>
+
+          <div class="festive-perk-item">
+            <span class="festive-perk-icon">🎁</span>
+            <div class="festive-perk-text">
+              <strong>Heritage Gift Packaging</strong>
+              <span>Custom handwritten family greeting cards</span>
+            </div>
+          </div>
+
+          <div class="festive-perk-item">
+            <span class="festive-perk-icon">🏛️</span>
+            <div class="festive-perk-text">
+              <strong>100% Silk Mark Certified</strong>
+              <span>Tested silver-plated gold zari guarantee</span>
+            </div>
+          </div>
+
+          <div class="festive-perk-item">
+            <span class="festive-perk-icon">🛡️</span>
+            <div class="festive-perk-text">
+              <strong>Soft Lining Guarantee</strong>
+              <span>Zero itching for kids and infants</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         EXPLORE SECTION: OCCASION-BASED SHOPPING CARDS & VIDEO CONSULTATION
+         ========================================================================== -->
+    <section class="section explore-only-section" style="padding-bottom: 2.5rem; display: none;">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Curated Occasions</span>
+          <h2 class="section-title">Shop by Sacred Family Milestone</h2>
+          <p class="section-subtitle">Coordinated outfits styled perfectly for weddings, birthdays, temple festivals,
+            and daily elegance.</p>
+          <div class="section-divider"><span class="section-divider-motif">✦</span></div>
+        </div>
+
+        <div class="occasions-grid">
+          <div class="occasion-card" data-occasion="Wedding &amp; Grand Celebration">
+            <img src="assets/images/hero_banner.jpg" alt="Weddings &amp; Grand Celebrations" />
+            <div class="occasion-overlay">
+              <h3>💍 Wedding &amp; Muhurtham Store</h3>
+              <p>Heavy Bridal Silks, Groom Sets &amp; Family Muhurtham Weaves</p>
+            </div>
+          </div>
+
+          <div class="occasion-card" data-occasion="Birthday &amp; Party Wear">
+            <img src="assets/images/kids_pattu_pavadai.jpg" alt="Birthdays &amp; Festive Party Wear" />
+            <div class="occasion-overlay">
+              <h3>🎂 Birthday &amp; Festive Party Wear</h3>
+              <p>Scratch-Free Girls' Pavadai, Boys' Kurta Dhotis &amp; Frocks</p>
+            </div>
+          </div>
+
+          <div class="occasion-card" data-occasion="Daily, School &amp; Workwear">
+            <img src="assets/images/linen_sage.jpg" alt="Daily, School &amp; Workwear" />
+            <div class="occasion-overlay">
+              <h3>🏫 Daily, School &amp; Workwear</h3>
+              <p>Breathable Organic Linen Sarees, Mulmul Cotton &amp; Baby Essentials</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIP 1-on-1 Video Shopping Banner -->
+        <div class="video-shopping-banner">
+          <div class="video-shopping-info">
+            <span
+              style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--color-gold); letter-spacing: 0.1em;">📹
+              Complimentary Service</span>
+            <h3>Book a Live Family Video Shopping Session</h3>
+            <p>Inspect real zari luster, verify silk fall, and coordinate family shades in real time with our master
+              draper via WhatsApp video call.</p>
+          </div>
+          <a href="https://wa.me/919840054321?text=Hello%20Srinivasa%20Textiles,%20I%20would%20like%20to%20book%20a%20Live%20Video%20Shopping%20Session."
+            target="_blank" class="btn btn-gold btn-lg" style="white-space: nowrap;">
+            📹 Book Video Call Now
+          </a>
         </div>
       </div>
     </section>
 
     <!-- ==========================================================================
-         HOME SECTION 4: ABOUT THE TEXTILE & LIVING WEAVING HERITAGE
+         DEDICATED DEPARTMENT PRODUCT CATALOG (Only shown on gender pages)
          ========================================================================== -->
-    <section class="section home-only-section"
-      style="background: var(--bg-surface); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <section class="section" id="deptCatalogSection" style="background: var(--bg-surface-alt); display: none;">
       <div class="container">
-        <div class="heritage-story-grid">
-          <div class="heritage-media-box">
-            <img src="assets/images/kanchipuram_weave_closeup.jpg" alt="Intricate Korvai Handloom Weaving Close Up" />
-            <div class="heritage-floating-badge">
-              <strong>100% Handloom</strong>
-              <span>Korvai Interlocking Weave</span>
-            </div>
+
+        <!-- Department Toolbar & Filters -->
+        <div class="catalog-toolbar"
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div class="toolbar-left" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <label for="fabricFilter"
+              style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">Fabric:</label>
+            <select id="fabricFilter" class="form-control"
+              style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.8rem;">
+              <option value="All">All Fabrics</option>
+              <option value="Kanchipuram Silk">Kanchipuram Silk</option>
+              <option value="Banarasi Silk">Banarasi Silk</option>
+              <option value="Pure Mulberry Silk">Pure Mulberry Silk</option>
+              <option value="Pure Linen">Pure Linen</option>
+              <option value="Cotton">Organic Cotton</option>
+              <option value="Tussar Silk">Tussar Silk</option>
+            </select>
+
+            <label for="occasionFilter"
+              style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">Occasion:</label>
+            <select id="occasionFilter" class="form-control"
+              style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.8rem;">
+              <option value="All">All Occasions</option>
+              <option value="Wedding &amp; Grand Celebration">Wedding &amp; Muhurtham</option>
+              <option value="Birthday &amp; Party Wear">Birthday &amp; Party Wear</option>
+              <option value="Daily, School &amp; Workwear">Daily &amp; Workwear</option>
+            </select>
           </div>
 
-          <div class="heritage-content">
-            <span class="section-tag">About Srinivasa Textiles</span>
-            <h2>The Sacred Craft of Kanchipuram Silk</h2>
-            <p>
-              Since 1978, the master weavers of Srinivasa Textiles have preserved ancient pit-loom techniques. Each
-              heirloom saree takes up to 28 days of meticulous craftsmanship using 3-ply twisted mulberry silk yarns and
-              genuine silver-electroplated tested gold zari.
-            </p>
-            <p>
-              Our family matching ensembles are dyed together in unified ritual dye baths, guaranteeing 100% color
-              fidelity across men's, women's, and children's festive attire.
-            </p>
-
-            <div class="heritage-pillars">
-              <div class="heritage-pillar-card">
-                <strong>🏛️ Silk Mark SMOI Certified</strong>
-                <span>Pure mulberry silk purity guaranteed by central silk board.</span>
-              </div>
-              <div class="heritage-pillar-card">
-                <strong>🛡️ Soft Cotton Inner Linings</strong>
-                <span>Zero itchiness or zari scratching for babies and children.</span>
-              </div>
-            </div>
+          <div class="toolbar-right" style="display: flex; align-items: center; gap: 0.5rem;">
+            <label for="sortSelect" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">Sort
+              by:</label>
+            <select id="sortSelect" class="form-control"
+              style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.8rem;">
+              <option value="featured">Featured &amp; Trending</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Customer Rating</option>
+            </select>
           </div>
         </div>
+
+        <!-- Products Grid (Isolated to Current Demographic) -->
+        <div class="products-grid" id="productsGrid"></div>
       </div>
     </section>
 
 
-
-    <!-- ==========================================================================
-         HOME SECTION 5: FINAL EXPLORE & VIDEO SHOPPING CTA BANNER (At the bottom of Home page)
-         ========================================================================== -->
-    <section class="explore-cta-section home-only-section" aria-label="Explore Collections & Video Shopping Banner">
-      <div class="container">
-        <div class="explore-cta-card">
-          <span class="section-tag"
-            style="background: rgba(255,255,255,0.15); color: #FFF2B2; border-color: var(--color-gold);">✨ 2026 Festive
-            &amp; Wedding Emporium</span>
-          <h2>Ready to Discover Our Complete Family Handloom Collections?</h2>
-          <p>
-            Step inside our digital multi-department shopping hub or connect directly with our master weavers for a
-            personalized live video shopping consultation.
-          </p>
-          <div class="explore-cta-actions"
-            style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.75rem;">
-            <a href="shop.html" onclick="if(window.storefront){event.preventDefault();window.storefront.navigateToPage('explore');}else{window.location.href='shop.html';}" class="btn btn-gold btn-lg" id="homeBottomExploreBtn"
-              style="font-weight: 800; min-width: 240px; text-decoration: none;">
-              Explore All Collections ➔
-            </a>
-            <a href="https://wa.me/919840054321?text=Hello%20Srinivasa%20Textiles,%20I%20would%20like%20to%20book%20a%20Family%20Video%20Shopping%20Consultation."
-              target="_blank" class="btn btn-outline-gold btn-lg"
-              style="font-weight: 800; min-width: 240px; border-width: 2px; text-decoration: none; color: #FFF2B2; border-color: var(--color-gold);">
-              📹 Video Shopping Call
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- FOOTER WITH SECURE OWNER PORTAL ACCESS -->
     <footer class="site-footer">
@@ -985,7 +1183,7 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-client.js"></script>
 
-  <!-- Application Scripts -->
+  <!-- Scripts -->
   <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
