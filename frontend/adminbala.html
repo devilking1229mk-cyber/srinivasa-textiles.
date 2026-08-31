@@ -1058,6 +1058,100 @@
     </div>
   </div>
 
+  <!-- ==========================================================================
+       MOBILE NAVIGATION & ADMIN TABS DRAWER (Exact proven UX from Main Page)
+       ========================================================================== -->
+  <div class="mobile-nav-drawer" id="adminMobileNavDrawer" role="dialog" aria-modal="true">
+    <div class="mobile-nav-header">
+      <div class="mobile-nav-title">
+        <span style="font-size: 1.35rem;">👑</span>
+        <div>
+          <h3>Srinivasa Admin</h3>
+          <small>Store Owner Navigation &amp; Logistics Hub</small>
+        </div>
+      </div>
+      <button class="pdp-close-btn" id="adminMobileNavCloseBtn" title="Close Menu">✕</button>
+    </div>
+
+    <div class="mobile-nav-body" style="padding: 1.25rem 1rem; overflow-y: auto;">
+      <div class="mobile-nav-section-title">📊 OPERATIONAL DASHBOARD</div>
+      <ul class="mobile-dept-list">
+        <li>
+          <button class="mobile-dept-btn active" data-tab="overview">
+            <span>📊 Dashboard Overview</span>
+            <span class="admin-menu-badge" style="margin-left: auto;">Live</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="mobile-nav-divider"></div>
+
+      <div class="mobile-nav-section-title">📦 INVENTORY &amp; CATALOG</div>
+      <ul class="mobile-dept-list">
+        <li>
+          <button class="mobile-dept-btn" data-tab="uploader">
+            <span>📸 Add New Product SKU</span>
+            <span class="admin-menu-badge" style="margin-left: auto;">+New</span>
+          </button>
+        </li>
+        <li>
+          <button class="mobile-dept-btn" data-tab="inventory">
+            <span>📦 Real-Time Stock Control</span>
+            <span class="admin-menu-badge" id="mobileSidebarStockBadge" style="margin-left: auto;">12 SKUs</span>
+          </button>
+        </li>
+        <li>
+          <button class="mobile-dept-btn" data-tab="bulk">
+            <span>📑 Bulk CSV Catalog Sync</span>
+            <span class="admin-menu-badge" style="margin-left: auto;">CSV</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="mobile-nav-divider"></div>
+
+      <div class="mobile-nav-section-title">🧾 LOGISTICS &amp; SALES</div>
+      <ul class="mobile-dept-list">
+        <li>
+          <button class="mobile-dept-btn" data-tab="orders">
+            <span>🧾 Orders &amp; GST Invoicing</span>
+            <span class="admin-menu-badge" style="margin-left: auto; background: var(--color-gold); color: #2D0310;">2 Orders</span>
+          </button>
+        </li>
+        <li>
+          <button class="mobile-dept-btn" data-tab="subscribers">
+            <span>🔔 Restock Waitlist Alerts</span>
+            <span class="admin-menu-badge" style="margin-left: auto;">1</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="mobile-nav-divider"></div>
+
+      <div class="mobile-nav-section-title">🌟 PATRON &amp; QUALITY</div>
+      <ul class="mobile-dept-list">
+        <li>
+          <button class="mobile-dept-btn" data-tab="feedbacks">
+            <span>🌟 Patron Reviews &amp; Feedback</span>
+            <span class="admin-menu-badge" id="mobileSidebarFeedbackBadge" style="margin-left: auto; background: var(--color-gold); color: #2D0310;">4 Reviews</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="mobile-nav-divider"></div>
+
+      <div class="mobile-nav-section-title">👑 STORE OWNER &amp; WEAVER</div>
+      <div class="mobile-nav-info-card">
+        <strong>👑 Master Weaver (Owner)</strong>
+        <p>Kanchipuram Heritage Pit-Looms</p>
+        <div style="margin-top: 0.5rem;">
+          <span style="font-size: 0.75rem; color: var(--color-gold); font-weight: 700;">🏛️ Silk Mark SMOI Certified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-overlay" id="adminMobileNavOverlay"></div>
+
   <!-- OWNER AUTHENTICATION LOCK SCREEN (PROTECTED GATE - ALWAYS ACTIVE ON REFRESH) -->
   <div class="admin-lock-overlay active" id="adminLockOverlay">
     <div class="admin-lock-card">

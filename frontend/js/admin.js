@@ -21,60 +21,85 @@ class AdminController {
 
   setupMobileSidebar() {
     const menuBtn = document.getElementById("adminMobileMenuBtn");
-    const closeBtn = document.getElementById("adminSidebarCloseBtn");
-    const backdrop = document.getElementById("adminSidebarBackdrop");
+    const drawer = document.getElementById("adminMobileNavDrawer");
+    const overlay = document.getElementById("adminMobileNavOverlay");
+    const closeBtn = document.getElementById("adminMobileNavCloseBtn");
 
-    const handleToggle = (e) => {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      this.toggleMobileSidebar();
+    const openDrawer = () => {
+      drawer?.classList.add("active");
+      overlay?.classList.add("active");
+      document.body.classList.add("admin-sidebar-open");
     };
 
-    const handleClose = (e) => {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      this.closeMobileSidebar();
+    const closeDrawer = () => {
+      drawer?.classList.remove("active");
+      overlay?.classList.remove("active");
+      document.body.classList.remove("admin-sidebar-open");
     };
 
     if (menuBtn) {
-      menuBtn.onclick = handleToggle;
+      menuBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openDrawer();
+      };
     }
     if (closeBtn) {
-      closeBtn.onclick = handleClose;
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+      };
     }
-    if (backdrop) {
-      backdrop.onclick = handleClose;
+    if (overlay) {
+      overlay.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+      };
     }
 
-    window.toggleAdminMobileMenu = () => this.toggleMobileSidebar();
-    window.closeAdminMobileMenu = () => this.closeMobileSidebar();
+    // Attach click listener to all tab buttons inside the mobile drawer
+    document.querySelectorAll("#adminMobileNavDrawer .mobile-dept-btn").forEach(btn => {
+      btn.onclick = (e) => {
+        const tab = btn.getAttribute("data-tab");
+        closeDrawer();
+        if (tab) this.switchTab(tab);
+      };
+    });
+
+    window.openAdminMobileMenu = openDrawer;
+    window.closeAdminMobileMenu = closeDrawer;
+    window.toggleAdminMobileMenu = () => {
+      if (drawer?.classList.contains("active")) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    };
   }
 
   toggleMobileSidebar(open) {
-    const sidebar = document.querySelector(".admin-sidebar");
-    const backdrop = document.getElementById("adminSidebarBackdrop");
-    if (!sidebar) return;
-    const isOpen = open !== undefined ? open : !sidebar.classList.contains("mobile-open");
+    const drawer = document.getElementById("adminMobileNavDrawer");
+    const overlay = document.getElementById("adminMobileNavOverlay");
+    if (!drawer) return;
+    const isOpen = open !== undefined ? open : !drawer.classList.contains("active");
     if (isOpen) {
-      sidebar.classList.add("mobile-open");
-      if (backdrop) backdrop.classList.add("active");
+      drawer.classList.add("active");
+      overlay?.classList.add("active");
       document.body.classList.add("admin-sidebar-open");
     } else {
-      sidebar.classList.remove("mobile-open");
-      if (backdrop) backdrop.classList.remove("active");
+      drawer.classList.remove("active");
+      overlay?.classList.remove("active");
       document.body.classList.remove("admin-sidebar-open");
     }
   }
 
   closeMobileSidebar() {
-    const sidebar = document.querySelector(".admin-sidebar");
-    const backdrop = document.getElementById("adminSidebarBackdrop");
-    if (sidebar) sidebar.classList.remove("mobile-open");
-    if (backdrop) backdrop.classList.remove("active");
+    const drawer = document.getElementById("adminMobileNavDrawer");
+    const overlay = document.getElementById("adminMobileNavOverlay");
+    if (drawer) drawer.classList.remove("active");
+    if (overlay) overlay.classList.remove("active");
     document.body.classList.remove("admin-sidebar-open");
   }
 
@@ -182,6 +207,12 @@ class AdminController {
       item.classList.toggle("active", isActive);
     });
 
+    document.querySelectorAll("#adminMobileNavDrawer .mobile-dept-btn").forEach(btn => {
+      const btnTab = btn.getAttribute("data-tab");
+      const isActive = btnTab === normTab || btnTab === tabName;
+      btn.classList.toggle("active", isActive);
+    });
+
     document.querySelectorAll(".admin-tab-pane").forEach(pane => {
       const paneId = pane.getAttribute("id");
       const isActive = paneId === `adminTab-${normTab}` || paneId === `adminTab-${tabName}`;
@@ -231,11 +262,17 @@ class AdminController {
       avgRating = (sum / totalFeedbacks).toFixed(1);
     }
 
+    const mobileSidebarFbBadge = document.getElementById("mobileSidebarFeedbackBadge");
+    const mobileSidebarStockBadge = document.getElementById("mobileSidebarStockBadge");
+    const sidebarStockBadge = document.getElementById("sidebarStockBadge");
+    if (sidebarStockBadge) sidebarStockBadge.textContent = `${stats.totalSKUs} SKUs`;
+    if (mobileSidebarStockBadge) mobileSidebarStockBadge.textContent = `${stats.totalSKUs} SKUs`;
+    if (sidebarFbBadge) sidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
+    if (mobileSidebarFbBadge) mobileSidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
+    if (fbBadge) fbBadge.textContent = `${totalFeedbacks} Reviews`;
+    if (btnFbCount) btnFbCount.textContent = `(${totalFeedbacks})`;
     if (avgRatingEl) avgRatingEl.textContent = `${avgRating} ★`;
     if (totalFbEl) totalFbEl.textContent = totalFeedbacks;
-    if (btnFbCount) btnFbCount.textContent = totalFeedbacks;
-    if (sidebarFbBadge) sidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
-    if (fbBadge) fbBadge.textContent = `${totalFeedbacks} Reviews`;
     if (fbAvgVal) fbAvgVal.textContent = `${avgRating} ★`;
     if (fbTotalVal) fbTotalVal.textContent = totalFeedbacks;
   }
