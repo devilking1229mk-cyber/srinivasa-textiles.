@@ -10,12 +10,43 @@ class AdminController {
 
   init() {
     this.bindEvents();
+    this.setupMobileSidebar();
     this.renderDashboardKPIs();
     this.renderInventoryTable();
     this.renderOrdersTable();
     this.renderSubscribersTable();
     this.renderFeedbacksTable();
     this.setupMediaUploader();
+  }
+
+  setupMobileSidebar() {
+    const menuBtn = document.getElementById("adminMobileMenuBtn");
+    const closeBtn = document.getElementById("adminSidebarCloseBtn");
+    const backdrop = document.getElementById("adminSidebarBackdrop");
+    const sidebar = document.querySelector(".admin-sidebar");
+
+    const toggle = (open) => {
+      if (!sidebar) return;
+      const isOpen = open !== undefined ? open : !sidebar.classList.contains("mobile-open");
+      sidebar.classList.toggle("mobile-open", isOpen);
+      if (backdrop) backdrop.classList.toggle("active", isOpen);
+      document.body.classList.toggle("admin-sidebar-open", isOpen);
+    };
+
+    if (menuBtn) menuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+    if (closeBtn) closeBtn.addEventListener("click", () => toggle(false));
+    if (backdrop) backdrop.addEventListener("click", () => toggle(false));
+  }
+
+  closeMobileSidebar() {
+    const sidebar = document.querySelector(".admin-sidebar");
+    const backdrop = document.getElementById("adminSidebarBackdrop");
+    if (sidebar) sidebar.classList.remove("mobile-open");
+    if (backdrop) backdrop.classList.remove("active");
+    document.body.classList.remove("admin-sidebar-open");
   }
 
   bindEvents() {
@@ -107,6 +138,7 @@ class AdminController {
 
   switchTab(tabName) {
     this.currentTab = tabName;
+    this.closeMobileSidebar();
 
     document.querySelectorAll(".admin-menu-item").forEach(item => {
       item.classList.toggle("active", item.getAttribute("data-tab") === tabName);

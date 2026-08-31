@@ -179,15 +179,20 @@
 
     <!-- TOP LUXURY HEADER -->
     <header class="admin-navbar">
-      <div class="admin-brand">
-        <div class="admin-brand-icon">👑</div>
-        <div>
-          <h2>SRINIVASA TEXTILES</h2>
-          <span class="admin-brand-tagline">Store Owner Management &amp; Logistics Command Hub</span>
-        </div>
-        <div class="admin-session-pill">
-          <span class="admin-pulse-dot"></span>
-          <span>Active Owner Session</span>
+      <div style="display: flex; align-items: center; gap: 0.65rem;">
+        <button id="adminMobileMenuBtn" class="admin-mobile-menu-btn" aria-label="Toggle Admin Tabs Menu" title="Browse Navigation Tabs">
+          ☰
+        </button>
+        <div class="admin-brand">
+          <div class="admin-brand-icon">👑</div>
+          <div>
+            <h2>SRINIVASA TEXTILES</h2>
+            <span class="admin-brand-tagline">Store Owner Management &amp; Logistics Command Hub</span>
+          </div>
+          <div class="admin-session-pill">
+            <span class="admin-pulse-dot"></span>
+            <span>Active Owner Session</span>
+          </div>
         </div>
       </div>
 
@@ -201,7 +206,7 @@
         </a>
 
         <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Toggle Light / Dark Theme">
-          <span>🌙</span> Theme
+          <span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>
         </button>
 
         <button id="exitAdminBtn" class="exit-admin-btn">
@@ -214,6 +219,12 @@
 
       <!-- LUXURY STRUCTURED SIDEBAR -->
       <aside class="admin-sidebar" aria-label="Admin Sidebar">
+        <div class="admin-sidebar-mobile-header">
+          <div class="admin-sidebar-mobile-title">
+            <span>👑</span> Admin Tabs
+          </div>
+          <button id="adminSidebarCloseBtn" class="admin-sidebar-close-btn" aria-label="Close Navigation Tabs">✕</button>
+        </div>
         <div class="admin-sidebar-nav">
 
           <!-- GROUP 1: OVERVIEW -->
@@ -314,6 +325,9 @@
           </div>
         </div>
       </aside>
+
+      <!-- Mobile Sidebar Backdrop -->
+      <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
 
       <!-- MAIN CONTENT AREA -->
       <main class="admin-main-content">
@@ -1184,7 +1198,7 @@
               document.documentElement.classList.remove("theme-transitioning");
             }, 550);
           }
-          themeBtn.innerHTML = newTheme === "dark" ? "<span>☀️</span> Dark" : "<span>🌙</span> Dark";
+          themeBtn.innerHTML = newTheme === "dark" ? '<span class="theme-icon">☀️</span><span class="theme-label"> Dark</span>' : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
         });
       }
 
