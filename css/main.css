@@ -346,6 +346,11 @@ textarea {
   gap: 0.85rem;
 }
 
+/* Mobile 3-Lines (☰) Menu Button - Hidden on Desktop view */
+.mobile-menu-btn {
+  display: none !important;
+}
+
 /* ==========================================================================
    THEME SWITCHER BUTTON (ULTRA HIGH CONTRAST & MAXIMUM VISIBILITY)
    ========================================================================== */

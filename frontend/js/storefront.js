@@ -50,7 +50,7 @@ class StorefrontController {
     const btn = document.getElementById("themeToggleBtn");
     if (btn) {
       btn.innerHTML = theme === "dark" 
-        ? '<span class="theme-icon">☀️</span><span class="theme-label"> Light</span>' 
+        ? '<span class="theme-icon">☀️</span><span class="theme-label"> Dark</span>' 
         : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
     }
   }
