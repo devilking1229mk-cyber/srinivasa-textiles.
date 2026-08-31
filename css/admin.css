@@ -1801,6 +1801,71 @@
     pointer-events: auto !important;
   }
 
+  /* Admin Mobile Drawer Items & Dynamic Golden Active Styling */
+  #adminMobileNavDrawer .mobile-dept-btn {
+    width: 100% !important;
+    text-align: left !important;
+    padding: 0.75rem 0.9rem !important;
+    background: rgba(212, 175, 55, 0.05) !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.22) !important;
+    border-radius: var(--radius-sm) !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    color: var(--text-heading) !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.45rem !important;
+  }
+
+  [data-theme="dark"] #adminMobileNavDrawer .mobile-dept-btn {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #FDFBF7 !important;
+    border-color: rgba(212, 175, 55, 0.22) !important;
+  }
+
+  #adminMobileNavDrawer .mobile-dept-btn:hover {
+    background: rgba(212, 175, 55, 0.18) !important;
+    border-color: var(--color-gold) !important;
+    transform: translateX(3px) !important;
+  }
+
+  /* DYNAMIC ACTIVE GOLDEN TAB: Glowing Gold with Rich Contrast */
+  #adminMobileNavDrawer .mobile-dept-btn.active {
+    background: linear-gradient(135deg, #D4AF37 0%, #F5E08E 50%, #C59A27 100%) !important;
+    color: #2D0310 !important;
+    border: 1.5px solid #FFFFFF !important;
+    font-weight: 900 !important;
+    box-shadow: 0 4px 18px rgba(212, 175, 55, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+    transform: translateX(4px) scale(1.01) !important;
+  }
+
+  #adminMobileNavDrawer .mobile-dept-btn.active span {
+    color: #2D0310 !important;
+    font-weight: 900 !important;
+  }
+
+  #adminMobileNavDrawer .mobile-dept-btn.active .admin-menu-badge {
+    background: #2D0310 !important;
+    color: #F5E08E !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    font-weight: 800 !important;
+  }
+
+  #adminMobileNavDrawer .mobile-dept-btn:not(.active) .admin-menu-badge {
+    background: rgba(212, 175, 55, 0.18) !important;
+    color: var(--color-gold) !important;
+    border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  }
+
+  [data-theme="dark"] #adminMobileNavDrawer .mobile-dept-btn:not(.active) .admin-menu-badge {
+    background: rgba(212, 175, 55, 0.18) !important;
+    color: #F5E08E !important;
+  }
+
   .admin-sidebar-menu {
     flex-direction: column !important;
     flex-wrap: nowrap !important;
