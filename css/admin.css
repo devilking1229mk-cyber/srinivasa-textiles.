@@ -1745,34 +1745,59 @@
     top: 0 !important;
     left: 0 !important;
     bottom: 0 !important;
-    width: 300px !important;
-    max-width: 85vw !important;
+    width: 310px !important;
+    max-width: 86vw !important;
     height: 100vh !important;
     max-height: 100vh !important;
-    z-index: 12000 !important;
+    z-index: 99999 !important;
     transform: translateX(-100%) !important;
     transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease, opacity 0.3s ease !important;
     box-shadow: none !important;
-    border-right: 1.5px solid var(--color-gold) !important;
+    border-right: 2px solid var(--color-gold) !important;
     border-bottom: none !important;
-    padding: 0 0 2rem 0 !important;
+    padding: 0 0 2.5rem 0 !important;
     overflow-y: auto !important;
     background: var(--bg-surface) !important;
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   [data-theme="dark"] .admin-sidebar {
-    background: #12141A !important;
-    border-right-color: #232733 !important;
+    background: #14161D !important;
+    border-right-color: #D4AF37 !important;
   }
 
   .admin-sidebar.mobile-open {
     transform: translateX(0) !important;
     visibility: visible !important;
     opacity: 1 !important;
-    box-shadow: 15px 0 50px rgba(0, 0, 0, 0.85) !important;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.85) !important;
+    pointer-events: auto !important;
+  }
+
+  .admin-sidebar-backdrop {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    z-index: 99990 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+  }
+
+  .admin-sidebar-backdrop.active {
+    opacity: 1 !important;
+    visibility: visible !important;
     pointer-events: auto !important;
   }
 

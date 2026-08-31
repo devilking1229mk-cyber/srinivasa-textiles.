@@ -9,14 +9,14 @@ class AdminController {
   }
 
   init() {
-    this.bindEvents();
     this.setupMobileSidebar();
-    this.renderDashboardKPIs();
-    this.renderInventoryTable();
-    this.renderOrdersTable();
-    this.renderSubscribersTable();
-    this.renderFeedbacksTable();
-    this.setupMediaUploader();
+    this.bindEvents();
+    try { this.renderDashboardKPIs(); } catch (e) { console.error("renderDashboardKPIs error:", e); }
+    try { this.renderInventoryTable(); } catch (e) { console.error("renderInventoryTable error:", e); }
+    try { this.renderOrdersTable(); } catch (e) { console.error("renderOrdersTable error:", e); }
+    try { this.renderSubscribersTable(); } catch (e) { console.error("renderSubscribersTable error:", e); }
+    try { this.renderFeedbacksTable(); } catch (e) { console.error("renderFeedbacksTable error:", e); }
+    try { this.setupMediaUploader(); } catch (e) { console.error("setupMediaUploader error:", e); }
   }
 
   setupMobileSidebar() {
@@ -24,26 +24,30 @@ class AdminController {
     const closeBtn = document.getElementById("adminSidebarCloseBtn");
     const backdrop = document.getElementById("adminSidebarBackdrop");
 
-    if (menuBtn) {
-      menuBtn.onclick = (e) => {
+    const handleToggle = (e) => {
+      if (e) {
         e.preventDefault();
         e.stopPropagation();
-        this.toggleMobileSidebar();
-      };
+      }
+      this.toggleMobileSidebar();
+    };
+
+    const handleClose = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      this.closeMobileSidebar();
+    };
+
+    if (menuBtn) {
+      menuBtn.onclick = handleToggle;
     }
     if (closeBtn) {
-      closeBtn.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.closeMobileSidebar();
-      };
+      closeBtn.onclick = handleClose;
     }
     if (backdrop) {
-      backdrop.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.closeMobileSidebar();
-      };
+      backdrop.onclick = handleClose;
     }
 
     window.toggleAdminMobileMenu = () => this.toggleMobileSidebar();
