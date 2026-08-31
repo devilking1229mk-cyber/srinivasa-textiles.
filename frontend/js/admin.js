@@ -23,34 +23,46 @@ class AdminController {
     const menuBtn = document.getElementById("adminMobileMenuBtn");
     const closeBtn = document.getElementById("adminSidebarCloseBtn");
     const backdrop = document.getElementById("adminSidebarBackdrop");
-    const sidebar = document.querySelector(".admin-sidebar");
-
-    const toggle = (open) => {
-      if (!sidebar) return;
-      const isOpen = open !== undefined ? open : !sidebar.classList.contains("mobile-open");
-      sidebar.classList.toggle("mobile-open", isOpen);
-      if (backdrop) backdrop.classList.toggle("active", isOpen);
-      document.body.classList.toggle("admin-sidebar-open", isOpen);
-    };
 
     if (menuBtn) {
       menuBtn.onclick = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        toggle();
+        this.toggleMobileSidebar();
       };
     }
     if (closeBtn) {
       closeBtn.onclick = (e) => {
         e.preventDefault();
-        toggle(false);
+        e.stopPropagation();
+        this.closeMobileSidebar();
       };
     }
     if (backdrop) {
       backdrop.onclick = (e) => {
         e.preventDefault();
-        toggle(false);
+        e.stopPropagation();
+        this.closeMobileSidebar();
       };
+    }
+
+    window.toggleAdminMobileMenu = () => this.toggleMobileSidebar();
+    window.closeAdminMobileMenu = () => this.closeMobileSidebar();
+  }
+
+  toggleMobileSidebar(open) {
+    const sidebar = document.querySelector(".admin-sidebar");
+    const backdrop = document.getElementById("adminSidebarBackdrop");
+    if (!sidebar) return;
+    const isOpen = open !== undefined ? open : !sidebar.classList.contains("mobile-open");
+    if (isOpen) {
+      sidebar.classList.add("mobile-open");
+      if (backdrop) backdrop.classList.add("active");
+      document.body.classList.add("admin-sidebar-open");
+    } else {
+      sidebar.classList.remove("mobile-open");
+      if (backdrop) backdrop.classList.remove("active");
+      document.body.classList.remove("admin-sidebar-open");
     }
   }
 
@@ -150,6 +162,7 @@ class AdminController {
   }
 
   switchTab(tabName) {
+    if (!tabName) return;
     this.currentTab = tabName;
     this.closeMobileSidebar();
 
@@ -157,23 +170,29 @@ class AdminController {
     const mainContent = document.querySelector(".admin-main-content");
     if (mainContent) mainContent.scrollTop = 0;
 
+    const normTab = (tabName === "feedback") ? "feedbacks" : tabName;
+
     document.querySelectorAll(".admin-menu-item").forEach(item => {
-      item.classList.toggle("active", item.getAttribute("data-tab") === tabName);
+      const itemTab = item.getAttribute("data-tab");
+      const isActive = itemTab === normTab || itemTab === tabName;
+      item.classList.toggle("active", isActive);
     });
 
     document.querySelectorAll(".admin-tab-pane").forEach(pane => {
-      pane.classList.toggle("active", pane.getAttribute("id") === `adminTab-${tabName}`);
+      const paneId = pane.getAttribute("id");
+      const isActive = paneId === `adminTab-${normTab}` || paneId === `adminTab-${tabName}`;
+      pane.classList.toggle("active", isActive);
     });
 
-    if (tabName === "orders") {
+    if (normTab === "orders") {
       this.renderOrdersTable();
-    } else if (tabName === "inventory") {
+    } else if (normTab === "inventory") {
       this.renderInventoryTable();
-    } else if (tabName === "feedback" || tabName === "feedbacks") {
+    } else if (normTab === "feedbacks" || normTab === "feedback") {
       this.renderFeedbacksTable();
-    } else if (tabName === "subscribers") {
+    } else if (normTab === "subscribers") {
       this.renderSubscribersTable();
-    } else {
+    } else if (normTab === "overview") {
       this.renderDashboardKPIs();
     }
   }

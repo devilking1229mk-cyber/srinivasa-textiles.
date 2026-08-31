@@ -180,7 +180,7 @@
     <!-- TOP LUXURY HEADER -->
     <header class="admin-navbar">
       <div style="display: flex; align-items: center; gap: 0.65rem;">
-        <button id="adminMobileMenuBtn" class="admin-mobile-menu-btn" aria-label="Toggle Admin Tabs Menu" title="Browse Navigation Tabs">
+        <button id="adminMobileMenuBtn" class="admin-mobile-menu-btn" aria-label="Toggle Admin Tabs Menu" title="Browse Navigation Tabs" onclick="if(window.admin && window.admin.toggleMobileSidebar){window.admin.toggleMobileSidebar()}else if(window.toggleAdminMobileMenu){window.toggleAdminMobileMenu()}">
           ☰
         </button>
         <div class="admin-brand">
@@ -223,7 +223,7 @@
           <div class="admin-sidebar-mobile-title">
             <span>👑</span> Admin Tabs
           </div>
-          <button id="adminSidebarCloseBtn" class="admin-sidebar-close-btn" aria-label="Close Navigation Tabs">✕</button>
+          <button id="adminSidebarCloseBtn" class="admin-sidebar-close-btn" aria-label="Close Navigation Tabs" onclick="if(window.admin && window.admin.closeMobileSidebar){window.admin.closeMobileSidebar()}else if(window.closeAdminMobileMenu){window.closeAdminMobileMenu()}">✕</button>
         </div>
         <div class="admin-sidebar-nav">
 
@@ -231,7 +231,7 @@
           <div>
             <div class="admin-nav-group-title">Operational Dashboard</div>
             <ul class="admin-sidebar-menu">
-              <li class="admin-menu-item active" data-tab="overview">
+              <li class="admin-menu-item active" data-tab="overview" onclick="window.admin && window.admin.switchTab('overview')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">📊</span>
                   <span>Dashboard Overview</span>
@@ -245,21 +245,21 @@
           <div>
             <div class="admin-nav-group-title">Inventory &amp; Catalog</div>
             <ul class="admin-sidebar-menu">
-              <li class="admin-menu-item" data-tab="uploader">
+              <li class="admin-menu-item" data-tab="uploader" onclick="window.admin && window.admin.switchTab('uploader')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">📸</span>
                   <span>Add New Product SKU</span>
                 </div>
                 <span class="admin-menu-badge">+New</span>
               </li>
-              <li class="admin-menu-item" data-tab="inventory">
+              <li class="admin-menu-item" data-tab="inventory" onclick="window.admin && window.admin.switchTab('inventory')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">📦</span>
                   <span>Real-Time Stock Control</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarStockBadge">12 SKUs</span>
               </li>
-              <li class="admin-menu-item" data-tab="bulk">
+              <li class="admin-menu-item" data-tab="bulk" onclick="window.admin && window.admin.switchTab('bulk')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">📑</span>
                   <span>Bulk CSV Catalog Sync</span>
@@ -273,19 +273,19 @@
           <div>
             <div class="admin-nav-group-title">Logistics &amp; Sales</div>
             <ul class="admin-sidebar-menu">
-              <li class="admin-menu-item" data-tab="orders">
+              <li class="admin-menu-item" data-tab="orders" onclick="window.admin && window.admin.switchTab('orders')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">🧾</span>
                   <span>Orders &amp; GST Invoicing</span>
                 </div>
                 <span class="admin-menu-badge" style="background: var(--color-gold); color: #2D0310;">2 Orders</span>
               </li>
-              <li class="admin-menu-item" data-tab="subscribers">
+              <li class="admin-menu-item" data-tab="subscribers" onclick="window.admin && window.admin.switchTab('subscribers')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">🔔</span>
                   <span>Restock Waitlist Alerts</span>
                 </div>
-                <span class="admin-menu-badge">3</span>
+                <span class="admin-menu-badge">1</span>
               </li>
             </ul>
           </div>
@@ -294,13 +294,13 @@
           <div>
             <div class="admin-nav-group-title">Patron &amp; Quality</div>
             <ul class="admin-sidebar-menu">
-              <li class="admin-menu-item" data-tab="feedbacks">
+              <li class="admin-menu-item" data-tab="feedbacks" onclick="window.admin && window.admin.switchTab('feedbacks')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">🌟</span>
                   <span>Patron Reviews &amp; Feedback</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarFeedbackBadge"
-                  style="background: var(--color-gold); color: #2D0310;">3 Reviews</span>
+                  style="background: var(--color-gold); color: #2D0310;">4 Reviews</span>
               </li>
             </ul>
           </div>
@@ -327,7 +327,7 @@
       </aside>
 
       <!-- Mobile Sidebar Backdrop -->
-      <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+      <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop" onclick="if(window.admin && window.admin.closeMobileSidebar){window.admin.closeMobileSidebar()}else if(window.closeAdminMobileMenu){window.closeAdminMobileMenu()}"></div>
 
       <!-- MAIN CONTENT AREA -->
       <main class="admin-main-content">
