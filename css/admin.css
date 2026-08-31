@@ -1749,6 +1749,58 @@
     display: none !important;
   }
 
+  /* Admin Mobile Navigation Drawer & Overlay (Same architecture as main page) */
+  #adminMobileNavDrawer {
+    position: fixed !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 320px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    background: var(--bg-surface) !important;
+    z-index: 100000 !important;
+    box-shadow: 5px 0 35px rgba(0, 0, 0, 0.5) !important;
+    transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-right: 1.5px solid var(--color-gold) !important;
+  }
+
+  [data-theme="dark"] #adminMobileNavDrawer {
+    background: #14161D !important;
+    border-right-color: #D4AF37 !important;
+  }
+
+  #adminMobileNavDrawer.active {
+    left: 0 !important;
+  }
+
+  #adminMobileNavOverlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 99990 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+    display: block !important;
+  }
+
+  #adminMobileNavOverlay.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
   .admin-sidebar-menu {
     flex-direction: column !important;
     flex-wrap: nowrap !important;

@@ -180,7 +180,7 @@
     <!-- TOP LUXURY HEADER -->
     <header class="admin-navbar">
       <div style="display: flex; align-items: center; gap: 0.65rem;">
-        <button id="adminMobileMenuBtn" class="admin-mobile-menu-btn" aria-label="Toggle Admin Tabs Menu" title="Browse Navigation Tabs" onclick="if(window.admin && window.admin.toggleMobileSidebar){window.admin.toggleMobileSidebar()}else if(window.toggleAdminMobileMenu){window.toggleAdminMobileMenu()}">
+        <button id="adminMobileMenuBtn" class="admin-mobile-menu-btn" aria-label="Toggle Admin Tabs Menu" title="Browse Navigation Tabs" onclick="document.getElementById('adminMobileNavDrawer')?.classList.add('active'); document.getElementById('adminMobileNavOverlay')?.classList.add('active'); document.body.classList.add('admin-sidebar-open');">
           ☰
         </button>
         <div class="admin-brand">
@@ -1070,14 +1070,14 @@
           <small>Store Owner Navigation &amp; Logistics Hub</small>
         </div>
       </div>
-      <button class="pdp-close-btn" id="adminMobileNavCloseBtn" title="Close Menu">✕</button>
+      <button class="pdp-close-btn" id="adminMobileNavCloseBtn" title="Close Menu" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open');">✕</button>
     </div>
 
     <div class="mobile-nav-body" style="padding: 1.25rem 1rem; overflow-y: auto;">
       <div class="mobile-nav-section-title">📊 OPERATIONAL DASHBOARD</div>
       <ul class="mobile-dept-list">
         <li>
-          <button class="mobile-dept-btn active" data-tab="overview">
+          <button class="mobile-dept-btn active" data-tab="overview" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('overview');">
             <span>📊 Dashboard Overview</span>
             <span class="admin-menu-badge" style="margin-left: auto;">Live</span>
           </button>
@@ -1089,19 +1089,19 @@
       <div class="mobile-nav-section-title">📦 INVENTORY &amp; CATALOG</div>
       <ul class="mobile-dept-list">
         <li>
-          <button class="mobile-dept-btn" data-tab="uploader">
+          <button class="mobile-dept-btn" data-tab="uploader" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('uploader');">
             <span>📸 Add New Product SKU</span>
             <span class="admin-menu-badge" style="margin-left: auto;">+New</span>
           </button>
         </li>
         <li>
-          <button class="mobile-dept-btn" data-tab="inventory">
+          <button class="mobile-dept-btn" data-tab="inventory" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('inventory');">
             <span>📦 Real-Time Stock Control</span>
             <span class="admin-menu-badge" id="mobileSidebarStockBadge" style="margin-left: auto;">12 SKUs</span>
           </button>
         </li>
         <li>
-          <button class="mobile-dept-btn" data-tab="bulk">
+          <button class="mobile-dept-btn" data-tab="bulk" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('bulk');">
             <span>📑 Bulk CSV Catalog Sync</span>
             <span class="admin-menu-badge" style="margin-left: auto;">CSV</span>
           </button>
@@ -1113,13 +1113,13 @@
       <div class="mobile-nav-section-title">🧾 LOGISTICS &amp; SALES</div>
       <ul class="mobile-dept-list">
         <li>
-          <button class="mobile-dept-btn" data-tab="orders">
+          <button class="mobile-dept-btn" data-tab="orders" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('orders');">
             <span>🧾 Orders &amp; GST Invoicing</span>
             <span class="admin-menu-badge" style="margin-left: auto; background: var(--color-gold); color: #2D0310;">2 Orders</span>
           </button>
         </li>
         <li>
-          <button class="mobile-dept-btn" data-tab="subscribers">
+          <button class="mobile-dept-btn" data-tab="subscribers" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('subscribers');">
             <span>🔔 Restock Waitlist Alerts</span>
             <span class="admin-menu-badge" style="margin-left: auto;">1</span>
           </button>
@@ -1131,7 +1131,7 @@
       <div class="mobile-nav-section-title">🌟 PATRON &amp; QUALITY</div>
       <ul class="mobile-dept-list">
         <li>
-          <button class="mobile-dept-btn" data-tab="feedbacks">
+          <button class="mobile-dept-btn" data-tab="feedbacks" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('feedbacks');">
             <span>🌟 Patron Reviews &amp; Feedback</span>
             <span class="admin-menu-badge" id="mobileSidebarFeedbackBadge" style="margin-left: auto; background: var(--color-gold); color: #2D0310;">4 Reviews</span>
           </button>
@@ -1150,7 +1150,7 @@
       </div>
     </div>
   </div>
-  <div class="drawer-overlay" id="adminMobileNavOverlay"></div>
+  <div class="drawer-overlay" id="adminMobileNavOverlay" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open');"></div>
 
   <!-- OWNER AUTHENTICATION LOCK SCREEN (PROTECTED GATE - ALWAYS ACTIVE ON REFRESH) -->
   <div class="admin-lock-overlay active" id="adminLockOverlay">
