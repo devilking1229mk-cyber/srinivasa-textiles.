@@ -1639,7 +1639,7 @@
 /* ==========================================================================
    13. RESPONSIVE BREAKPOINTS
    ========================================================================== */
-@media (min-width: 901px) {
+@media (min-width: 1025px) {
   .admin-workspace.active {
     height: 100vh;
     max-height: 100vh;
@@ -1653,13 +1653,7 @@
   }
 }
 
-@media (max-width: 1080px) {
-  .admin-overview-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   /* Prevent horizontal cutoffs and enable full natural page scrolling */
   html, body {
     overflow-x: hidden !important;
@@ -1751,19 +1745,21 @@
     top: 0 !important;
     left: 0 !important;
     bottom: 0 !important;
-    width: 290px !important;
+    width: 300px !important;
     max-width: 85vw !important;
     height: 100vh !important;
     max-height: 100vh !important;
-    z-index: 1200 !important;
+    z-index: 12000 !important;
     transform: translateX(-100%) !important;
-    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease !important;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease, opacity 0.3s ease !important;
     box-shadow: none !important;
-    border-right: 1px solid var(--border-color) !important;
+    border-right: 1.5px solid var(--color-gold) !important;
     border-bottom: none !important;
     padding: 0 0 2rem 0 !important;
     overflow-y: auto !important;
     background: var(--bg-surface) !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
     pointer-events: none !important;
   }
 
@@ -1774,7 +1770,9 @@
 
   .admin-sidebar.mobile-open {
     transform: translateX(0) !important;
-    box-shadow: 12px 0 45px rgba(0, 0, 0, 0.75) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-shadow: 15px 0 50px rgba(0, 0, 0, 0.85) !important;
     pointer-events: auto !important;
   }
 

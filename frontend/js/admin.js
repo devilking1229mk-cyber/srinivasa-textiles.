@@ -33,12 +33,25 @@ class AdminController {
       document.body.classList.toggle("admin-sidebar-open", isOpen);
     };
 
-    if (menuBtn) menuBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggle();
-    });
-    if (closeBtn) closeBtn.addEventListener("click", () => toggle(false));
-    if (backdrop) backdrop.addEventListener("click", () => toggle(false));
+    if (menuBtn) {
+      menuBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle();
+      };
+    }
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        toggle(false);
+      };
+    }
+    if (backdrop) {
+      backdrop.onclick = (e) => {
+        e.preventDefault();
+        toggle(false);
+      };
+    }
   }
 
   closeMobileSidebar() {
@@ -139,6 +152,10 @@ class AdminController {
   switchTab(tabName) {
     this.currentTab = tabName;
     this.closeMobileSidebar();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const mainContent = document.querySelector(".admin-main-content");
+    if (mainContent) mainContent.scrollTop = 0;
 
     document.querySelectorAll(".admin-menu-item").forEach(item => {
       item.classList.toggle("active", item.getAttribute("data-tab") === tabName);
