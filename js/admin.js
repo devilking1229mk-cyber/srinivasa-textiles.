@@ -1370,7 +1370,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     const finalAmount = taxableAmount + totalTax + (order.shippingINR || 0);
 
     const waOrderMsg = encodeURIComponent(`Namaste ${order.customer ? order.customer.name : 'Customer'}! 🙏 Here is your official GST Tax Invoice from Srinivasa Textiles for Order #${order.orderId} (Total: ₹${finalAmount.toLocaleString("en-IN")}). Courier: ${order.courier || 'BlueDart Express'} (AWB: ${order.trackingNumber}).`);
-    const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '919840054321')}?text=${waOrderMsg}`;
+    const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '916381265149')}?text=${waOrderMsg}`;
 
     if (isEditMode) {
       // RENDER EDIT MODE
@@ -1865,7 +1865,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     tbody.innerHTML = feedbacks.map(fb => {
       const ratingNum = parseInt(fb.rating, 10) || 5;
       const starsDisplay = "★".repeat(ratingNum) + "☆".repeat(Math.max(0, 5 - ratingNum));
-      const cleanPhone = "919840054321"; // Store care line or patron reference
+      const cleanPhone = "916381265149"; // Store care line or patron reference
       const waMsg = encodeURIComponent(`Namaste ${fb.author}! 🙏 Thank you for your wonderful ${ratingNum}★ review with Srinivasa Textiles. We are honored to serve your family.`);
       const waLink = `https://wa.me/?text=${waMsg}`;
 
