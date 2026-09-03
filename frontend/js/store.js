@@ -19,7 +19,7 @@ const STORE_KEYS = {
 const DEFAULT_SETTINGS = {
   storeName: "Srinivasa Textiles",
   tagline: "Master Weavers & Pure Silk Family Emporium Since 1978",
-  phone: "+91 98400 54321",
+  phone: "+91 6381265149",
   whatsapp: "919840054321",
   email: "care@srinivasatextiles.com",
   gstin: "33AABCS9876C1ZT",

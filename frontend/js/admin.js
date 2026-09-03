@@ -979,7 +979,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
             <div class="brand-title">SRINIVASA TEXTILES</div>
             <div class="brand-sub">Master Weavers & Pure Silk Family Emporium • Since 1978</div>
             <div style="font-size: 11px; color: #475569; margin-top: 4px;">
-              108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 98400 54321
+              108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 6381265149
             </div>
             <div style="font-size: 11px; font-weight: 700; color: #7A0C2E; margin-top: 2px;">
               GSTIN: 33AABCS9876C1ZT | State Code: 33 (Tamil Nadu) | Silk Mark (SMOI) Certified

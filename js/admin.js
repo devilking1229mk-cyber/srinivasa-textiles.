@@ -9,13 +9,98 @@ class AdminController {
   }
 
   init() {
+    this.setupMobileSidebar();
     this.bindEvents();
-    this.renderDashboardKPIs();
-    this.renderInventoryTable();
-    this.renderOrdersTable();
-    this.renderSubscribersTable();
-    this.renderFeedbacksTable();
-    this.setupMediaUploader();
+    try { this.renderDashboardKPIs(); } catch (e) { console.error("renderDashboardKPIs error:", e); }
+    try { this.renderInventoryTable(); } catch (e) { console.error("renderInventoryTable error:", e); }
+    try { this.renderOrdersTable(); } catch (e) { console.error("renderOrdersTable error:", e); }
+    try { this.renderSubscribersTable(); } catch (e) { console.error("renderSubscribersTable error:", e); }
+    try { this.renderFeedbacksTable(); } catch (e) { console.error("renderFeedbacksTable error:", e); }
+    try { this.setupMediaUploader(); } catch (e) { console.error("setupMediaUploader error:", e); }
+  }
+
+  setupMobileSidebar() {
+    const menuBtn = document.getElementById("adminMobileMenuBtn");
+    const drawer = document.getElementById("adminMobileNavDrawer");
+    const overlay = document.getElementById("adminMobileNavOverlay");
+    const closeBtn = document.getElementById("adminMobileNavCloseBtn");
+
+    const openDrawer = () => {
+      drawer?.classList.add("active");
+      overlay?.classList.add("active");
+      document.body.classList.add("admin-sidebar-open");
+    };
+
+    const closeDrawer = () => {
+      drawer?.classList.remove("active");
+      overlay?.classList.remove("active");
+      document.body.classList.remove("admin-sidebar-open");
+    };
+
+    if (menuBtn) {
+      menuBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openDrawer();
+      };
+    }
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+      };
+    }
+    if (overlay) {
+      overlay.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+      };
+    }
+
+    // Attach click listener to all tab buttons inside the mobile drawer
+    document.querySelectorAll("#adminMobileNavDrawer .mobile-dept-btn").forEach(btn => {
+      btn.onclick = (e) => {
+        const tab = btn.getAttribute("data-tab");
+        closeDrawer();
+        if (tab) this.switchTab(tab);
+      };
+    });
+
+    window.openAdminMobileMenu = openDrawer;
+    window.closeAdminMobileMenu = closeDrawer;
+    window.toggleAdminMobileMenu = () => {
+      if (drawer?.classList.contains("active")) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    };
+  }
+
+  toggleMobileSidebar(open) {
+    const drawer = document.getElementById("adminMobileNavDrawer");
+    const overlay = document.getElementById("adminMobileNavOverlay");
+    if (!drawer) return;
+    const isOpen = open !== undefined ? open : !drawer.classList.contains("active");
+    if (isOpen) {
+      drawer.classList.add("active");
+      overlay?.classList.add("active");
+      document.body.classList.add("admin-sidebar-open");
+    } else {
+      drawer.classList.remove("active");
+      overlay?.classList.remove("active");
+      document.body.classList.remove("admin-sidebar-open");
+    }
+  }
+
+  closeMobileSidebar() {
+    const drawer = document.getElementById("adminMobileNavDrawer");
+    const overlay = document.getElementById("adminMobileNavOverlay");
+    if (drawer) drawer.classList.remove("active");
+    if (overlay) overlay.classList.remove("active");
+    document.body.classList.remove("admin-sidebar-open");
   }
 
   bindEvents() {
@@ -106,25 +191,43 @@ class AdminController {
   }
 
   switchTab(tabName) {
+    if (!tabName) return;
     this.currentTab = tabName;
+    this.closeMobileSidebar();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const mainContent = document.querySelector(".admin-main-content");
+    if (mainContent) mainContent.scrollTop = 0;
+
+    const normTab = (tabName === "feedback") ? "feedbacks" : tabName;
 
     document.querySelectorAll(".admin-menu-item").forEach(item => {
-      item.classList.toggle("active", item.getAttribute("data-tab") === tabName);
+      const itemTab = item.getAttribute("data-tab");
+      const isActive = itemTab === normTab || itemTab === tabName;
+      item.classList.toggle("active", isActive);
+    });
+
+    document.querySelectorAll("#adminMobileNavDrawer .mobile-dept-btn").forEach(btn => {
+      const btnTab = btn.getAttribute("data-tab");
+      const isActive = btnTab === normTab || btnTab === tabName;
+      btn.classList.toggle("active", isActive);
     });
 
     document.querySelectorAll(".admin-tab-pane").forEach(pane => {
-      pane.classList.toggle("active", pane.getAttribute("id") === `adminTab-${tabName}`);
+      const paneId = pane.getAttribute("id");
+      const isActive = paneId === `adminTab-${normTab}` || paneId === `adminTab-${tabName}`;
+      pane.classList.toggle("active", isActive);
     });
 
-    if (tabName === "orders") {
+    if (normTab === "orders") {
       this.renderOrdersTable();
-    } else if (tabName === "inventory") {
+    } else if (normTab === "inventory") {
       this.renderInventoryTable();
-    } else if (tabName === "feedback" || tabName === "feedbacks") {
+    } else if (normTab === "feedbacks" || normTab === "feedback") {
       this.renderFeedbacksTable();
-    } else if (tabName === "subscribers") {
+    } else if (normTab === "subscribers") {
       this.renderSubscribersTable();
-    } else {
+    } else if (normTab === "overview") {
       this.renderDashboardKPIs();
     }
   }
@@ -159,11 +262,17 @@ class AdminController {
       avgRating = (sum / totalFeedbacks).toFixed(1);
     }
 
+    const mobileSidebarFbBadge = document.getElementById("mobileSidebarFeedbackBadge");
+    const mobileSidebarStockBadge = document.getElementById("mobileSidebarStockBadge");
+    const sidebarStockBadge = document.getElementById("sidebarStockBadge");
+    if (sidebarStockBadge) sidebarStockBadge.textContent = `${stats.totalSKUs} SKUs`;
+    if (mobileSidebarStockBadge) mobileSidebarStockBadge.textContent = `${stats.totalSKUs} SKUs`;
+    if (sidebarFbBadge) sidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
+    if (mobileSidebarFbBadge) mobileSidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
+    if (fbBadge) fbBadge.textContent = `${totalFeedbacks} Reviews`;
+    if (btnFbCount) btnFbCount.textContent = `(${totalFeedbacks})`;
     if (avgRatingEl) avgRatingEl.textContent = `${avgRating} ★`;
     if (totalFbEl) totalFbEl.textContent = totalFeedbacks;
-    if (btnFbCount) btnFbCount.textContent = totalFeedbacks;
-    if (sidebarFbBadge) sidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
-    if (fbBadge) fbBadge.textContent = `${totalFeedbacks} Reviews`;
     if (fbAvgVal) fbAvgVal.textContent = `${avgRating} ★`;
     if (fbTotalVal) fbTotalVal.textContent = totalFeedbacks;
   }
@@ -870,7 +979,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
             <div class="brand-title">SRINIVASA TEXTILES</div>
             <div class="brand-sub">Master Weavers & Pure Silk Family Emporium • Since 1978</div>
             <div style="font-size: 11px; color: #475569; margin-top: 4px;">
-              108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 98400 54321
+              108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 6381265149
             </div>
             <div style="font-size: 11px; font-weight: 700; color: #7A0C2E; margin-top: 2px;">
               GSTIN: 33AABCS9876C1ZT | State Code: 33 (Tamil Nadu) | Silk Mark (SMOI) Certified
