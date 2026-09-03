@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS = {
   storeName: "Srinivasa Textiles",
   tagline: "Master Weavers & Pure Silk Family Emporium Since 1978",
   phone: "+91 6381265149",
-  whatsapp: "919840054321",
+  whatsapp: "+91 6381265149",
   email: "care@srinivasatextiles.com",
   gstin: "33AABCS9876C1ZT",
   address: "Srinivasa Heritage Weaving Mansion, 108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India",
@@ -55,7 +55,7 @@ class TextileStore {
       localStorage.removeItem("st_wishlist_data_v2");
       localStorage.removeItem("st_wishlist_data");
       localStorage.removeItem("st_wishlist");
-    } catch (e) {}
+    } catch (e) { }
 
     this.catalog = this.load(STORE_KEYS.CATALOG, INITIAL_CATALOG);
     this.orders = this.load(STORE_KEYS.ORDERS, INITIAL_ORDERS);
@@ -225,7 +225,7 @@ class TextileStore {
     document.documentElement.classList.add("theme-transitioning");
     document.documentElement.setAttribute("data-theme", theme);
     window.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme } }));
-    
+
     if (this._themeTransitionTimer) {
       clearTimeout(this._themeTransitionTimer);
     }
@@ -531,7 +531,7 @@ class TextileStore {
     if (!product) return false;
     const selectedSize = size || (product.availableSizes && product.availableSizes[0]) || "Standard";
     const selectedColor = (product.colors && product.colors[0] && product.colors[0].name) || "Signature";
-    
+
     this.addToCart(productId, selectedColor, selectedSize, "unstitched", null, 1);
     this.toggleWishlist(productId);
     return true;
