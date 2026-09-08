@@ -469,7 +469,7 @@ class StorefrontController {
       if (deptCatalogSection) deptCatalogSection.style.display = "block";
 
       const deptMeta = this.getDepartmentMeta(this.currentPage);
-      if (deptTitle) deptTitle.textContent = deptMeta.title;
+      if (deptTitle) deptTitle.innerHTML = deptMeta.title;
       if (deptDesc) deptDesc.textContent = deptMeta.desc;
       if (deptBreadcrumbName) deptBreadcrumbName.textContent = deptMeta.breadcrumb;
 
@@ -481,37 +481,37 @@ class StorefrontController {
     switch (pageKey) {
       case "women":
         return {
-          title: "👩 Women's Silk Sarees & Ethnic Collection",
+          title: '<img src="icons/ladies.jpeg" alt="Ladies" class="dept-banner-icon" /> Ladies\' Silk Sarees & Ethnic Collection',
           desc: "Authentic Pure Kanchipuram Silk, Banarasi Katan, French Flax Linen, Chanderi Tissue, and Kalamkari Tussar Sarees.",
-          breadcrumb: "Women's Collection",
+          breadcrumb: "Ladies' Collection",
           filterDept: "Women's Collection"
         };
       case "men":
         return {
-          title: "👨 Men's Pure Silk & Traditional Dhotis",
+          title: '<img src="icons/mens.jpeg" alt="Men" class="dept-banner-icon" /> Men\'s Pure Silk & Traditional Dhotis',
           desc: "Pure Mulberry Silk Wedding Shirts, 8-Muzham Gold Zari Dhotis (Veshti), and Ceremonial Angavastram Shawls.",
           breadcrumb: "Men's Collection",
           filterDept: "Men's Collection"
         };
       case "girls":
         return {
-          title: "👧 Girls' Ethnic Wear (2 - 14 Years)",
+          title: '<img src="icons/kids.jpeg" alt="Kids" class="dept-banner-icon" /> Girls\' Ethnic Wear (2 - 14 Years)',
           desc: "Traditional Pure Silk Pattu Pavadai & Lehenga Sets backed by our Scratch-Free Soft Cotton Inner-Lining Guarantee.",
           breadcrumb: "Kids Wear (Girls)",
           filterDept: "Kids Wear (Girls)"
         };
       case "boys":
         return {
-          title: "👦 Boys' Festive Kurta & Dhoti Sets (2 - 14 Years)",
+          title: '<img src="icons/kids.jpeg" alt="Kids" class="dept-banner-icon" /> Boys\' Festive Kurta & Dhoti Sets (2 - 14 Years)',
           desc: "Silk Jacquard Kurtas with Pre-Pleated Ready-to-Wear Elastic Dhotis and Soft Cotton Undersides.",
           breadcrumb: "Kids Wear (Boys)",
           filterDept: "Kids Wear (Boys)"
         };
       case "infants":
         return {
-          title: "🍼 Infants & Toddlers (0 - 2 Years)",
+          title: '<img src="icons/bourn%20babies.jpeg" alt="Born Babies" class="dept-banner-icon" /> Born Babies & Infants (0 - 2 Years)',
           desc: "100% GOTS Certified Pure Organic Muslin Cotton Jhablas, Swaddle Blankets, and Hypoallergenic Baby Silk Rompers.",
-          breadcrumb: "Infants & Toddlers",
+          breadcrumb: "Born Babies & Infants",
           filterDept: "Infants & Toddlers"
         };
       case "family":
@@ -668,10 +668,10 @@ class StorefrontController {
 
           <div class="card-actions-quick">
             <button class="quick-action-btn wishlist-toggle-btn ${isWishlisted ? "wishlisted" : ""}" title="Save to Wishlist">
-              ♥
+              <img src="icons/favourite.jpeg" alt="Wishlist" class="card-action-icon" />
             </button>
             <button class="quick-action-btn open-pdp" title="Quick View">
-              🔍
+              <img src="icons/search.jpeg" alt="Quick View" class="card-action-icon" />
             </button>
           </div>
         </div>
@@ -975,7 +975,7 @@ class StorefrontController {
       <div class="pdp-media-column">
         <div class="clean-img-viewer" id="cleanImgViewer" title="Click to open Fullscreen Lightbox">
           <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" class="clean-pdp-img" id="pdpMainImg" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
-          <div class="lightbox-trigger-badge">🔍 Click for Fullscreen Lightbox</div>
+          <div class="lightbox-trigger-badge"><img src="icons/search.jpeg" alt="Search" class="lightbox-badge-icon" /> Click for Fullscreen Lightbox</div>
         </div>
 
         ${(product.gallery && product.gallery.length > 1) ? `
@@ -1561,9 +1561,9 @@ class StorefrontController {
       if (footer) footer.style.display = "none";
       body.innerHTML = `
         <div class="wishlist-empty-state">
-          <div class="wishlist-empty-icon">❤️</div>
+          <div class="wishlist-empty-icon"><img src="icons/favourite.jpeg" alt="Favourites" class="empty-state-fav-icon" /></div>
           <h4>Your Favourites is Empty</h4>
-          <p>Tap the ❤️ heart icon on any pure Kanchipuram silk saree, kids pattu pavadai, or royal family set to save your favorite weaves here!</p>
+          <p>Tap the heart icon on any pure Kanchipuram silk saree, kids pattu pavadai, or royal family set to save your favorite weaves here!</p>
           <button class="btn btn-gold btn-sm" id="wishlistExploreBtn" style="margin-top: 1.25rem;">
             Explore Heirloom Collections ➔
           </button>

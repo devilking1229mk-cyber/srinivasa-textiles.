@@ -1879,3 +1879,203 @@ textarea {
 [data-theme="dark"] .festive-copy-btn:hover {
   background: #FDE68A !important;
 }
+
+/* ==========================================================================
+   CUSTOM ICON STYLES (from icons/ directory)
+   ========================================================================== */
+.st-icon {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+}
+
+/* Header & Navigation Action Icons */
+.search-trigger-btn .st-icon-search {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: transform var(--transition-fast);
+}
+
+.search-trigger-btn:hover .st-icon-search {
+  transform: scale(1.12);
+}
+
+[data-theme="dark"] .search-trigger-btn .st-icon-search {
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 1px;
+}
+
+.wishlist-btn .st-icon-favourite {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  transition: transform var(--transition-fast);
+}
+
+.wishlist-btn:hover .st-icon-favourite {
+  transform: scale(1.15);
+}
+
+.feedback-nav-btn .feedback-btn-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: -2px;
+}
+
+/* Modal and Drawer Icons */
+.drawer-header-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.feedback-modal-icon-img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 50%;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
+}
+
+.empty-state-fav-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  display: block;
+}
+
+.search-modal-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  margin-right: 0.6rem;
+  vertical-align: middle;
+}
+
+/* Department Navigation & Gateway Icons */
+.dept-nav-img-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.45rem;
+  vertical-align: -3px;
+  border: 1.5px solid var(--color-gold);
+  background: #ffffff;
+  display: inline-block;
+}
+
+.drawer-dept-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.6rem;
+  vertical-align: -4px;
+  border: 1.5px solid var(--color-gold);
+  background: #ffffff;
+  display: inline-block;
+}
+
+.drawer-icon-img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: contain;
+  margin-right: 0.5rem;
+  vertical-align: -3px;
+  display: inline-block;
+}
+
+.gateway-title-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.6rem;
+  vertical-align: -6px;
+  border: 2px solid var(--color-gold);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  display: inline-block;
+}
+
+.dept-banner-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+  vertical-align: -8px;
+  border: 2px solid var(--color-gold);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+  display: inline-block;
+}
+
+/* Video Call Icons */
+.btn-video-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  border-radius: 5px;
+  margin-right: 0.5rem;
+  vertical-align: -3px;
+  display: inline-block;
+}
+
+.footer-link-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  border-radius: 3px;
+  margin-right: 0.45rem;
+  vertical-align: -2px;
+  display: inline-block;
+}
+
+.footer-dept-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 0.45rem;
+  vertical-align: -3px;
+  background: #ffffff;
+  border: 1px solid var(--color-gold);
+  display: inline-block;
+}
+
+/* Product Card Quick Action Icons */
+.card-action-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+  border-radius: 3px;
+}
+
+.quick-action-btn.wishlisted .card-action-icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 4px #E11D48);
+}
+
+.lightbox-badge-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  vertical-align: -1px;
+  margin-right: 0.35rem;
+  display: inline-block;
+}

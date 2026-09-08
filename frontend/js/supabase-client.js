@@ -45,11 +45,11 @@ class SupabaseService {
 
       // Transform DB row into frontend product format
       return data.map(row => {
-        const primaryImg = (Array.isArray(row.images) && row.images.length > 0) 
-          ? row.images[0] 
+        const primaryImg = (Array.isArray(row.images) && row.images.length > 0)
+          ? row.images[0]
           : (row.image_url || row.image || row.mainImage || "");
-        const imageList = Array.isArray(row.images) && row.images.length > 0 
-          ? row.images 
+        const imageList = Array.isArray(row.images) && row.images.length > 0
+          ? row.images
           : (primaryImg ? [primaryImg] : []);
 
         return {
@@ -90,8 +90,8 @@ class SupabaseService {
     if (!this.isConfigured()) return null;
     try {
       const primaryImg = product.mainImage || product.image || (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image_url || ""));
-      const imgList = Array.isArray(product.images) && product.images.length > 0 
-        ? product.images 
+      const imgList = Array.isArray(product.images) && product.images.length > 0
+        ? product.images
         : (Array.isArray(product.gallery) && product.gallery.length > 0 ? product.gallery : [primaryImg]);
 
       const dbProduct = {
@@ -279,7 +279,7 @@ class SupabaseService {
 
     try {
       console.info(`⚡ [Supabase Realtime] Initializing channel listener for Order: ${orderId}`);
-      
+
       const channel = this.client
         .channel(`order-status-${orderId}`)
         .on(
