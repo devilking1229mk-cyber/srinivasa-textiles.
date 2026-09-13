@@ -12,8 +12,11 @@ class AdminController {
     this.setupMobileSidebar();
     this.bindEvents();
     try { this.renderDashboardKPIs(); } catch (e) { console.error("renderDashboardKPIs error:", e); }
+    try { this.renderInventoryKPIs(); } catch (e) { console.error("renderInventoryKPIs error:", e); }
     try { this.renderInventoryTable(); } catch (e) { console.error("renderInventoryTable error:", e); }
     try { this.renderOrdersTable(); } catch (e) { console.error("renderOrdersTable error:", e); }
+    try { this.renderBulkOrdersSession(); } catch (e) { console.error("renderBulkOrdersSession error:", e); }
+    try { this.renderBulkOrderKPIs(); } catch (e) { console.error("renderBulkOrderKPIs error:", e); }
     try { this.renderSubscribersTable(); } catch (e) { console.error("renderSubscribersTable error:", e); }
     try { this.renderFeedbacksTable(); } catch (e) { console.error("renderFeedbacksTable error:", e); }
     try { this.setupMediaUploader(); } catch (e) { console.error("setupMediaUploader error:", e); }
@@ -115,7 +118,13 @@ class AdminController {
     // Reactivity
     window.addEventListener("catalogUpdated", () => {
       this.renderDashboardKPIs();
+      this.renderInventoryKPIs();
       this.renderInventoryTable();
+    });
+
+    window.addEventListener("stockUpdated", () => {
+      this.renderDashboardKPIs();
+      this.renderInventoryKPIs();
     });
 
     window.addEventListener("ordersUpdated", () => {
@@ -162,7 +171,102 @@ class AdminController {
       productForm.addEventListener("submit", (e) => this.handleAddProduct(e));
     }
 
-    // Bulk CSV Export & Import Buttons
+    // Bulk Orders & CSV Sync Event Listeners
+    window.addEventListener("bulkOrdersUpdated", () => {
+      this.renderBulkOrdersSession();
+      this.renderBulkOrderKPIs();
+      this.renderDashboardKPIs();
+    });
+
+    const importBulkCsvInput = document.getElementById("importBulkOrdersCsvInput");
+    if (importBulkCsvInput) {
+      importBulkCsvInput.addEventListener("change", (e) => this.handleImportBulkOrdersCSV(e));
+    }
+
+    const downloadBulkTemplateBtn = document.getElementById("downloadBulkOrderTemplateBtn");
+    if (downloadBulkTemplateBtn) {
+      downloadBulkTemplateBtn.addEventListener("click", () => this.handleDownloadBulkOrderTemplateCSV());
+    }
+    const downloadBulkTemplateBtn2 = document.getElementById("downloadBulkOrderTemplateBtn2");
+    if (downloadBulkTemplateBtn2) {
+      downloadBulkTemplateBtn2.addEventListener("click", () => this.handleDownloadBulkOrderTemplateCSV());
+    }
+
+    const exportBulkBtn = document.getElementById("exportBulkOrdersBtn");
+    if (exportBulkBtn) {
+      exportBulkBtn.addEventListener("click", () => this.handleExportBulkOrdersCSV());
+    }
+
+    const resetSampleBulkBtn = document.getElementById("resetSampleBulkOrdersBtn");
+    if (resetSampleBulkBtn) {
+      resetSampleBulkBtn.addEventListener("click", () => {
+        if (confirm("Reset and reload verified sample B2B bulk orders?")) {
+          window.store.resetSampleBulkOrders();
+          if (window.storefront) window.storefront.showToast("Sample wholesale bulk orders reloaded!", "info");
+        }
+      });
+    }
+
+    const toggleCatalogSyncBtn = document.getElementById("toggleCatalogSyncSectionBtn");
+    const catalogSyncContainer = document.getElementById("productCatalogSyncContainer");
+    if (toggleCatalogSyncBtn && catalogSyncContainer) {
+      toggleCatalogSyncBtn.addEventListener("click", () => {
+        const isHidden = catalogSyncContainer.style.display === "none";
+        catalogSyncContainer.style.display = isHidden ? "block" : "none";
+        toggleCatalogSyncBtn.innerHTML = isHidden ? "<span>📦</span> Master Catalog SKU Sync ▴" : "<span>📦</span> Master Catalog SKU Sync ▾";
+      });
+    }
+
+    // Modal Booking Handlers
+    const openAddBulkModalBtn = document.getElementById("openAddBulkOrderModalBtn");
+    const openAddBulkModalBtn2 = document.getElementById("openAddBulkOrderModalBtn2");
+    const closeAddBulkModalBtn = document.getElementById("closeAddBulkOrderModalBtn");
+    const cancelAddBulkModalBtn = document.getElementById("cancelAddBulkOrderBtn");
+    const addBulkModal = document.getElementById("addBulkOrderModal");
+
+    const openBulkModal = () => {
+      if (addBulkModal) {
+        addBulkModal.classList.add("active");
+        const deadlineInput = document.getElementById("bulkInDeadline");
+        if (deadlineInput && !deadlineInput.value) {
+          deadlineInput.value = new Date(Date.now() + 20 * 86400000).toISOString().split("T")[0];
+        }
+      }
+    };
+    const closeBulkModal = () => {
+      if (addBulkModal) addBulkModal.classList.remove("active");
+    };
+
+    if (openAddBulkModalBtn) openAddBulkModalBtn.addEventListener("click", openBulkModal);
+    if (openAddBulkModalBtn2) openAddBulkModalBtn2.addEventListener("click", openBulkModal);
+    if (closeAddBulkModalBtn) closeAddBulkModalBtn.addEventListener("click", closeBulkModal);
+    if (cancelAddBulkModalBtn) cancelAddBulkModalBtn.addEventListener("click", closeBulkModal);
+
+    const addBulkOrderForm = document.getElementById("addBulkOrderForm");
+    if (addBulkOrderForm) {
+      addBulkOrderForm.addEventListener("submit", (e) => this.handleAddBulkOrder(e));
+    }
+
+    // Search and Filter Listeners for Bulk Order Session
+    const bulkSearch = document.getElementById("bulkOrderSearchInput");
+    const bulkTypeFilter = document.getElementById("bulkOrderTypeFilter");
+    const bulkStatusFilter = document.getElementById("bulkOrderStatusFilter");
+
+    if (bulkSearch) bulkSearch.addEventListener("input", () => this.renderBulkOrdersSession());
+    if (bulkTypeFilter) bulkTypeFilter.addEventListener("change", () => this.renderBulkOrdersSession());
+    if (bulkStatusFilter) bulkStatusFilter.addEventListener("change", () => this.renderBulkOrdersSession());
+
+    const resetBulkBtn = document.getElementById("resetBulkOrderFilterBtn");
+    if (resetBulkBtn) {
+      resetBulkBtn.addEventListener("click", () => {
+        if (bulkSearch) bulkSearch.value = "";
+        if (bulkTypeFilter) bulkTypeFilter.value = "ALL";
+        if (bulkStatusFilter) bulkStatusFilter.value = "ALL";
+        this.renderBulkOrdersSession();
+      });
+    }
+
+    // Bulk Catalog CSV Export & Import Buttons (Preserved)
     const exportCsvBtn = document.getElementById("exportCsvBtn");
     if (exportCsvBtn) {
       exportCsvBtn.addEventListener("click", () => this.handleExportCSV());
@@ -187,6 +291,60 @@ class AdminController {
     const printAllInvoicesBtn = document.getElementById("printAllInvoicesBtn");
     if (printAllInvoicesBtn) {
       printAllInvoicesBtn.addEventListener("click", () => this.printAllGSTInvoicesPDF());
+    }
+
+    // Real-Time Inventory Control Listeners
+    const invSearch = document.getElementById("inventorySearchInput");
+    const invDept = document.getElementById("inventoryDeptFilter");
+    const invStatus = document.getElementById("inventoryStockFilter");
+    const invReset = document.getElementById("resetInventoryFilterBtn");
+    const invRestockLow = document.getElementById("quickRestockLowBtn");
+    const invResetDefault = document.getElementById("resetSampleStockBtn");
+
+    if (invSearch) invSearch.addEventListener("input", () => this.renderInventoryTable());
+    if (invDept) invDept.addEventListener("change", () => this.renderInventoryTable());
+    if (invStatus) invStatus.addEventListener("change", () => this.renderInventoryTable());
+
+    if (invReset) {
+      invReset.addEventListener("click", () => {
+        if (invSearch) invSearch.value = "";
+        if (invDept) invDept.value = "";
+        if (invStatus) invStatus.value = "";
+        this.renderInventoryTable();
+      });
+    }
+
+    if (invRestockLow) {
+      invRestockLow.addEventListener("click", () => {
+        const catalog = window.store.getAllProducts();
+        let count = 0;
+        catalog.forEach(p => {
+          if (p.stock <= (p.lowStockThreshold || 2)) {
+            window.store.updateStock(p.id, (p.stock || 0) + 5);
+            count++;
+          }
+        });
+        this.renderInventoryTable();
+        if (window.storefront) {
+          window.storefront.showToast(`⚡ Restocked +5 units for ${count} low-stock items! (Live on Website)`, "success");
+        }
+      });
+    }
+
+    if (invResetDefault) {
+      invResetDefault.addEventListener("click", () => {
+        if (confirm("Reset all products to their standard loom stock counts?")) {
+          if (typeof INITIAL_CATALOG !== "undefined") {
+            INITIAL_CATALOG.forEach(p => {
+              window.store.updateStock(p.id, p.stock);
+            });
+            this.renderInventoryTable();
+            if (window.storefront) {
+              window.storefront.showToast("🔄 Catalog stock reset to default weaver units!", "info");
+            }
+          }
+        }
+      });
     }
   }
 
@@ -222,7 +380,11 @@ class AdminController {
     if (normTab === "orders") {
       this.renderOrdersTable();
     } else if (normTab === "inventory") {
+      this.renderInventoryKPIs();
       this.renderInventoryTable();
+    } else if (normTab === "bulk") {
+      this.renderBulkOrdersSession();
+      this.renderBulkOrderKPIs();
     } else if (normTab === "feedbacks" || normTab === "feedback") {
       this.renderFeedbacksTable();
     } else if (normTab === "subscribers") {
@@ -494,64 +656,245 @@ class AdminController {
     this.switchTab("inventory");
   }
 
+  renderInventoryKPIs() {
+    const stats = window.store.getInventoryStats ? window.store.getInventoryStats() : {
+      totalSKUs: 0,
+      totalStockUnits: 0,
+      inStockCount: 0,
+      lowStockCount: 0,
+      outOfStockCount: 0
+    };
+
+    const totalUnitsEl = document.getElementById("invTotalUnits");
+    const inStockEl = document.getElementById("invInStockCount");
+    const lowStockEl = document.getElementById("invLowStockCount");
+    const outOfStockEl = document.getElementById("invOutOfStockCount");
+
+    if (totalUnitsEl) totalUnitsEl.textContent = stats.totalStockUnits.toLocaleString("en-IN");
+    if (inStockEl) inStockEl.textContent = stats.inStockCount;
+    if (lowStockEl) lowStockEl.textContent = stats.lowStockCount;
+    if (outOfStockEl) outOfStockEl.textContent = stats.outOfStockCount;
+  }
+
   renderInventoryTable() {
     const tbody = document.getElementById("adminInventoryTableBody");
     if (!tbody) return;
 
-    const catalog = window.store.getAllProducts();
+    this.renderInventoryKPIs();
+
+    const searchQuery = (document.getElementById("inventorySearchInput")?.value || "").toLowerCase().trim();
+    const deptFilter = document.getElementById("inventoryDeptFilter")?.value || "";
+    const stockFilter = document.getElementById("inventoryStockFilter")?.value || "";
+
+    let catalog = window.store.getAllProducts();
+
+    if (searchQuery) {
+      catalog = catalog.filter(p => {
+        const id = (p.id || "").toLowerCase();
+        const title = (p.title || "").toLowerCase();
+        const dept = (p.department || "").toLowerCase();
+        const fabric = (p.fabric || p.fabricType || "").toLowerCase();
+        const sub = (p.subCategory || "").toLowerCase();
+        return id.includes(searchQuery) || title.includes(searchQuery) || dept.includes(searchQuery) || fabric.includes(searchQuery) || sub.includes(searchQuery);
+      });
+    }
+
+    if (deptFilter) {
+      catalog = catalog.filter(p => p.department === deptFilter);
+    }
+
+    if (stockFilter === "in-stock") {
+      catalog = catalog.filter(p => p.stock > 2);
+    } else if (stockFilter === "low-stock") {
+      catalog = catalog.filter(p => p.stock > 0 && p.stock <= (p.lowStockThreshold || 2));
+    } else if (stockFilter === "out-of-stock") {
+      catalog = catalog.filter(p => p.stock <= 0);
+    }
+
+    if (catalog.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🔍</div>
+            <strong style="color: var(--text-heading);">No inventory items match your search/filter</strong>
+            <p style="font-size: 0.8rem; margin-top: 0.25rem;">Try clearing your search query or resetting filters.</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
 
     tbody.innerHTML = catalog.map(product => {
       const isLowStock = product.stock > 0 && product.stock <= (product.lowStockThreshold || 2);
       const isOutOfStock = product.stock <= 0;
 
       return `
-        <tr data-id="${product.id}">
+        <tr data-id="${product.id}" id="inventory-row-${product.id}">
           <td>
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" style="width: 44px; height: 52px; object-fit: cover; border-radius: 4px;" />
+              <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" style="width: 46px; height: 56px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" />
               <div>
-                <strong style="display: block; font-size: 0.85rem;">${product.title}</strong>
-                <span style="font-size: 0.725rem; color: #64748B;">SKU: ${product.id} • <strong>${product.department}</strong></span>
+                <strong style="display: block; font-size: 0.875rem; color: var(--text-heading);">${product.title}</strong>
+                <span style="font-size: 0.725rem; color: #64748B;">SKU: <strong style="color: var(--color-primary);">${product.id}</strong> • ${product.department}</span>
               </div>
             </div>
           </td>
           <td><strong>${product.hsnCode || "50072010"}</strong></td>
-          <td>${window.store.formatPrice(product.priceINR)}</td>
           <td>
-            <input type="number" class="stock-inline-edit" data-id="${product.id}" value="${product.stock}" min="0" />
+            <div style="font-weight: 700; color: var(--color-primary);">${window.store.formatPrice(product.priceINR)}</div>
+            ${product.mrpINR ? `<span style="font-size: 0.725rem; text-decoration: line-through; color: var(--text-muted);">${window.store.formatPrice(product.mrpINR)}</span>` : ""}
           </td>
           <td>
+            <div class="admin-stock-control-box">
+              <div class="stock-stepper-row">
+                <button type="button" class="btn-stock-step btn-stock-dec" data-id="${product.id}" title="Decrease 1 unit">−</button>
+                <input type="number" class="stock-inline-edit" data-id="${product.id}" value="${product.stock}" min="0" />
+                <button type="button" class="btn-stock-step btn-stock-inc" data-id="${product.id}" title="Increase 1 unit">+</button>
+                <span class="stock-sync-indicator" id="sync-ind-${product.id}">✓ Live</span>
+              </div>
+              <div class="stock-quick-pills">
+                <button type="button" class="stock-pill-btn pill-zero" data-id="${product.id}" data-set="0" title="Set to 0 (Mark Sold Out on Live Website)">0 (Sold Out)</button>
+                <button type="button" class="stock-pill-btn pill-plus" data-id="${product.id}" data-add="5" title="Add 5 units">+5 Units</button>
+                <button type="button" class="stock-pill-btn pill-plus" data-id="${product.id}" data-add="10" title="Add 10 units">+10</button>
+              </div>
+            </div>
+          </td>
+          <td id="stock-badge-cell-${product.id}">
             ${isOutOfStock ? `
-              <span class="status-badge" style="background:#FEE2E2; color:#DC2626;">Out of Stock</span>
+              <span class="status-badge" style="background:#FEE2E2; color:#DC2626; border: 1px solid #FCA5A5; font-weight: 700;">🔒 Out of Stock</span>
             ` : isLowStock ? `
-              <span class="status-badge" style="background:#FEF3C7; color:#D97706;">Low Stock (${product.stock})</span>
+              <span class="status-badge" style="background:#FEF3C7; color:#D97706; border: 1px solid #FCD34D; font-weight: 700;">🔥 Low Stock (${product.stock})</span>
             ` : `
-              <span class="status-badge paid">In Stock</span>
+              <span class="status-badge paid" style="background:#DCFCE7; color:#166534; border: 1px solid #86EFAC; font-weight: 700;">✓ In Stock (${product.stock})</span>
             `}
           </td>
           <td>
-            <button class="btn btn-outline btn-sm delete-prod-btn" data-id="${product.id}" style="color: var(--color-danger); border-color: #FECDD3;">Delete</button>
+            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+              <a href="shop.html" target="_blank" class="btn btn-outline btn-sm" style="font-size: 0.725rem; padding: 0.25rem 0.5rem;" title="View on customer shop page">
+                👁️ View
+              </a>
+              <button type="button" class="btn btn-outline btn-sm delete-prod-btn" data-id="${product.id}" style="color: var(--color-danger); border-color: #FECDD3; font-size: 0.725rem; padding: 0.25rem 0.5rem;" title="Delete SKU">
+                🗑️
+              </button>
+            </div>
           </td>
         </tr>
       `;
     }).join("");
 
-    tbody.querySelectorAll(".stock-inline-edit").forEach(input => {
-      input.addEventListener("change", (e) => {
-        const id = e.target.getAttribute("data-id");
-        const val = parseInt(e.target.value, 10);
-        window.store.updateStock(id, val);
-        if (window.storefront) {
-          window.storefront.showToast(`Updated stock for ${id} to ${val}`, "info");
+    this.bindInventoryRowEvents(tbody);
+  }
+
+  applyLiveStockUpdate(id, newQty) {
+    const clampedQty = Math.max(0, isNaN(parseInt(newQty, 10)) ? 0 : parseInt(newQty, 10));
+    const updatedProduct = window.store.updateStock(id, clampedQty);
+    if (!updatedProduct) return;
+
+    // 1. Update the number input in the DOM
+    const input = document.querySelector(`.stock-inline-edit[data-id="${id}"]`);
+    if (input && parseInt(input.value, 10) !== clampedQty) {
+      input.value = clampedQty;
+    }
+
+    // 2. Update the status badge cell immediately
+    const badgeCell = document.getElementById(`stock-badge-cell-${id}`);
+    if (badgeCell) {
+      const isLow = clampedQty > 0 && clampedQty <= (updatedProduct.lowStockThreshold || 2);
+      const isOOS = clampedQty <= 0;
+      badgeCell.innerHTML = isOOS ? `
+        <span class="status-badge" style="background:#FEE2E2; color:#DC2626; border: 1px solid #FCA5A5; font-weight: 700;">🔒 Out of Stock</span>
+      ` : isLow ? `
+        <span class="status-badge" style="background:#FEF3C7; color:#D97706; border: 1px solid #FCD34D; font-weight: 700;">🔥 Low Stock (${clampedQty})</span>
+      ` : `
+        <span class="status-badge paid" style="background:#DCFCE7; color:#166534; border: 1px solid #86EFAC; font-weight: 700;">✓ In Stock (${clampedQty})</span>
+      `;
+    }
+
+    // 3. Flash the live sync indicator
+    const ind = document.getElementById(`sync-ind-${id}`);
+    if (ind) {
+      ind.classList.add("show");
+      setTimeout(() => ind.classList.remove("show"), 2200);
+    }
+
+    // 4. Update KPI counters
+    this.renderInventoryKPIs();
+    this.renderDashboardKPIs();
+
+    // 5. Toast confirmation
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(`✅ SKU ${id} stock set to ${clampedQty} units (Live on Website)`, "success");
+    }
+  }
+
+  bindInventoryRowEvents(tbody) {
+    // Stepper Decrement
+    tbody.querySelectorAll(".btn-stock-dec").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute("data-id");
+        const prod = window.store.getProductById(id);
+        if (prod) {
+          this.applyLiveStockUpdate(id, Math.max(0, (prod.stock || 0) - 1));
         }
       });
     });
 
+    // Stepper Increment
+    tbody.querySelectorAll(".btn-stock-inc").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute("data-id");
+        const prod = window.store.getProductById(id);
+        if (prod) {
+          this.applyLiveStockUpdate(id, (prod.stock || 0) + 1);
+        }
+      });
+    });
+
+    // Inline input change & keydown
+    tbody.querySelectorAll(".stock-inline-edit").forEach(input => {
+      input.addEventListener("change", (e) => {
+        const id = e.target.getAttribute("data-id");
+        const val = parseInt(e.target.value, 10);
+        this.applyLiveStockUpdate(id, val);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const id = e.target.getAttribute("data-id");
+          const val = parseInt(e.target.value, 10);
+          this.applyLiveStockUpdate(id, val);
+          input.blur();
+        }
+      });
+    });
+
+    // Quick Action Pills (0 Sold Out, +5, +10)
+    tbody.querySelectorAll(".stock-pill-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute("data-id");
+        const prod = window.store.getProductById(id);
+        if (!prod) return;
+
+        if (btn.hasAttribute("data-set")) {
+          const targetQty = parseInt(btn.getAttribute("data-set"), 10);
+          this.applyLiveStockUpdate(id, targetQty);
+        } else if (btn.hasAttribute("data-add")) {
+          const addQty = parseInt(btn.getAttribute("data-add"), 10);
+          this.applyLiveStockUpdate(id, (prod.stock || 0) + addQty);
+        }
+      });
+    });
+
+    // Delete SKU button
     tbody.querySelectorAll(".delete-prod-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const id = e.target.getAttribute("data-id");
-        if (confirm(`Remove product ${id} from catalog?`)) {
+        const id = btn.getAttribute("data-id");
+        if (confirm(`Remove product ${id} permanently from catalog?`)) {
           window.store.deleteProduct(id);
+          this.renderInventoryTable();
           if (window.storefront) {
             window.storefront.showToast(`Product ${id} deleted from catalog`, "warning");
           }
@@ -601,13 +944,542 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
         if (window.storefront) {
           window.storefront.showToast(`Batch imported ${res.count} family SKUs successfully!`, "success");
         }
-        this.renderInventoryTable();
-        this.renderDashboardKPIs();
+      this.renderInventoryTable();
+      this.renderDashboardKPIs();
+    } else {
+      alert(`Error importing CSV: ${res.message}`);
+    }
+  };
+  reader.readAsText(file);
+}
+
+  // ==========================================================================
+  // BULK ORDER SESSION & B2B OPERATIONS
+  // ==========================================================================
+  renderBulkOrdersSession() {
+    const tbody = document.getElementById("adminBulkOrdersTableBody");
+    if (!tbody) return;
+
+    const allOrders = window.store.getBulkOrders() || [];
+    const searchInput = document.getElementById("bulkOrderSearchInput");
+    const searchTerm = (searchInput ? searchInput.value : "").toLowerCase().trim();
+    const typeFilter = document.getElementById("bulkOrderTypeFilter")?.value || "ALL";
+    const statusFilter = document.getElementById("bulkOrderStatusFilter")?.value || "ALL";
+
+    const filtered = allOrders.filter(o => {
+      const matchSearch = !searchTerm ||
+        (o.bulkOrderId && o.bulkOrderId.toLowerCase().includes(searchTerm)) ||
+        (o.clientCompany && o.clientCompany.toLowerCase().includes(searchTerm)) ||
+        (o.contactPerson && o.contactPerson.toLowerCase().includes(searchTerm)) ||
+        (o.phone && o.phone.toLowerCase().includes(searchTerm)) ||
+        (o.gstin && o.gstin.toLowerCase().includes(searchTerm));
+
+      const matchType = typeFilter === "ALL" || o.orderType === typeFilter;
+      const matchStatus = statusFilter === "ALL" || o.orderStatus === statusFilter;
+
+      return matchSearch && matchType && matchStatus;
+    });
+
+    const countBadge = document.getElementById("bulkOrdersCountBadge");
+    if (countBadge) {
+      countBadge.textContent = `${filtered.length} Active B2B Order${filtered.length === 1 ? "" : "s"}`;
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📭</div>
+            <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Orders Found</h4>
+            <p style="font-size: 0.825rem; margin: 0 0 1rem 0;">No wholesale orders matched your search or filter criteria.</p>
+            <button type="button" class="btn btn-gold btn-sm" onclick="document.getElementById('openAddBulkOrderModalBtn')?.click()">+ Book First Bulk Order</button>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(order => {
+      const isUnderProd = order.orderStatus === "Under Production";
+      const isReady = order.orderStatus === "Ready to Ship";
+      const isDispatched = order.orderStatus === "Dispatched";
+      const isDelivered = order.orderStatus === "Delivered";
+
+      const priorityBadge = order.priority === "Urgent"
+        ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);">🔥 Urgent</span>`
+        : order.priority === "High Priority"
+        ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);">⚡ High</span>`
+        : `<span class="status-badge" style="background: var(--bg-surface-alt); color: var(--text-muted); font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid var(--border-color);">Standard</span>`;
+
+      const typeBadgeStyle =
+        order.orderType === "Wholesale" ? "background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE;" :
+        order.orderType === "Wedding Bulk" ? "background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A;" :
+        order.orderType === "Corporate Gifting" ? "background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;" :
+        "background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;";
+
+      const paymentBadge = order.paymentStatus === "Fully Paid"
+        ? `<span class="status-badge paid" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">✓ Paid</span>`
+        : order.paymentStatus === "Advance Received"
+        ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; font-size: 0.7rem; padding: 0.15rem 0.5rem;">⏳ Advance Recd</span>`
+        : `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; font-size: 0.7rem; padding: 0.15rem 0.5rem;">Pending</span>`;
+
+      return `
+        <tr data-bulk-id="${order.bulkOrderId}">
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+                <strong style="color: var(--color-primary); font-size: 0.885rem; font-family: monospace; letter-spacing: 0.02em;">${order.bulkOrderId}</strong>
+                ${priorityBadge}
+              </div>
+              <div style="font-size: 0.735rem; color: var(--text-muted); line-height: 1.35;">
+                <div>📅 <span style="color: var(--text-main);">Booked:</span> ${order.orderDate}</div>
+                <div style="color: #DC2626; font-weight: 700; margin-top: 0.15rem;">🎯 Due: ${order.deliveryDeadline}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <strong style="font-size: 0.885rem; color: var(--color-primary); line-height: 1.3;">${order.clientCompany}</strong>
+              <span style="font-size: 0.785rem; color: var(--text-main); font-weight: 600;">👤 ${order.contactPerson}</span>
+              <span style="font-size: 0.735rem; color: #64748B;">📞 ${order.phone}</span>
+              ${order.gstin ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
+              <span class="status-badge" style="${typeBadgeStyle} font-size: 0.72rem; padding: 0.2rem 0.55rem; white-space: nowrap;">${order.orderType}</span>
+              <span style="font-size: 0.725rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">🏭 ${order.productionUnit || 'Kanchipuram Sheds'}</span>
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <strong style="font-size: 0.885rem; color: var(--color-gold);">${order.totalPieces} Pieces / Sets</strong>
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${order.itemsDescription}">
+                ${order.itemsDescription}
+              </p>
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <strong style="font-size: 0.95rem; color: var(--text-heading); font-weight: 800;">₹${Number(order.totalAmountINR).toLocaleString("en-IN")}</strong>
+              <div style="font-size: 0.725rem; color: var(--text-muted); line-height: 1.3;">
+                <span>Adv: ₹${Number(order.advancePaidINR || 0).toLocaleString("en-IN")}</span><br />
+                ${(order.balanceDueINR > 0) ? `<span style="color: #DC2626; font-weight: 700;">Due: ₹${Number(order.balanceDueINR).toLocaleString("en-IN")}</span>` : '<span style="color: #10B981; font-weight: 700;">Cleared</span>'}
+              </div>
+              <div style="margin-top: 0.15rem;">${paymentBadge}</div>
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
+              <select class="bulk-status-dropdown form-control" data-id="${order.bulkOrderId}" style="font-size: 0.775rem; padding: 0.35rem 0.55rem; border-radius: var(--radius-sm); font-weight: 700; width: 100%; min-width: 140px; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                <option value="Under Production" ${isUnderProd ? "selected" : ""}>⏳ Under Production</option>
+                <option value="Ready to Ship" ${isReady ? "selected" : ""}>📦 Ready to Ship</option>
+                <option value="Dispatched" ${isDispatched ? "selected" : ""}>🚚 Dispatched</option>
+                <option value="Delivered" ${isDelivered ? "selected" : ""}>✅ Delivered</option>
+              </select>
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <div style="display: flex; gap: 0.35rem; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+              <button type="button" class="btn btn-outline btn-xs print-bulk-invoice-btn" data-id="${order.bulkOrderId}" title="Print B2B Wholesale GST Tax Invoice" style="font-size: 0.735rem; padding: 0.3rem 0.55rem; white-space: nowrap;">
+                🧾 Invoice
+              </button>
+              <button type="button" class="btn btn-outline-gold btn-xs whatsapp-bulk-btn" data-id="${order.bulkOrderId}" title="Send WhatsApp Update to Client" style="font-size: 0.735rem; padding: 0.3rem 0.55rem; white-space: nowrap;">
+                💬 WhatsApp
+              </button>
+              <button type="button" class="btn btn-outline btn-xs delete-bulk-btn" data-id="${order.bulkOrderId}" title="Delete Bulk Order" style="color: #DC2626; border-color: #FECDD3; font-size: 0.735rem; padding: 0.3rem 0.45rem;">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    // Wire up row action listeners
+    tbody.querySelectorAll(".bulk-status-dropdown").forEach(select => {
+      select.addEventListener("change", (e) => {
+        const id = e.target.getAttribute("data-id");
+        const val = e.target.value;
+        this.handleBulkOrderStatusChange(id, val);
+      });
+    });
+
+    tbody.querySelectorAll(".print-bulk-invoice-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = e.currentTarget.getAttribute("data-id");
+        this.printBulkOrderGSTInvoice(id);
+      });
+    });
+
+    tbody.querySelectorAll(".whatsapp-bulk-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = e.currentTarget.getAttribute("data-id");
+        this.openWhatsAppForBulkOrder(id);
+      });
+    });
+
+    tbody.querySelectorAll(".delete-bulk-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = e.currentTarget.getAttribute("data-id");
+        this.handleDeleteBulkOrder(id);
+      });
+    });
+  }
+
+  renderBulkOrderKPIs() {
+    const stats = window.store.getBulkOrderStats();
+
+    const ordersEl = document.getElementById("bulkKpiOrdersCount");
+    const piecesEl = document.getElementById("bulkKpiPiecesCount");
+    const totalValEl = document.getElementById("bulkKpiTotalValue");
+    const advSubEl = document.getElementById("bulkKpiAdvanceSub");
+    const balEl = document.getElementById("bulkKpiPendingBalance");
+    const prodSubEl = document.getElementById("bulkKpiProductionSub");
+    const sidebarBadge = document.getElementById("sidebarBulkBadge");
+
+    if (ordersEl) ordersEl.textContent = `${stats.totalOrders} Active`;
+    if (piecesEl) piecesEl.textContent = `${stats.totalPieces.toLocaleString("en-IN")} Pcs`;
+    if (totalValEl) totalValEl.textContent = `₹${stats.totalValue.toLocaleString("en-IN")}`;
+    if (advSubEl) advSubEl.textContent = `₹${stats.advanceCollected.toLocaleString("en-IN")} Advance Collected`;
+    if (balEl) balEl.textContent = `₹${stats.pendingBalance.toLocaleString("en-IN")}`;
+    if (prodSubEl) prodSubEl.textContent = `${stats.activeProduction} Under Active Weaving`;
+    if (sidebarBadge) sidebarBadge.textContent = `${stats.totalOrders} B2B`;
+  }
+
+  handleImportBulkOrdersCSV(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target.result;
+      const res = window.store.importBulkOrdersFromCSV(content);
+      if (res.success) {
+        if (window.storefront) {
+          window.storefront.showToast(`Batch imported ${res.count} bulk wholesale orders successfully!`, "success");
+        }
+        this.renderBulkOrdersSession();
+        this.renderBulkOrderKPIs();
       } else {
-        alert(`Error importing CSV: ${res.message}`);
+        alert(`Error importing Bulk Orders CSV: ${res.message}`);
       }
+      e.target.value = "";
     };
     reader.readAsText(file);
+  }
+
+  handleDownloadBulkOrderTemplateCSV() {
+    const templateContent = `Bulk_Order_ID,Client_Company,Contact_Person,Phone_WhatsApp,Email,GSTIN,Billing_Shipping_Address,Order_Type,Items_Description,Total_Pieces,Total_Amount_INR,Advance_Paid_INR,Balance_Due_INR,Payment_Status,Order_Status,Order_Date,Delivery_Deadline,Priority,Production_Unit,Notes
+ST-BLK-SAMPLE-01,Madurai Meenakshi Silks,R. Sundar,919842109876,wholesale@meenakshisilks.com,33AAACM5541L1Z9,"24 South Masi Street, Madurai, Tamil Nadu - 625001",Wholesale,"45x Kanchipuram Pure Zari Silk Sarees, 20x Samanvaya Matching Family Combos",65,1850000,925000,925000,Advance Received,Under Production,2026-09-01,2026-09-28,High Priority,Loom Shed #2,Silk Mark certification on all pieces
+ST-BLK-SAMPLE-02,Sri Krishna Mandapam Wedding Troupe,V. Radhakrishnan,919789012345,troupe@krishnamandapam.org,URP-B2C-BULK,"108 Gandhi Road, Vellore, Tamil Nadu - 632004",Wedding Bulk,"30x Pithamaha Father & Son Silk Sets, 40x Mayuri Girls Pattu Pavadai Sets",70,740000,740000,0,Fully Paid,Ready to Ship,2026-09-04,2026-09-20,Urgent,Packaging Room 1,Festive gift packing with custom labels`;
+
+    const blob = new Blob([templateContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "Srinivasa_Bulk_Orders_Template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (window.storefront) window.storefront.showToast("Bulk Orders CSV template downloaded!", "info");
+  }
+
+  handleExportBulkOrdersCSV() {
+    const csvData = window.store.exportBulkOrdersToCSV();
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Srinivasa_Bulk_Orders_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (window.storefront) window.storefront.showToast("Exported all bulk orders to CSV!", "success");
+  }
+
+  openAddBulkOrderModal() {
+    const modal = document.getElementById("addBulkOrderModal");
+    if (modal) {
+      modal.classList.add("active");
+      const deadlineInput = document.getElementById("bulkInDeadline");
+      if (deadlineInput && !deadlineInput.value) {
+        deadlineInput.value = new Date(Date.now() + 20 * 86400000).toISOString().split("T")[0];
+      }
+    }
+  }
+
+  handleAddBulkOrder(e) {
+    e.preventDefault();
+    const company = document.getElementById("bulkInCompany")?.value?.trim();
+    const contact = document.getElementById("bulkInContact")?.value?.trim();
+    const phone = document.getElementById("bulkInPhone")?.value?.trim();
+    const email = document.getElementById("bulkInEmail")?.value?.trim() || "";
+    const gstin = document.getElementById("bulkInGstin")?.value?.trim() || "URP-WHOLESALE";
+    const address = document.getElementById("bulkInAddress")?.value?.trim() || "Tamil Nadu, India";
+    const type = document.getElementById("bulkInType")?.value || "Wholesale";
+    const pieces = parseInt(document.getElementById("bulkInPieces")?.value, 10) || 10;
+    const deadline = document.getElementById("bulkInDeadline")?.value || new Date(Date.now() + 20 * 86400000).toISOString().split("T")[0];
+    const items = document.getElementById("bulkInItems")?.value?.trim() || "Handloom Pure Silk Collection";
+    const total = parseFloat(document.getElementById("bulkInTotal")?.value) || 100000;
+    const advance = parseFloat(document.getElementById("bulkInAdvance")?.value) || 0;
+    const status = document.getElementById("bulkInStatus")?.value || "Under Production";
+
+    const newOrder = window.store.addBulkOrder({
+      clientCompany: company,
+      contactPerson: contact,
+      phone,
+      email,
+      gstin,
+      address,
+      orderType: type,
+      totalPieces: pieces,
+      deliveryDeadline: deadline,
+      itemsDescription: items,
+      totalAmountINR: total,
+      advancePaidINR: advance,
+      orderStatus: status
+    });
+
+    document.getElementById("addBulkOrderForm")?.reset();
+    document.getElementById("addBulkOrderModal")?.classList.remove("active");
+
+    if (window.storefront) {
+      window.storefront.showToast(`Bulk Order ${newOrder.bulkOrderId} booked successfully!`, "success");
+    }
+
+    this.renderBulkOrdersSession();
+    this.renderBulkOrderKPIs();
+  }
+
+  handleBulkOrderStatusChange(bulkOrderId, newStatus) {
+    const success = window.store.updateBulkOrderStatus(bulkOrderId, newStatus);
+    if (success) {
+      if (window.storefront) {
+        window.storefront.showToast(`Updated ${bulkOrderId} status to: ${newStatus}`, "info");
+      }
+      this.renderBulkOrderKPIs();
+    }
+  }
+
+  handleDeleteBulkOrder(bulkOrderId) {
+    if (confirm(`Are you sure you want to delete bulk order ${bulkOrderId}?`)) {
+      window.store.deleteBulkOrder(bulkOrderId);
+      if (window.storefront) {
+        window.storefront.showToast(`Bulk order ${bulkOrderId} deleted.`, "warning");
+      }
+      this.renderBulkOrdersSession();
+      this.renderBulkOrderKPIs();
+    }
+  }
+
+  openWhatsAppForBulkOrder(bulkOrderId) {
+    const order = window.store.getBulkOrderById(bulkOrderId);
+    if (!order) return;
+
+    const rawPhone = (order.phone || "").replace(/[^0-9]/g, "");
+    const cleanPhone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
+
+    const msg = encodeURIComponent(
+`*Namaste ${order.contactPerson || order.clientCompany}*,
+Greetings from *Srinivasa Textiles (Master Weavers Since 1978)*.
+
+Here is the current status of your Wholesale Bulk Order:
+📋 *Bulk Order ID:* ${order.bulkOrderId}
+📦 *Order Category:* ${order.orderType}
+🧵 *Items:* ${order.itemsDescription}
+🔢 *Total Volume:* ${order.totalPieces} Units
+⏳ *Production Status:* ${order.orderStatus}
+🎯 *Target Delivery Date:* ${order.deliveryDeadline}
+💰 *Total Order Value:* ₹${Number(order.totalAmountINR).toLocaleString("en-IN")}
+💵 *Advance Received:* ₹${Number(order.advancePaidINR || 0).toLocaleString("en-IN")}
+${order.balanceDueINR > 0 ? `⚠️ *Balance Due:* ₹${Number(order.balanceDueINR).toLocaleString("en-IN")}` : "✅ *Payment Status:* Fully Cleared"}
+
+Our master weaving artisan team is ensuring strict Silk Mark certified handloom quality. Please feel free to reply here for any dispatch coordination.
+
+Warm regards,
+*Srinivasa Textiles Weaving Mansion, Kanchipuram*`
+    );
+
+    window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
+  }
+
+  printBulkOrderGSTInvoice(bulkOrderId) {
+    const order = window.store.getBulkOrderById(bulkOrderId);
+    if (!order) {
+      alert("Bulk order not found.");
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to print B2B GST Invoices.");
+      return;
+    }
+
+    const invoiceNo = `B2B-INV-${order.bulkOrderId.replace("ST-BLK-", "")}`;
+    const subtotal = order.subtotalINR || Math.round(order.totalAmountINR / 1.05);
+    const gstTotal = order.gstINR || (order.totalAmountINR - subtotal);
+    const cgst = Math.round(gstTotal / 2);
+    const sgst = gstTotal - cgst;
+    const totalAmount = order.totalAmountINR;
+    const advancePaid = order.advancePaidINR || 0;
+    const balanceDue = order.balanceDueINR || Math.max(0, totalAmount - advancePaid);
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>B2B Wholesale GST Tax Invoice - ${order.bulkOrderId}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+          @page { size: A4; margin: 15mm; }
+          body { font-family: 'Plus Jakarta Sans', sans-serif; color: #1E293B; margin: 0; padding: 20px; font-size: 13px; line-height: 1.5; }
+          .invoice-card { max-width: 800px; margin: 0 auto; border: 2px solid #D4AF37; padding: 25px; border-radius: 8px; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #D4AF37; padding-bottom: 15px; margin-bottom: 20px; }
+          .brand-title { font-family: 'Cinzel', serif; font-size: 22px; font-weight: 800; color: #7A0C2E; margin: 0; }
+          .brand-sub { font-size: 11px; color: #64748B; margin-top: 2px; }
+          .inv-title { text-align: right; }
+          .inv-title h2 { font-family: 'Cinzel', serif; font-size: 20px; color: #7A0C2E; margin: 0; }
+          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+          .box { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 6px; }
+          .box h4 { margin: 0 0 6px 0; color: #7A0C2E; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          th { background: #7A0C2E; color: #FFF; padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase; }
+          td { padding: 9px 10px; border-bottom: 1px solid #E2E8F0; font-size: 12px; }
+          .totals-table { width: 340px; margin-left: auto; margin-bottom: 20px; }
+          .totals-table td { padding: 5px 8px; }
+          .totals-table .grand { font-size: 14px; font-weight: 800; color: #7A0C2E; border-top: 2px solid #D4AF37; }
+          .bank-box { background: #FFFDF7; border: 1px dashed #D4AF37; padding: 10px 14px; border-radius: 6px; font-size: 11px; }
+          .footer { margin-top: 25px; border-top: 1px solid #E2E8F0; padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+          .seal-stamp { border: 1.5px dashed #7A0C2E; padding: 8px 14px; text-align: center; border-radius: 6px; font-family: 'Cinzel', serif; color: #7A0C2E; font-weight: 700; font-size: 11px; }
+          @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+            .invoice-card { border: none; padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="no-print" style="text-align: center; margin-bottom: 15px;">
+          <button onclick="window.print()" style="background: #7A0C2E; color: #FFF; border: none; padding: 8px 20px; font-weight: 700; border-radius: 4px; cursor: pointer; font-size: 14px;">🖨️ Print / Save as PDF</button>
+        </div>
+        <div class="invoice-card">
+          <div class="header">
+            <div>
+              <h1 class="brand-title">SRINIVASA TEXTILES</h1>
+              <div class="brand-sub">Master Weavers & Pure Silk Family Handloom Emporium Since 1978</div>
+              <div style="font-size: 11px; color: #475569; margin-top: 4px;">
+                108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501<br>
+                <strong>GSTIN:</strong> 33AABCS9876C1ZT | <strong>Phone:</strong> +91 6381265149 | <strong>Email:</strong> wholesale@srinivasatextiles.com
+              </div>
+            </div>
+            <div class="inv-title">
+              <h2>TAX INVOICE</h2>
+              <div style="font-size: 11px; color: #64748B; margin-top: 4px;">
+                <strong>Invoice No:</strong> ${invoiceNo}<br>
+                <strong>Date:</strong> ${order.orderDate}<br>
+                <strong>Bulk Order Ref:</strong> ${order.bulkOrderId}<br>
+                <strong>Category:</strong> ${order.orderType}
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="box">
+              <h4>Billed & Shipped To (Buyer)</h4>
+              <strong style="font-size: 13px; color: #1E293B;">${order.clientCompany}</strong><br>
+              <strong>Attn:</strong> ${order.contactPerson}<br>
+              <strong>Phone:</strong> ${order.phone}<br>
+              ${order.email ? `<strong>Email:</strong> ${order.email}<br>` : ""}
+              <strong>Address:</strong> ${order.address}<br>
+              <strong>Buyer GSTIN:</strong> ${order.gstin || "URP (Unregistered Dealer)"}
+            </div>
+            <div class="box">
+              <h4>Dispatch & Production Details</h4>
+              <strong>Production Shed:</strong> ${order.productionUnit || 'Loom Shed #3'}<br>
+              <strong>Target Delivery Deadline:</strong> ${order.deliveryDeadline}<br>
+              <strong>Current Status:</strong> ${order.orderStatus}<br>
+              <strong>Priority:</strong> ${order.priority || 'Standard'}<br>
+              <strong>Place of Supply:</strong> Tamil Nadu (State Code: 33)<br>
+              <strong>Notes:</strong> ${order.notes || 'Strict Silk Mark certified batch'}
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 35px;">#</th>
+                <th>Description of Goods & Fabrics</th>
+                <th>HSN Code</th>
+                <th style="text-align: center;">Qty (Units)</th>
+                <th style="text-align: right;">Taxable Value (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>
+                  <strong>${order.itemsDescription}</strong>
+                  <div style="font-size: 10px; color: #64748B;">100% Pure Tested Silk with Silk Mark SMOI Guarantee. Master weaver loom batch.</div>
+                </td>
+                <td>50072010</td>
+                <td style="text-align: center;"><strong>${order.totalPieces}</strong></td>
+                <td style="text-align: right;"><strong>₹${subtotal.toLocaleString("en-IN")}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table class="totals-table">
+            <tr>
+              <td>Subtotal (Taxable Amount):</td>
+              <td style="text-align: right;">₹${subtotal.toLocaleString("en-IN")}</td>
+            </tr>
+            <tr>
+              <td>CGST @ 2.5%:</td>
+              <td style="text-align: right;">₹${cgst.toLocaleString("en-IN")}</td>
+            </tr>
+            <tr>
+              <td>SGST @ 2.5%:</td>
+              <td style="text-align: right;">₹${sgst.toLocaleString("en-IN")}</td>
+            </tr>
+            <tr class="grand">
+              <td>Total Wholesale Amount:</td>
+              <td style="text-align: right;">₹${totalAmount.toLocaleString("en-IN")}</td>
+            </tr>
+            <tr style="color: #047857; font-weight: 600;">
+              <td>Advance Received:</td>
+              <td style="text-align: right;">₹${advancePaid.toLocaleString("en-IN")}</td>
+            </tr>
+            <tr style="color: #DC2626; font-weight: 700; font-size: 13px;">
+              <td>Balance Payable:</td>
+              <td style="text-align: right;">₹${balanceDue.toLocaleString("en-IN")}</td>
+            </tr>
+          </table>
+
+          <div class="bank-box">
+            <strong>Direct Wholesale RTGS / NEFT Banking Settlement:</strong><br>
+            Bank: State Bank of India (Kanchipuram Main Branch) | A/C Name: Srinivasa Textiles Heritage Handlooms<br>
+            A/C No: 3389102455912 | IFSC: SBIN0000843 | UPI ID: srinivasatextiles@sbi
+          </div>
+
+          <div class="footer">
+            <div style="font-size: 10px; color: #64748B; max-width: 440px;">
+              * Goods once produced under bespoke wholesale specification are inspected for pure silk testing. Interest @ 18% p.a. charged on overdue balance beyond delivery date. Subject to Kanchipuram jurisdiction.
+            </div>
+            <div class="seal-stamp">
+              SRINIVASA TEXTILES<br>
+              <span style="font-size: 9px; font-weight: 400;">Authorized Signatory</span>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   renderOrdersTable() {

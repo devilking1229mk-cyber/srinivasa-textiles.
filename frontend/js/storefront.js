@@ -350,31 +350,76 @@ class StorefrontController {
     // Checkout Modal Setup
     this.setupCheckoutHandlers();
 
-    // Real-Time Stock & Availability Updates
-    window.addEventListener("productsUpdated", (e) => {
-      const activeDept = this.currentDepartment || "all";
-      this.renderProductsForDepartment(activeDept);
-
-      // If PDP quick view is currently open, refresh its content in real-time
-      if (this.activeProduct && (!e.detail || !e.detail.productId || e.detail.productId === this.activeProduct.id)) {
-        const freshProduct = window.store.getProductById(this.activeProduct.id);
-        if (freshProduct) {
-          this.activeProduct = freshProduct;
-          this.renderPDPModalContent(freshProduct);
-        }
+    // Real-Time Stock & Availability Updates Across Storefront & Tabs
+    const refreshStorefrontStockUI = (detail) => {
+      // 1. Reload store catalog in memory so freshest units are loaded
+      if (window.store && typeof window.store.reloadCatalog === "function") {
+        window.store.reloadCatalog();
       }
-    });
 
-    window.addEventListener("stockUpdated", (e) => {
-      const activeDept = this.currentDepartment || "all";
-      this.renderProductsForDepartment(activeDept);
-    });
+      // 2. Re-render Home Featured Products Grid (index.html)
+      const homeGrid = document.getElementById("homeFeaturedProductsGrid");
+      if (homeGrid && typeof this.renderHomeFeaturedProducts === "function") {
+        this.renderHomeFeaturedProducts();
+      }
 
-    window.addEventListener("storage", (e) => {
-      if (e.key === "st_products_data_v2" || e.key === "st_subscribers_data_v2") {
-        window.store.products = window.store.load("st_products_data_v2", window.store.products);
+      // 3. Re-render Shop / Department Grid (shop.html or filtered page)
+      const shopGrid = document.getElementById("productsGrid");
+      if (shopGrid && typeof this.renderProductsForDepartment === "function") {
         const activeDept = this.currentDepartment || "all";
         this.renderProductsForDepartment(activeDept);
+      }
+
+      // 4. If PDP Quick View Modal is currently active, update its contents in real time
+      const pdpModal = document.getElementById("pdpModal");
+      if (pdpModal && pdpModal.classList.contains("active") && this.activeProduct) {
+        const targetId = (detail && detail.productId) ? detail.productId : this.activeProduct.id;
+        if (targetId === this.activeProduct.id) {
+          const freshProduct = window.store.getProductById(this.activeProduct.id);
+          if (freshProduct) {
+            this.activeProduct = freshProduct;
+            const container = document.getElementById("pdpModalContent");
+            if (container) {
+              container.innerHTML = this.createPDPContentHTML(freshProduct);
+              this.bindPDPEvents(freshProduct);
+            }
+          }
+        }
+      }
+
+      // 5. If Wishlist is open, refresh items availability
+      const wishlistModal = document.getElementById("wishlistModal");
+      if (wishlistModal && wishlistModal.classList.contains("active") && typeof this.renderWishlistModal === "function") {
+        this.renderWishlistModal();
+      }
+    };
+
+    this.refreshRealtimeStock = refreshStorefrontStockUI;
+
+    // Listen for custom events dispatched by store within same window
+    window.addEventListener("productsUpdated", (e) => refreshStorefrontStockUI(e.detail));
+    window.addEventListener("stockUpdated", (e) => refreshStorefrontStockUI(e.detail));
+    window.addEventListener("catalogUpdated", (e) => refreshStorefrontStockUI(e.detail));
+
+    // Listen for BroadcastChannel messages across tabs (0-delay real-time cross-tab sync)
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      try {
+        const channel = new BroadcastChannel("st_inventory_channel_v2");
+        channel.onmessage = (event) => {
+          const data = event.data;
+          if (data && (data.type === "STOCK_UPDATED" || data.type === "CATALOG_UPDATED")) {
+            refreshStorefrontStockUI(data);
+          }
+        };
+      } catch (e) {
+        console.warn("[Storefront BroadcastChannel] notice:", e);
+      }
+    }
+
+    // Listen for storage events (fired automatically by browser across tabs when LocalStorage changes)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "st_catalog_data_v2" || e.key === "st_products_data_v2" || e.key === "st_subscribers_data_v2") {
+        refreshStorefrontStockUI();
       }
     });
   }

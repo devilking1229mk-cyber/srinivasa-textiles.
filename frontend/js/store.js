@@ -13,7 +13,8 @@ const STORE_KEYS = {
   DYNAMIC_RULES: "st_dynamic_rules_v2",
   OWNER_AUTH: "st_owner_auth_session_v2",
   ORDER_SHEET: "st_order_sheet_config_v2",
-  FEEDBACK: "st_feedbacks_data_v2"
+  FEEDBACK: "st_feedbacks_data_v2",
+  BULK_ORDERS: "st_bulk_orders_data_v2"
 };
 
 const DEFAULT_SETTINGS = {
@@ -59,6 +60,7 @@ class TextileStore {
 
     this.catalog = this.load(STORE_KEYS.CATALOG, INITIAL_CATALOG);
     this.orders = this.load(STORE_KEYS.ORDERS, INITIAL_ORDERS);
+    this.bulkOrders = this.load(STORE_KEYS.BULK_ORDERS, (typeof INITIAL_BULK_ORDERS !== "undefined" ? INITIAL_BULK_ORDERS : []));
     this.cart = this.load(STORE_KEYS.CART, []);
     // Wishlist: Starts strictly at 0 items by default (empty array)
     const storedWishlist = this.load(STORE_KEYS.WISHLIST, []);
@@ -86,6 +88,31 @@ class TextileStore {
     // Sync with REST API Backend and Supabase on startup
     this.initBackendSync();
     this.initSupabaseSync();
+    this.setupRealtimeSync();
+  }
+
+  setupRealtimeSync() {
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      try {
+        this.broadcastChannel = new BroadcastChannel("st_inventory_channel_v2");
+        this.broadcastChannel.onmessage = (event) => {
+          const data = event.data;
+          if (data && (data.type === "STOCK_UPDATED" || data.type === "CATALOG_UPDATED")) {
+            this.reloadCatalog();
+            window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: data }));
+            window.dispatchEvent(new CustomEvent("stockUpdated", { detail: data }));
+            window.dispatchEvent(new CustomEvent("productsUpdated", { detail: data }));
+          }
+        };
+      } catch (e) {
+        console.warn("[BroadcastChannel] Sync init:", e);
+      }
+    }
+  }
+
+  reloadCatalog() {
+    this.catalog = this.load(STORE_KEYS.CATALOG, INITIAL_CATALOG);
+    return this.catalog;
   }
 
   async initBackendSync() {
@@ -312,15 +339,64 @@ class TextileStore {
   updateStock(id, newStock) {
     const product = this.getProductById(id);
     if (product) {
-      product.stock = Math.max(0, parseInt(newStock, 10));
+      const parsedVal = Math.max(0, isNaN(parseInt(newStock, 10)) ? 0 : parseInt(newStock, 10));
+      product.stock = parsedVal;
       this.save(STORE_KEYS.CATALOG, this.catalog);
+
       if (typeof window !== "undefined" && window.supabaseService) {
-        window.supabaseService.upsertProduct(product);
+        try { window.supabaseService.upsertProduct(product); } catch (e) { }
       }
-      window.dispatchEvent(new CustomEvent("catalogUpdated"));
+      if (typeof window !== "undefined" && window.API && window.API.isOnline) {
+        try { window.API.updateProduct(id, { stock: parsedVal }); } catch (e) { }
+      }
+
+      const detail = { productId: id, stock: parsedVal, product, timestamp: Date.now() };
+      window.dispatchEvent(new CustomEvent("catalogUpdated", { detail }));
+      window.dispatchEvent(new CustomEvent("stockUpdated", { detail }));
+      window.dispatchEvent(new CustomEvent("productsUpdated", { detail }));
+
+      // Broadcast across all other open browser windows/tabs
+      if (this.broadcastChannel) {
+        try {
+          this.broadcastChannel.postMessage({
+            type: "STOCK_UPDATED",
+            productId: id,
+            stock: parsedVal,
+            title: product.title,
+            timestamp: Date.now()
+          });
+        } catch (e) {
+          console.warn("[BroadcastChannel] postMessage error:", e);
+        }
+      }
+
       return product;
     }
     return null;
+  }
+
+  getInventoryStats() {
+    const catalog = this.getAllProducts();
+    const totalSKUs = catalog.length;
+    let totalStockUnits = 0;
+    let lowStockCount = 0;
+    let outOfStockCount = 0;
+    let inStockCount = 0;
+
+    catalog.forEach(p => {
+      const stock = parseInt(p.stock, 10) || 0;
+      totalStockUnits += stock;
+      const threshold = p.lowStockThreshold || 2;
+      if (stock <= 0) {
+        outOfStockCount++;
+      } else if (stock <= threshold) {
+        lowStockCount++;
+      } else {
+        inStockCount++;
+      }
+    });
+
+    return { totalSKUs, totalStockUnits, inStockCount, lowStockCount, outOfStockCount };
   }
 
   // Cart operations
@@ -930,6 +1006,260 @@ class TextileStore {
       return { success: true, count: importedCount };
     } catch (err) {
       console.error("CSV Import Error:", err);
+      return { success: false, message: err.message };
+    }
+  }
+
+  // ==========================================
+  // B2B WHOLESALE & BULK ORDERS MANAGEMENT
+  // ==========================================
+  getBulkOrders() {
+    return this.bulkOrders || [];
+  }
+
+  getBulkOrderById(orderId) {
+    if (!orderId) return null;
+    return (this.bulkOrders || []).find(o => o.bulkOrderId === orderId || o.id === orderId);
+  }
+
+  addBulkOrder(orderData) {
+    if (!orderData) return null;
+    const year = new Date().getFullYear();
+    const id = orderData.bulkOrderId || `ST-BLK-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const pieces = parseInt(orderData.totalPieces, 10) || 1;
+    const subtotal = parseFloat(orderData.subtotalINR) || (parseFloat(orderData.totalAmountINR) ? Math.round(parseFloat(orderData.totalAmountINR) / 1.05) : 100000);
+    const gst = parseFloat(orderData.gstINR) || Math.round(subtotal * 0.05);
+    const total = parseFloat(orderData.totalAmountINR) || (subtotal + gst);
+    const advance = parseFloat(orderData.advancePaidINR) || 0;
+    const balance = Math.max(0, total - advance);
+
+    const newOrder = {
+      bulkOrderId: id,
+      clientCompany: orderData.clientCompany || "Wholesale Partner",
+      contactPerson: orderData.contactPerson || "Proprietor",
+      phone: orderData.phone || "",
+      email: orderData.email || "",
+      gstin: orderData.gstin || "URP-WHOLESALE",
+      address: orderData.address || "Tamil Nadu, India",
+      orderType: orderData.orderType || "Wholesale",
+      itemsDescription: orderData.itemsDescription || "Handloom Silk Sets & Pure Sarees",
+      totalPieces: pieces,
+      subtotalINR: subtotal,
+      gstINR: gst,
+      totalAmountINR: total,
+      advancePaidINR: advance,
+      balanceDueINR: balance,
+      paymentStatus: orderData.paymentStatus || (balance <= 0 ? "Fully Paid" : advance > 0 ? "Advance Received" : "Pending Payment"),
+      orderStatus: orderData.orderStatus || "Under Production",
+      orderDate: orderData.orderDate || new Date().toISOString().split("T")[0],
+      deliveryDeadline: orderData.deliveryDeadline || new Date(Date.now() + 21 * 86400000).toISOString().split("T")[0],
+      priority: orderData.priority || "Standard",
+      productionUnit: orderData.productionUnit || "Kanchipuram Loom Sheds",
+      notes: orderData.notes || "B2B Wholesale contract order"
+    };
+
+    if (!Array.isArray(this.bulkOrders)) this.bulkOrders = [];
+    this.bulkOrders.unshift(newOrder);
+    this.save(STORE_KEYS.BULK_ORDERS, this.bulkOrders);
+    window.dispatchEvent(new CustomEvent("bulkOrdersUpdated", { detail: newOrder }));
+    return newOrder;
+  }
+
+  updateBulkOrderStatus(bulkOrderId, newStatus) {
+    const order = this.getBulkOrderById(bulkOrderId);
+    if (!order) return false;
+    order.orderStatus = newStatus;
+    this.save(STORE_KEYS.BULK_ORDERS, this.bulkOrders);
+    window.dispatchEvent(new CustomEvent("bulkOrdersUpdated", { detail: order }));
+    return true;
+  }
+
+  updateBulkPaymentStatus(bulkOrderId, newPaymentStatus) {
+    const order = this.getBulkOrderById(bulkOrderId);
+    if (!order) return false;
+    order.paymentStatus = newPaymentStatus;
+    if (newPaymentStatus === "Fully Paid") {
+      order.advancePaidINR = order.totalAmountINR;
+      order.balanceDueINR = 0;
+    }
+    this.save(STORE_KEYS.BULK_ORDERS, this.bulkOrders);
+    window.dispatchEvent(new CustomEvent("bulkOrdersUpdated", { detail: order }));
+    return true;
+  }
+
+  deleteBulkOrder(bulkOrderId) {
+    if (!this.bulkOrders) return false;
+    const initialLen = this.bulkOrders.length;
+    this.bulkOrders = this.bulkOrders.filter(o => o.bulkOrderId !== bulkOrderId && o.id !== bulkOrderId);
+    if (this.bulkOrders.length !== initialLen) {
+      this.save(STORE_KEYS.BULK_ORDERS, this.bulkOrders);
+      window.dispatchEvent(new CustomEvent("bulkOrdersUpdated"));
+      return true;
+    }
+    return false;
+  }
+
+  resetSampleBulkOrders() {
+    this.bulkOrders = (typeof INITIAL_BULK_ORDERS !== "undefined") ? JSON.parse(JSON.stringify(INITIAL_BULK_ORDERS)) : [];
+    this.save(STORE_KEYS.BULK_ORDERS, this.bulkOrders);
+    window.dispatchEvent(new CustomEvent("bulkOrdersUpdated"));
+    return this.bulkOrders;
+  }
+
+  getBulkOrderStats() {
+    const orders = this.bulkOrders || [];
+    let totalPieces = 0;
+    let totalValue = 0;
+    let advanceCollected = 0;
+    let pendingBalance = 0;
+    let activeProduction = 0;
+    let readyToShip = 0;
+    let dispatched = 0;
+
+    orders.forEach(o => {
+      totalPieces += parseInt(o.totalPieces, 10) || 0;
+      totalValue += parseFloat(o.totalAmountINR) || 0;
+      advanceCollected += parseFloat(o.advancePaidINR) || 0;
+      pendingBalance += parseFloat(o.balanceDueINR) || 0;
+
+      if (o.orderStatus === "Under Production") activeProduction++;
+      else if (o.orderStatus === "Ready to Ship") readyToShip++;
+      else if (o.orderStatus === "Dispatched") dispatched++;
+    });
+
+    return {
+      totalOrders: orders.length,
+      totalPieces,
+      totalValue,
+      advanceCollected,
+      pendingBalance,
+      activeProduction,
+      readyToShip,
+      dispatched
+    };
+  }
+
+  exportBulkOrdersToCSV() {
+    const headers = [
+      "Bulk_Order_ID", "Client_Company", "Contact_Person", "Phone_WhatsApp", "Email",
+      "GSTIN", "Billing_Shipping_Address", "Order_Type", "Items_Description",
+      "Total_Pieces", "Total_Amount_INR", "Advance_Paid_INR", "Balance_Due_INR",
+      "Payment_Status", "Order_Status", "Order_Date", "Delivery_Deadline", "Priority", "Production_Unit", "Notes"
+    ];
+
+    const rows = (this.bulkOrders || []).map(o => [
+      `"${(o.bulkOrderId || '').replace(/"/g, '""')}"`,
+      `"${(o.clientCompany || '').replace(/"/g, '""')}"`,
+      `"${(o.contactPerson || '').replace(/"/g, '""')}"`,
+      `"${(o.phone || '').replace(/"/g, '""')}"`,
+      `"${(o.email || '').replace(/"/g, '""')}"`,
+      `"${(o.gstin || '').replace(/"/g, '""')}"`,
+      `"${(o.address || '').replace(/"/g, '""')}"`,
+      `"${(o.orderType || 'Wholesale').replace(/"/g, '""')}"`,
+      `"${(o.itemsDescription || '').replace(/"/g, '""')}"`,
+      o.totalPieces || 0,
+      o.totalAmountINR || 0,
+      o.advancePaidINR || 0,
+      o.balanceDueINR || 0,
+      `"${(o.paymentStatus || 'Pending').replace(/"/g, '""')}"`,
+      `"${(o.orderStatus || 'Under Production').replace(/"/g, '""')}"`,
+      `"${(o.orderDate || '').replace(/"/g, '""')}"`,
+      `"${(o.deliveryDeadline || '').replace(/"/g, '""')}"`,
+      `"${(o.priority || 'Standard').replace(/"/g, '""')}"`,
+      `"${(o.productionUnit || '').replace(/"/g, '""')}"`,
+      `"${(o.notes || '').replace(/"/g, '""')}"`
+    ]);
+
+    return [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  }
+
+  importBulkOrdersFromCSV(csvText) {
+    try {
+      const lines = csvText.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length < 2) return { success: false, message: "CSV file is empty or does not contain data rows." };
+
+      let importedCount = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const values = [];
+        let cur = "";
+        let insideQuotes = false;
+        for (let c of lines[i]) {
+          if (c === '"') insideQuotes = !insideQuotes;
+          else if (c === ',' && !insideQuotes) {
+            values.push(cur.trim().replace(/^"|"$/g, "").replace(/""/g, '"'));
+            cur = "";
+          } else {
+            cur += c;
+          }
+        }
+        values.push(cur.trim().replace(/^"|"$/g, "").replace(/""/g, '"'));
+
+        if (values.length >= 4) {
+          const bulkOrderId = values[0] || `ST-BLK-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+          const clientCompany = values[1] || "Wholesale Partner";
+          const contactPerson = values[2] || "Proprietor";
+          const phone = values[3] || "";
+          const email = values[4] || "";
+          const gstin = values[5] || "URP-WHOLESALE";
+          const address = values[6] || "Tamil Nadu, India";
+          const orderType = values[7] || "Wholesale";
+          const itemsDescription = values[8] || "Handloom Silk Sets & Sarees";
+          const totalPieces = parseInt(values[9], 10) || 10;
+          const totalAmountINR = parseFloat(values[10]) || 150000;
+          const advancePaidINR = parseFloat(values[11]) || Math.round(totalAmountINR * 0.5);
+          const balanceDueINR = parseFloat(values[12]) || Math.max(0, totalAmountINR - advancePaidINR);
+          const paymentStatus = values[13] || (balanceDueINR <= 0 ? "Fully Paid" : advancePaidINR > 0 ? "Advance Received" : "Pending Payment");
+          const orderStatus = values[14] || "Under Production";
+          const orderDate = values[15] || new Date().toISOString().split("T")[0];
+          const deliveryDeadline = values[16] || new Date(Date.now() + 20 * 86400000).toISOString().split("T")[0];
+          const priority = values[17] || "Standard";
+          const productionUnit = values[18] || "Loom Sheds";
+          const notes = values[19] || "CSV Imported bulk order";
+
+          const subtotalINR = Math.round(totalAmountINR / 1.05);
+          const gstINR = totalAmountINR - subtotalINR;
+
+          const existingIndex = (this.bulkOrders || []).findIndex(o => o.bulkOrderId === bulkOrderId);
+          const parsedOrder = {
+            bulkOrderId,
+            clientCompany,
+            contactPerson,
+            phone,
+            email,
+            gstin,
+            address,
+            orderType,
+            itemsDescription,
+            totalPieces,
+            subtotalINR,
+            gstINR,
+            totalAmountINR,
+            advancePaidINR,
+            balanceDueINR,
+            paymentStatus,
+            orderStatus,
+            orderDate,
+            deliveryDeadline,
+            priority,
+            productionUnit,
+            notes
+          };
+
+          if (existingIndex >= 0) {
+            this.bulkOrders[existingIndex] = { ...this.bulkOrders[existingIndex], ...parsedOrder };
+          } else {
+            if (!Array.isArray(this.bulkOrders)) this.bulkOrders = [];
+            this.bulkOrders.unshift(parsedOrder);
+          }
+          importedCount++;
+        }
+      }
+
+      this.save(STORE_KEYS.BULK_ORDERS, this.bulkOrders);
+      window.dispatchEvent(new CustomEvent("bulkOrdersUpdated"));
+      return { success: true, count: importedCount };
+    } catch (err) {
+      console.error("Bulk CSV Import Error:", err);
       return { success: false, message: err.message };
     }
   }
