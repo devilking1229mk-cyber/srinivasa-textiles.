@@ -280,6 +280,13 @@
                 </div>
                 <span class="admin-menu-badge" style="background: var(--color-gold); color: #2D0310;">2 Orders</span>
               </li>
+              <li class="admin-menu-item" data-tab="coupons" onclick="window.admin && window.admin.switchTab('coupons')">
+                <div class="admin-menu-item-left">
+                  <span class="menu-icon">🏷️</span>
+                  <span>Coupons &amp; Offers</span>
+                </div>
+                <span class="admin-menu-badge" id="sidebarCouponsBadge" style="background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">6 Offers</span>
+              </li>
               <li class="admin-menu-item" data-tab="subscribers" onclick="window.admin && window.admin.switchTab('subscribers')">
                 <div class="admin-menu-item-left">
                   <span class="menu-icon">🔔</span>
@@ -459,6 +466,14 @@
                     <div class="admin-shortcut-info">
                       <h4>Bulk Orders &amp; CSV</h4>
                       <span>Wholesale B2B &amp; Upload</span>
+                    </div>
+                  </div>
+
+                  <div class="admin-shortcut-card" onclick="window.admin.switchTab('coupons')">
+                    <div class="admin-shortcut-icon">🏷️</div>
+                    <div class="admin-shortcut-info">
+                      <h4>Coupons &amp; Offers</h4>
+                      <span>Create, Alter &amp; Sync Codes</span>
                     </div>
                   </div>
 
@@ -1170,6 +1185,118 @@
         </section>
 
         <!-- ==================================================================
+             TAB: COUPONS, DISCOUNT PRIVILEGES & PROMO ENGINE
+             ================================================================== -->
+        <section id="adminTab-coupons" class="admin-tab-pane">
+
+          <!-- BREADCRUMB & HEADER -->
+          <div class="admin-section-header">
+            <div>
+              <div class="admin-breadcrumb">
+                <span>Sales &amp; Promotions</span> <span>/</span> <span>Coupons &amp; Offers</span>
+              </div>
+              <h1 class="admin-section-title">
+                <span>🏷️</span> Promotional Coupons &amp; Discount Privileges
+              </h1>
+              <p class="admin-section-subtitle">
+                Create, alter, and toggle discount vouchers in real time. Modifications immediately synchronize with customer carts and checkout sessions.
+              </p>
+            </div>
+            <div class="admin-header-actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-gold btn-sm" id="openAddCouponBtn" onclick="window.admin && window.admin.openCouponModal()" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+                <span>➕</span> Create New Coupon
+              </button>
+            </div>
+          </div>
+
+          <!-- COUPON STATS KPI CARDS -->
+          <div class="admin-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">TOTAL COUPONS</span>
+                <span class="kpi-icon">🏷️</span>
+              </div>
+              <div class="kpi-value" id="kpiTotalCoupons">6</div>
+              <div class="kpi-subtext">Registered promo vouchers</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">ACTIVE CODES</span>
+                <span class="kpi-icon">🟢</span>
+              </div>
+              <div class="kpi-value" id="kpiActiveCoupons" style="color: #059669;">5</div>
+              <div class="kpi-subtext">Live on customer storefront</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">DISABLED / EXPIRED</span>
+                <span class="kpi-icon">⏸️</span>
+              </div>
+              <div class="kpi-value" id="kpiInactiveCoupons" style="color: #DC2626;">1</div>
+              <div class="kpi-subtext">Inactive / Past validity</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">MAX DISCOUNT CAP</span>
+                <span class="kpi-icon">⚡</span>
+              </div>
+              <div class="kpi-value" id="kpiMaxCouponDiscount">20% OFF</div>
+              <div class="kpi-subtext">Highest active patron privilege</div>
+            </div>
+          </div>
+
+          <!-- COUPON SEARCH & FILTER TOOLBAR -->
+          <div class="admin-card" style="margin-bottom: 1.5rem; padding: 0;">
+            <div style="padding: 1rem 1.5rem; background: var(--bg-surface-alt); border-bottom: 1.5px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; flex: 1; min-width: 300px;">
+                <div style="position: relative; flex: 2; min-width: 220px;">
+                  <input type="text" id="couponSearchInput" placeholder="🔍 Search Coupon Code, Title, Discount..." style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
+                </div>
+                
+                <select id="couponStatusFilter" class="form-control" style="flex: 1; min-width: 140px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                  <option value="ALL">All Statuses</option>
+                  <option value="ACTIVE">🟢 Active Only</option>
+                  <option value="INACTIVE">🔴 Inactive / Disabled</option>
+                </select>
+
+                <select id="couponTypeFilter" class="form-control" style="flex: 1; min-width: 140px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                  <option value="ALL">All Discount Types</option>
+                  <option value="percent">Percentage (% OFF)</option>
+                  <option value="flat">Flat Amount (₹ OFF)</option>
+                </select>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <button type="button" id="resetCouponFilterBtn" class="btn btn-outline btn-sm" style="font-size: 0.775rem; padding: 0.45rem 0.75rem; white-space: nowrap;">
+                  Clear Filters
+                </button>
+              </div>
+            </div>
+
+            <!-- COUPONS TABLE -->
+            <div class="admin-table-wrapper" style="border: none; border-radius: 0; overflow-x: auto;">
+              <table class="admin-table" id="adminCouponsTable">
+                <thead>
+                  <tr>
+                    <th style="width: 20%; min-width: 200px;">Coupon Code &amp; Title</th>
+                    <th style="width: 16%; min-width: 150px;">Discount Benefit</th>
+                    <th style="width: 15%; min-width: 140px;">Min. Cart Order</th>
+                    <th style="width: 15%; min-width: 140px;">Validity / Expiry</th>
+                    <th style="width: 10%; min-width: 100px; text-align: center;">Uses</th>
+                    <th style="width: 13%; min-width: 130px; text-align: center;">Website (ON / OFF)</th>
+                    <th style="width: 12%; min-width: 140px; text-align: right;">Owner Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminCouponsTableBody">
+                  <!-- Dynamically populated via renderCouponsTab() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================================================================
              TAB 6: RESTOCK WAITLIST
              ================================================================== -->
         <section id="adminTab-subscribers" class="admin-tab-pane">
@@ -1375,6 +1502,12 @@
           </button>
         </li>
         <li>
+          <button class="mobile-dept-btn" data-tab="coupons" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('coupons');">
+            <span>🏷️ Coupons &amp; Offers</span>
+            <span class="admin-menu-badge" id="mobileSidebarCouponsBadge" style="margin-left: auto; background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">Offers</span>
+          </button>
+        </li>
+        <li>
           <button class="mobile-dept-btn" data-tab="subscribers" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('subscribers');">
             <span>🔔 Restock Waitlist Alerts</span>
             <span class="admin-menu-badge" style="margin-left: auto;">1</span>
@@ -1554,6 +1687,98 @@
         <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
           <button type="button" class="btn btn-outline btn-sm" id="cancelAddBulkOrderBtn">Cancel</button>
           <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;">💾 Save Bulk Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / ALTER COUPON CODE -->
+  <div id="adminCouponModal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 99999; background: rgba(0,0,0,0.65); backdrop-filter: blur(5px); position: fixed; inset: 0;">
+    <div class="modal-card" style="max-width: 580px; width: 90%; max-height: 90vh; overflow-y: auto; background: var(--bg-surface); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1.75rem; box-shadow: 0 25px 60px rgba(0,0,0,0.45);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <div>
+          <h3 id="couponModalHeading" style="margin: 0; font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--color-primary); display: flex; align-items: center; gap: 0.5rem;">
+            <span>🏷️</span> <span id="couponModalTitleText">Create Promotional Coupon</span>
+          </h3>
+          <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: var(--text-muted);">
+            Configure promo discount details. Updates reflect in customer carts immediately.
+          </p>
+        </div>
+        <button type="button" id="closeCouponModalBtn" onclick="window.admin && window.admin.closeCouponModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">✕</button>
+      </div>
+
+      <form id="adminCouponForm" style="display: flex; flex-direction: column; gap: 1rem;">
+        <input type="hidden" id="couponFormId" value="" />
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Coupon Code *</label>
+            <input type="text" id="couponFormCode" required placeholder="e.g. FESTIVE20" style="text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em;" class="form-control" />
+            <small style="font-size: 0.7rem; color: var(--text-muted);">Unique promo identifier (Uppercase)</small>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Badge / Tag (e.g. Family Bundle Special)</label>
+            <input type="text" id="couponFormBadge" placeholder="e.g. Family Bundle Special" class="form-control" />
+            <small style="font-size: 0.7rem; color: var(--text-muted);">Card corner badge on website</small>
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Offer Title *</label>
+          <input type="text" id="couponFormTitle" required placeholder="e.g. Flat 20% Off Family Combos" class="form-control" />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Discount Type *</label>
+            <select id="couponFormDiscountType" class="form-control">
+              <option value="percent">Percentage Discount (% OFF)</option>
+              <option value="flat">Flat Amount Discount (₹ OFF)</option>
+            </select>
+          </div>
+
+          <div>
+            <label id="couponValueLabel" style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Discount Value (% or ₹) *</label>
+            <input type="number" id="couponFormValue" required min="1" placeholder="15" class="form-control" />
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Min. Cart Value (INR)</label>
+            <input type="number" id="couponFormMinOrder" min="0" placeholder="e.g. 1000 (0 for no limit)" class="form-control" />
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Max Discount Cap (INR)</label>
+            <input type="number" id="couponFormMaxDiscount" min="0" placeholder="e.g. 2500 (blank = unlimited)" class="form-control" />
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Valid Until (Optional)</label>
+            <input type="date" id="couponFormValidUntil" class="form-control" />
+          </div>
+
+          <div style="display: flex; flex-direction: column; justify-content: center;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Live Status</label>
+            <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+              <input type="checkbox" id="couponFormIsActive" checked style="width: 18px; height: 18px; accent-color: var(--color-gold);" />
+              <span>Enable Coupon Immediately</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Customer Description / Terms</label>
+          <textarea id="couponFormDesc" rows="2" placeholder="e.g. Applicable on all pure handloom silks during the festival season." class="form-control" style="font-size: 0.825rem;"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button type="button" class="btn btn-outline btn-sm" id="cancelCouponModalBtn" onclick="window.admin && window.admin.closeCouponModal()">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;" id="saveCouponSubmitBtn">💾 Save Coupon</button>
         </div>
       </form>
     </div>

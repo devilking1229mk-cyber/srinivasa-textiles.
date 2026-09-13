@@ -14,8 +14,173 @@ const STORE_KEYS = {
   OWNER_AUTH: "st_owner_auth_session_v2",
   ORDER_SHEET: "st_order_sheet_config_v2",
   FEEDBACK: "st_feedbacks_data_v2",
-  BULK_ORDERS: "st_bulk_orders_data_v2"
+  BULK_ORDERS: "st_bulk_orders_data_v2",
+  COUPONS: "st_coupons_data_v2",
+  DELETED_COUPONS: "st_deleted_coupons_data_v2"
 };
+
+const DEFAULT_COUPONS = [
+  {
+    id: "cp-festive20",
+    code: "FESTIVE20",
+    badge: "Family Bundle Special",
+    title: "Flat 20% Off Family Combos",
+    discountType: "percent",
+    discountPercent: 20,
+    discountAmount: 0,
+    minOrderValue: 0,
+    maxDiscount: 15000,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Valid on all 4-piece and 2-piece synchronized color-matched festive ensembles.",
+    usageCount: 42,
+    createdAt: "2024-01-15T00:00:00Z"
+  },
+  {
+    id: "cp-bridal15",
+    code: "BRIDAL15",
+    badge: "Bridal Trousseau",
+    title: "Flat 15% Off Bridal Korvai",
+    discountType: "percent",
+    discountPercent: 15,
+    discountAmount: 0,
+    minOrderValue: 0,
+    maxDiscount: 10000,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Exclusive on Pure Kanchipuram 3-ply bridal silks + Complimentary pure muslin saree cover.",
+    usageCount: 38,
+    createdAt: "2024-01-20T00:00:00Z"
+  },
+  {
+    id: "cp-kidsgift",
+    code: "KIDSGIFT",
+    badge: "Kids Celebration",
+    title: "₹1,000 Off Kids Wear",
+    discountType: "flat",
+    discountPercent: 0,
+    discountAmount: 1000,
+    minOrderValue: 5000,
+    maxDiscount: 1000,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "On all scratch-free Girls' Pattu Pavadai & Boys' Dhoti orders over ₹5,000.",
+    usageCount: 19,
+    createdAt: "2024-02-01T00:00:00Z"
+  },
+  {
+    id: "cp-prepaid500",
+    code: "PREPAID500",
+    badge: "Prepaid Privilege",
+    title: "Instant ₹500 + Free Air Delivery",
+    discountType: "flat",
+    discountPercent: 0,
+    discountAmount: 500,
+    minOrderValue: 0,
+    maxDiscount: 500,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Instant cashback discount on UPI / Card payments with free insured courier.",
+    usageCount: 52,
+    createdAt: "2024-02-10T00:00:00Z"
+  },
+  {
+    id: "cp-heritage10",
+    code: "HERITAGE10",
+    badge: "Heritage Welcome",
+    title: "Inaugural Heritage Privilege",
+    discountType: "percent",
+    discountPercent: 10,
+    discountAmount: 0,
+    minOrderValue: 1000,
+    maxDiscount: 2000,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Enjoy 10% privilege discount on all handloom pure silks across master collections.",
+    usageCount: 18,
+    createdAt: "2024-01-01T00:00:00Z"
+  },
+  {
+    id: "cp-srinivasa15",
+    code: "SRINIVASA15",
+    badge: "Festival Grand",
+    title: "Srinivasa Festival Grand Offer",
+    discountType: "percent",
+    discountPercent: 15,
+    discountAmount: 0,
+    minOrderValue: 3000,
+    maxDiscount: 3500,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Special 15% discount for festival celebrations on orders above ₹3,000.",
+    usageCount: 32,
+    createdAt: "2024-02-15T00:00:00Z"
+  },
+  {
+    id: "cp-family5",
+    code: "FAMILY5",
+    badge: "Family Savings",
+    title: "Family Bundle Privilege",
+    discountType: "percent",
+    discountPercent: 5,
+    discountAmount: 0,
+    minOrderValue: 500,
+    maxDiscount: 1000,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Instant 5% family bundle discount on any heirloom order.",
+    usageCount: 45,
+    createdAt: "2024-01-10T00:00:00Z"
+  },
+  {
+    id: "cp-silk20",
+    code: "SILK20",
+    badge: "Pure Silk Special",
+    title: "Pure Kanchipuram Silk Privilege",
+    discountType: "percent",
+    discountPercent: 20,
+    discountAmount: 0,
+    minOrderValue: 5000,
+    maxDiscount: 5000,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Grand 20% discount on pure wedding silk sarees for orders above ₹5,000.",
+    usageCount: 14,
+    createdAt: "2024-03-01T00:00:00Z"
+  },
+  {
+    id: "cp-welcome10",
+    code: "WELCOME10",
+    badge: "New Patron",
+    title: "New Customer Welcome Privilege",
+    discountType: "percent",
+    discountPercent: 10,
+    discountAmount: 0,
+    minOrderValue: 999,
+    maxDiscount: 1500,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "10% privilege discount for new customers joining our heritage emporium.",
+    usageCount: 27,
+    createdAt: "2024-01-05T00:00:00Z"
+  },
+  {
+    id: "cp-flat500",
+    code: "FLAT500",
+    badge: "Bridal Cashback",
+    title: "Grand Bridal Flat ₹500 Off",
+    discountType: "flat",
+    discountPercent: 0,
+    discountAmount: 500,
+    minOrderValue: 4000,
+    maxDiscount: 500,
+    validUntil: "2027-12-31",
+    isActive: true,
+    description: "Flat ₹500 off on bridal attire and heavy zari silk selections above ₹4,000.",
+    usageCount: 9,
+    createdAt: "2024-03-10T00:00:00Z"
+  }
+];
 
 const DEFAULT_SETTINGS = {
   storeName: "Srinivasa Textiles",
@@ -68,6 +233,28 @@ class TextileStore {
     this.save(STORE_KEYS.WISHLIST, this.wishlist);
     this.subscribers = this.load(STORE_KEYS.SUBSCRIBERS, INITIAL_SUBSCRIBERS);
     this.feedbacks = this.load(STORE_KEYS.FEEDBACK, (typeof INITIAL_REVIEWS !== "undefined" ? INITIAL_REVIEWS : []));
+    this.coupons = this.load(STORE_KEYS.COUPONS, DEFAULT_COUPONS);
+    if (!Array.isArray(this.coupons) || this.coupons.length === 0) {
+      this.coupons = DEFAULT_COUPONS;
+      this.save(STORE_KEYS.COUPONS, this.coupons);
+    }
+    this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
+
+    // Ensure all default festive coupons exist unless explicitly deleted by store owner
+    let couponsUpdated = false;
+    DEFAULT_COUPONS.forEach(defCp => {
+      const isDeleted = (this.deletedCoupons || []).some(d => (d.code || "").toUpperCase() === defCp.code.toUpperCase());
+      const exists = (this.coupons || []).some(c => (c.code || "").toUpperCase() === defCp.code.toUpperCase());
+      if (!isDeleted && !exists) {
+        this.coupons.push(defCp);
+        couponsUpdated = true;
+      }
+    });
+    if (couponsUpdated) {
+      this.save(STORE_KEYS.COUPONS, this.coupons);
+    }
+
+    this.lastUnavailableCoupon = null;
     this.activeCurrency = this.load(STORE_KEYS.CURRENCY, "INR");
     this.activeTheme = this.load(STORE_KEYS.THEME, "light");
     this.settings = this.load(STORE_KEYS.SETTINGS, DEFAULT_SETTINGS);
@@ -102,11 +289,27 @@ class TextileStore {
             window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: data }));
             window.dispatchEvent(new CustomEvent("stockUpdated", { detail: data }));
             window.dispatchEvent(new CustomEvent("productsUpdated", { detail: data }));
+          } else if (data && data.type === "COUPONS_UPDATED") {
+            this.coupons = this.load(STORE_KEYS.COUPONS, DEFAULT_COUPONS);
+            this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
+            this.validateActiveCoupon();
+            window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons, ...(data.payload || {}) } }));
           }
         };
       } catch (e) {
         console.warn("[BroadcastChannel] Sync init:", e);
       }
+    }
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("storage", (e) => {
+        if (e.key === STORE_KEYS.COUPONS || e.key === STORE_KEYS.DELETED_COUPONS) {
+          this.coupons = this.load(STORE_KEYS.COUPONS, DEFAULT_COUPONS);
+          this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
+          this.validateActiveCoupon();
+          window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons } }));
+        }
+      });
     }
   }
 
@@ -472,72 +675,379 @@ class TextileStore {
     window.dispatchEvent(new CustomEvent("cartUpdated"));
   }
 
+  // --- Dynamic Coupon Management Engine ---
+  getCoupons() {
+    if (!this.coupons || !Array.isArray(this.coupons)) {
+      this.coupons = this.load(STORE_KEYS.COUPONS, DEFAULT_COUPONS);
+    }
+    return this.coupons;
+  }
+
+  getDeletedCoupons() {
+    if (!this.deletedCoupons || !Array.isArray(this.deletedCoupons)) {
+      this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
+    }
+    return this.deletedCoupons;
+  }
+
+  clearUnavailableNotice() {
+    this.lastUnavailableCoupon = null;
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
+  }
+
+  getCouponById(id) {
+    return (this.getCoupons()).find(c => c.id === id);
+  }
+
+  getCouponByCode(code) {
+    if (!code) return null;
+    const clean = code.trim().toUpperCase();
+    return (this.getCoupons()).find(c => (c.code || "").toUpperCase() === clean);
+  }
+
+  saveCoupons(couponsList) {
+    this.coupons = Array.isArray(couponsList) ? couponsList : [];
+    this.save(STORE_KEYS.COUPONS, this.coupons);
+    this.notifyCouponsUpdated();
+  }
+
+  addCoupon(data) {
+    const code = (data.code || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+    if (!code) {
+      return { success: false, message: "Coupon code cannot be empty. Use uppercase letters/numbers." };
+    }
+
+    const existing = this.getCouponByCode(code);
+    if (existing) {
+      return { success: false, message: `Coupon code "${code}" already exists! Please use Alter/Edit or choose a new code.` };
+    }
+
+    const discountType = data.discountType === "flat" ? "flat" : "percent";
+    const discountPercent = discountType === "percent" ? Math.max(1, Math.min(100, parseFloat(data.discountPercent) || 10)) : 0;
+    const discountAmount = discountType === "flat" ? Math.max(1, parseFloat(data.discountAmount) || 100) : 0;
+    const minOrderValue = Math.max(0, parseFloat(data.minOrderValue) || 0);
+    const maxDiscount = data.maxDiscount && parseFloat(data.maxDiscount) > 0 ? parseFloat(data.maxDiscount) : null;
+
+    const newCoupon = {
+      id: data.id || `cp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      code,
+      badge: (data.badge || "").trim(),
+      title: (data.title || `${code} Promotional Privilege`).trim(),
+      discountType,
+      discountPercent,
+      discountAmount,
+      minOrderValue,
+      maxDiscount,
+      validUntil: data.validUntil || "",
+      isActive: data.isActive !== false,
+      description: (data.description || "").trim(),
+      usageCount: 0,
+      createdAt: new Date().toISOString()
+    };
+
+    if (!Array.isArray(this.coupons)) this.coupons = [];
+    this.coupons.unshift(newCoupon);
+    this.save(STORE_KEYS.COUPONS, this.coupons);
+    this.notifyCouponsUpdated();
+    return { success: true, message: `🎉 Coupon "${code}" created successfully!`, coupon: newCoupon };
+  }
+
+  updateCoupon(id, updatedData) {
+    if (!Array.isArray(this.coupons)) this.coupons = [];
+    const idx = this.coupons.findIndex(c => c.id === id);
+    if (idx === -1) {
+      return { success: false, message: "Coupon not found." };
+    }
+
+    const current = this.coupons[idx];
+    const newCode = (updatedData.code || current.code).trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+
+    if (newCode !== current.code) {
+      const duplicate = this.coupons.find(c => c.id !== id && (c.code || "").toUpperCase() === newCode);
+      if (duplicate) {
+        return { success: false, message: `Coupon code "${newCode}" is already in use by another coupon.` };
+      }
+    }
+
+    const discountType = updatedData.discountType ? (updatedData.discountType === "flat" ? "flat" : "percent") : current.discountType;
+    const discountPercent = discountType === "percent"
+      ? (updatedData.discountPercent !== undefined ? Math.max(1, Math.min(100, parseFloat(updatedData.discountPercent) || 0)) : current.discountPercent)
+      : 0;
+    const discountAmount = discountType === "flat"
+      ? (updatedData.discountAmount !== undefined ? Math.max(1, parseFloat(updatedData.discountAmount) || 0) : (current.discountAmount || 100))
+      : 0;
+    const minOrderValue = updatedData.minOrderValue !== undefined ? Math.max(0, parseFloat(updatedData.minOrderValue) || 0) : current.minOrderValue;
+    const maxDiscount = updatedData.maxDiscount !== undefined
+      ? (updatedData.maxDiscount && parseFloat(updatedData.maxDiscount) > 0 ? parseFloat(updatedData.maxDiscount) : null)
+      : current.maxDiscount;
+    const isActive = updatedData.isActive !== undefined ? Boolean(updatedData.isActive) : current.isActive;
+
+    const updated = {
+      ...current,
+      code: newCode,
+      badge: updatedData.badge !== undefined ? updatedData.badge.trim() : (current.badge || ""),
+      title: updatedData.title !== undefined ? updatedData.title.trim() : current.title,
+      discountType,
+      discountPercent,
+      discountAmount,
+      minOrderValue,
+      maxDiscount,
+      validUntil: updatedData.validUntil !== undefined ? updatedData.validUntil : current.validUntil,
+      isActive,
+      description: updatedData.description !== undefined ? updatedData.description.trim() : current.description,
+      updatedAt: new Date().toISOString()
+    };
+
+    this.coupons[idx] = updated;
+
+    this.save(STORE_KEYS.COUPONS, this.coupons);
+    this.validateActiveCoupon();
+    this.notifyCouponsUpdated({ action: "ALTER", coupon: updated });
+    return { success: true, message: `✅ Coupon "${newCode}" updated successfully!`, coupon: updated };
+  }
+
+  deleteCoupon(id) {
+    if (!Array.isArray(this.coupons)) this.coupons = [];
+    const idx = this.coupons.findIndex(c => c.id === id);
+    if (idx === -1) {
+      return { success: false, message: "Coupon not found." };
+    }
+    const removed = this.coupons.splice(idx, 1)[0];
+    removed.isDeleted = true;
+    removed.isActive = false;
+
+    if (!Array.isArray(this.deletedCoupons)) this.deletedCoupons = [];
+    this.deletedCoupons = this.deletedCoupons.filter(c => (c.code || "").toUpperCase() !== (removed.code || "").toUpperCase());
+    this.deletedCoupons.unshift(removed);
+    if (this.deletedCoupons.length > 8) this.deletedCoupons.pop();
+
+    this.save(STORE_KEYS.DELETED_COUPONS, this.deletedCoupons);
+    this.save(STORE_KEYS.COUPONS, this.coupons);
+
+    // If removed coupon was active in cart, mark as unavailable
+    if (this.activeCoupon && this.activeCoupon.code === removed.code) {
+      this.lastUnavailableCoupon = { code: removed.code, reason: "deleted" };
+      if (this.usedCoupons) {
+        this.usedCoupons.delete(removed.code);
+      }
+      this.activeCoupon = null;
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { unavailable: removed.code, reason: "deleted" } }));
+    }
+
+    this.notifyCouponsUpdated({ action: "DELETE", coupon: removed });
+    return { success: true, message: `🗑️ Coupon "${removed.code}" removed successfully!` };
+  }
+
+  toggleCouponStatus(id) {
+    const coupon = this.getCouponById(id);
+    if (!coupon) return { success: false, message: "Coupon not found." };
+    coupon.isActive = !coupon.isActive;
+    coupon.updatedAt = new Date().toISOString();
+    this.save(STORE_KEYS.COUPONS, this.coupons);
+
+    if (!coupon.isActive && this.activeCoupon && this.activeCoupon.code === coupon.code) {
+      this.lastUnavailableCoupon = { code: coupon.code, reason: "inactive" };
+      if (this.usedCoupons) {
+        this.usedCoupons.delete(coupon.code);
+      }
+      this.activeCoupon = null;
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { unavailable: coupon.code, reason: "inactive" } }));
+    } else {
+      this.validateActiveCoupon();
+    }
+
+    this.notifyCouponsUpdated({ action: coupon.isActive ? "ACTIVATE" : "DEACTIVATE", coupon });
+    return {
+      success: true,
+      message: `Coupon "${coupon.code}" turned ${coupon.isActive ? "ON 🟢 (Visible on website)" : "OFF ⚫ (Removed from website & session)"}!`,
+      isActive: coupon.isActive
+    };
+  }
+
+  notifyCouponsUpdated(payload = {}) {
+    try {
+      if (this.broadcastChannel) {
+        this.broadcastChannel.postMessage({ type: "COUPONS_UPDATED", coupons: this.coupons, deletedCoupons: this.deletedCoupons, payload });
+      }
+    } catch (e) { }
+    window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons, ...payload } }));
+  }
+
+  validateActiveCoupon() {
+    if (!this.activeCoupon) return null;
+    const currentCode = this.activeCoupon.code;
+    const liveCoupon = this.getCouponByCode(currentCode);
+
+    if (!liveCoupon) {
+      this.activeCoupon = null;
+      this.lastUnavailableCoupon = { code: currentCode, reason: "deleted" };
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { unavailable: currentCode, reason: "deleted" } }));
+      return { status: "deleted", code: currentCode };
+    }
+
+    if (!liveCoupon.isActive) {
+      this.activeCoupon = null;
+      this.lastUnavailableCoupon = { code: currentCode, reason: "inactive" };
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { unavailable: currentCode, reason: "inactive" } }));
+      return { status: "inactive", code: currentCode };
+    }
+
+    if (liveCoupon.validUntil) {
+      const expDate = new Date(liveCoupon.validUntil);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (expDate < today) {
+        this.activeCoupon = null;
+        this.lastUnavailableCoupon = { code: currentCode, reason: "expired" };
+        window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { unavailable: currentCode, reason: "expired" } }));
+        return { status: "expired", code: currentCode };
+      }
+    }
+
+    // Check if altered!
+    const wasAltered = (
+      this.activeCoupon.discountType !== liveCoupon.discountType ||
+      this.activeCoupon.discountPercent !== liveCoupon.discountPercent ||
+      this.activeCoupon.discountAmount !== liveCoupon.discountAmount ||
+      this.activeCoupon.minOrderValue !== liveCoupon.minOrderValue ||
+      this.activeCoupon.maxDiscount !== liveCoupon.maxDiscount ||
+      this.activeCoupon.title !== liveCoupon.title
+    );
+
+    this.activeCoupon.discountType = liveCoupon.discountType;
+    this.activeCoupon.discountPercent = liveCoupon.discountPercent;
+    this.activeCoupon.discountAmount = liveCoupon.discountAmount;
+    this.activeCoupon.minOrderValue = liveCoupon.minOrderValue;
+    this.activeCoupon.maxDiscount = liveCoupon.maxDiscount;
+    this.activeCoupon.title = liveCoupon.title;
+    this.activeCoupon.label = liveCoupon.title || `${liveCoupon.code} Privilege`;
+
+    window.dispatchEvent(new CustomEvent("cartUpdated", { detail: wasAltered ? { altered: liveCoupon } : {} }));
+    return { status: wasAltered ? "altered" : "valid", coupon: liveCoupon };
+  }
+
   applyCoupon(code) {
     const cleanCode = (code || "").trim().toUpperCase();
     if (!cleanCode) {
       return { success: false, message: "Please enter a valid promo code." };
     }
 
-    if (this.usedCoupons && this.usedCoupons.has(cleanCode)) {
+    // Check if coupon is in deletedCoupons
+    const isDeleted = (this.deletedCoupons || []).some(c => (c.code || "").toUpperCase() === cleanCode);
+    if (isDeleted) {
       return {
         success: false,
-        message: `⚠️ Promo code "${cleanCode}" is Unavailable (Already Used)!`
+        isUnavailable: true,
+        message: `⚠️ Promo code "${cleanCode}" is Not Available (Removed by Store Management)!`
       };
     }
 
-    const COUPON_REGISTRY = {
-      "HERITAGE10": { discountPercent: 10, label: "Heritage 10% Inaugural Privilege" },
-      "HERITAGE": { discountPercent: 10, label: "Heritage 10% Inaugural Privilege" },
-      "FAMILY5": { discountPercent: 5, label: "Family Bundle 5% Discount" },
-      "FAMILY": { discountPercent: 5, label: "Family Bundle 5% Discount" },
-      "SRINIVASA15": { discountPercent: 15, label: "Srinivasa Special 15% Festival Discount" },
-      "SRINIVASA": { discountPercent: 15, label: "Srinivasa Special 15% Festival Discount" },
-      "FESTIVE15": { discountPercent: 15, label: "Festive Season 15% Special Discount" },
-      "SILK20": { discountPercent: 20, label: "Pure Kanchipuram Silk 20% Privilege" },
-      "PATTU20": { discountPercent: 20, label: "Pure Silk 20% Privilege" },
-      "WELCOME10": { discountPercent: 10, label: "Welcome 10% First Order Discount" },
-      "NEW10": { discountPercent: 10, label: "Welcome 10% First Order Discount" },
-      "SAVE10": { discountPercent: 10, label: "Special 10% Savings Privilege" },
-      "SAVE15": { discountPercent: 15, label: "Special 15% Savings Privilege" },
-      "SAVE20": { discountPercent: 20, label: "Special 20% Savings Privilege" },
-      "BALA10": { discountPercent: 10, label: "Special 10% Master Privilege" },
-      "BALA20": { discountPercent: 20, label: "Special 20% Master Privilege" }
-    };
-
-    let match = COUPON_REGISTRY[cleanCode];
-    if (!match) {
-      const pctMatch = cleanCode.match(/(\d{1,2})$/);
-      if (pctMatch) {
-        const num = parseInt(pctMatch[1], 10);
-        if (num > 0 && num <= 50) {
-          match = { discountPercent: num, label: `Special ${num}% Promo Privilege` };
-        }
-      }
+    if (this.usedCoupons && this.usedCoupons.has(cleanCode) && (!this.activeCoupon || this.activeCoupon.code !== cleanCode)) {
+      return {
+        success: false,
+        message: `⚠️ Promo code "${cleanCode}" is Unavailable (Already Used in this order)!`
+      };
     }
+
+    const match = this.getCouponByCode(cleanCode);
 
     if (match) {
+      if (!match.isActive) {
+        return {
+          success: false,
+          isUnavailable: true,
+          message: `⚠️ Promo code "${cleanCode}" is currently turned OFF by store management!`
+        };
+      }
+
+      if (match.validUntil) {
+        const expDate = new Date(match.validUntil);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (expDate < today) {
+          return {
+            success: false,
+            isUnavailable: true,
+            message: `⚠️ Promo code "${cleanCode}" is Not Available (Expired on ${new Date(match.validUntil).toLocaleDateString("en-IN")})!`
+          };
+        }
+      }
+
+      const cartSubtotal = this.cart.reduce((acc, item) => acc + (item.unitPriceINR + (item.blouseExtraINR || 0)) * item.qty, 0);
+      if (match.minOrderValue && cartSubtotal < match.minOrderValue) {
+        return {
+          success: false,
+          message: `⚠️ Code "${cleanCode}" requires a minimum order of ₹${match.minOrderValue.toLocaleString("en-IN")}. Your subtotal: ₹${cartSubtotal.toLocaleString("en-IN")}.`
+        };
+      }
+
+      const discountLabel = match.discountType === "flat"
+        ? `₹${match.discountAmount} Flat OFF`
+        : `${match.discountPercent}% OFF`;
+
       this.activeCoupon = {
         code: cleanCode,
-        discountPercent: match.discountPercent,
-        label: match.label
+        title: match.title,
+        discountType: match.discountType,
+        discountPercent: match.discountPercent || 0,
+        discountAmount: match.discountAmount || 0,
+        minOrderValue: match.minOrderValue || 0,
+        maxDiscount: match.maxDiscount || null,
+        label: match.title || `${cleanCode} (${discountLabel})`
       };
+
+      // Clear unavailable notice
+      this.lastUnavailableCoupon = null;
+
       if (this.usedCoupons) {
         this.usedCoupons.add(cleanCode);
       }
+      match.usageCount = (match.usageCount || 0) + 1;
+      this.save(STORE_KEYS.COUPONS, this.coupons);
+
       window.dispatchEvent(new CustomEvent("cartUpdated"));
       return {
         success: true,
-        message: `🎉 Success! Promo code "${cleanCode}" applied (${match.discountPercent}% OFF discount calculated)!`
+        message: `🎉 Success! Promo code "${cleanCode}" applied (${discountLabel})!`
       };
+    }
+
+    // Fallback: Check if code has a % number pattern like BALA10 or SAVE15
+    const pctMatch = cleanCode.match(/(\d{1,2})$/);
+    if (pctMatch) {
+      const num = parseInt(pctMatch[1], 10);
+      if (num > 0 && num <= 50) {
+        this.activeCoupon = {
+          code: cleanCode,
+          title: `Special ${num}% Promo Privilege`,
+          discountType: "percent",
+          discountPercent: num,
+          discountAmount: 0,
+          label: `Special ${num}% Promo Privilege`
+        };
+        this.lastUnavailableCoupon = null;
+        if (this.usedCoupons) {
+          this.usedCoupons.add(cleanCode);
+        }
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+        return {
+          success: true,
+          message: `🎉 Success! Promo code "${cleanCode}" applied (${num}% OFF)!`
+        };
+      }
     }
 
     return {
       success: false,
-      message: "⚠️ Invalid or expired promo code. Try 'HERITAGE10', 'FAMILY5', or 'SRINIVASA15'!"
+      isUnavailable: true,
+      message: `⚠️ Promo code "${cleanCode}" is Not Available!`
     };
   }
 
   removeCoupon() {
+    if (this.activeCoupon && this.usedCoupons) {
+      this.usedCoupons.delete(this.activeCoupon.code);
+    }
     this.activeCoupon = null;
     window.dispatchEvent(new CustomEvent("cartUpdated"));
   }
@@ -553,10 +1063,18 @@ class TextileStore {
     const subtotalINR = this.cart.reduce((acc, item) => acc + (item.unitPriceINR + (item.blouseExtraINR || 0)) * item.qty, 0);
     let discountINR = 0;
     if (this.activeCoupon) {
-      discountINR = Math.round((subtotalINR * this.activeCoupon.discountPercent) / 100);
+      if (this.activeCoupon.discountType === "flat") {
+        discountINR = Math.min(subtotalINR, this.activeCoupon.discountAmount || this.activeCoupon.discountValue || 0);
+      } else {
+        const pct = this.activeCoupon.discountPercent || 0;
+        discountINR = Math.round((subtotalINR * pct) / 100);
+        if (this.activeCoupon.maxDiscount && discountINR > this.activeCoupon.maxDiscount) {
+          discountINR = this.activeCoupon.maxDiscount;
+        }
+      }
     }
     const giftWrapINR = this.includeGiftWrap ? this.settings.giftWrapPriceINR : 0;
-    const discountedSubtotal = subtotalINR - discountINR;
+    const discountedSubtotal = Math.max(0, subtotalINR - discountINR);
     const gstINR = Math.round(discountedSubtotal * 0.05);
     const shippingINR = (this.settings.freeShippingThresholdINR === 0 || subtotalINR >= this.settings.freeShippingThresholdINR || subtotalINR === 0) ? 0 : 0;
     const totalINR = discountedSubtotal + gstINR + shippingINR + giftWrapINR;

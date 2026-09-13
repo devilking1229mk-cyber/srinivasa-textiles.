@@ -21,6 +21,7 @@ class StorefrontController {
     this.handleRouteFromHash();
     this.renderReviews();
     this.renderHomePageFeatured();
+    this.renderFestiveVouchers();
     this.updateCartUI();
     this.updateWishlistCount();
     this.setupWishlistDrawer();
@@ -62,6 +63,21 @@ class StorefrontController {
       this.renderHomePageFeatured();
     });
     window.addEventListener("cartUpdated", () => this.updateCartUI());
+    window.addEventListener("couponsUpdated", (e) => {
+      if (window.store && typeof window.store.validateActiveCoupon === "function") {
+        const valRes = window.store.validateActiveCoupon();
+        if (valRes && valRes.status === "deleted") {
+          this.showToast(`⚠️ Promo code "${valRes.code}" was removed and is Not Available.`, "warning");
+        } else if (valRes && valRes.status === "inactive") {
+          this.showToast(`⚠️ Promo code "${valRes.code}" has been turned OFF by store. Session removed.`, "warning");
+        } else if (valRes && valRes.status === "altered") {
+          const benefit = valRes.coupon.discountType === "flat" ? `₹${valRes.coupon.discountAmount} Flat OFF` : `${valRes.coupon.discountPercent}% OFF`;
+          this.showToast(`🔄 Promo code "${valRes.coupon.code}" was updated in real time: Now ${benefit}!`, "success");
+        }
+      }
+      this.updateCartUI();
+      this.renderFestiveVouchers();
+    });
     window.addEventListener("wishlistUpdated", () => {
       this.updateWishlistCount();
       this.renderWishlistDrawer();
@@ -1427,15 +1443,19 @@ class StorefrontController {
         discountEl.style.color = "#059669";
         discountEl.style.fontWeight = "800";
       }
+      const discountLabel = totals.coupon.discountType === "flat"
+        ? `₹${(totals.coupon.discountAmount || totals.coupon.discountValue || 0).toLocaleString("en-IN")} Flat OFF`
+        : `${totals.coupon.discountPercent}% OFF`;
+
       if (discountLine) {
         const labelSpan = discountLine.querySelector("span");
-        if (labelSpan) labelSpan.innerHTML = `Discount (<strong>${totals.coupon.code}</strong> - ${totals.coupon.discountPercent}% OFF):`;
+        if (labelSpan) labelSpan.innerHTML = `Discount (<strong>${totals.coupon.code}</strong> - ${discountLabel}):`;
       }
       if (activeCouponBox) {
         activeCouponBox.style.display = "block";
         activeCouponBox.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: var(--radius-sm); padding: 0.45rem 0.75rem; font-size: 0.775rem;">
-            <span style="color: #047857; font-weight: 700;">🏷️ "${totals.coupon.code}" Applied (${totals.coupon.discountPercent}% OFF) • Code is now Unavailable</span>
+            <span style="color: #047857; font-weight: 700;">🏷️ "${totals.coupon.code}" Applied (${discountLabel})</span>
             <button type="button" id="removeActiveCouponBtn" style="background: none; border: none; color: #DC2626; font-size: 0.75rem; font-weight: 800; cursor: pointer; padding: 0; text-decoration: underline;">✕ Remove</button>
           </div>
         `;
@@ -1444,10 +1464,40 @@ class StorefrontController {
           this.showToast("Promo code removed", "info");
         });
       }
+    } else if (window.store && window.store.lastUnavailableCoupon) {
+      const un = window.store.lastUnavailableCoupon;
+      if (couponInput) {
+        couponInput.disabled = false;
+        couponInput.value = "";
+      }
+      if (applyCouponBtn) {
+        applyCouponBtn.disabled = false;
+        applyCouponBtn.textContent = "Apply";
+      }
+      if (discountEl) {
+        discountEl.textContent = "₹0";
+        discountEl.style.color = "";
+        discountEl.style.fontWeight = "";
+      }
+      if (discountLine) {
+        const labelSpan = discountLine.querySelector("span");
+        if (labelSpan) labelSpan.textContent = "Discount:";
+      }
+      if (activeCouponBox) {
+        activeCouponBox.style.display = "block";
+        activeCouponBox.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(239, 68, 68, 0.12); border: 1.5px solid rgba(239, 68, 68, 0.4); border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; font-size: 0.775rem;">
+            <span style="color: #DC2626; font-weight: 700;">⚠️ Promo code "${un.code}" is <strong>Not Available</strong> (${un.reason === "deleted" ? "Removed by Store" : "Disabled"})</span>
+            <button type="button" id="dismissUnavailableCouponBtn" style="background: none; border: none; color: #DC2626; font-size: 0.8rem; font-weight: 800; cursor: pointer; padding: 0 0.35rem;" title="Dismiss">✕</button>
+          </div>
+        `;
+        document.getElementById("dismissUnavailableCouponBtn")?.addEventListener("click", () => {
+          window.store.clearUnavailableNotice();
+        });
+      }
     } else {
       if (couponInput) {
         couponInput.disabled = false;
-        couponInput.placeholder = "Promo Code (Try 'HERITAGE10')";
       }
       if (applyCouponBtn) {
         applyCouponBtn.disabled = false;
@@ -1472,6 +1522,227 @@ class StorefrontController {
     if (giftWrapEl) giftWrapEl.textContent = totals.giftWrapINR > 0 ? `+${window.store.formatPrice(totals.giftWrapINR)}` : "₹0";
     if (gstEl) gstEl.textContent = window.store.formatPrice(totals.gstINR);
     if (totalEl) totalEl.textContent = window.store.formatPrice(totals.totalINR);
+
+    // Render dynamic available offers list in cart
+    this.renderCartAvailableOffers(totals);
+  }
+
+  renderCartAvailableOffers(totals) {
+    const offersBox = document.getElementById("cartAvailableOffersBox");
+    if (!offersBox) return;
+
+    if (!window.store) {
+      offersBox.innerHTML = "";
+      return;
+    }
+
+    const liveCoupons = window.store.getCoupons() || [];
+    const deletedCoupons = window.store.getDeletedCoupons() || [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (liveCoupons.length === 0 && deletedCoupons.length === 0) {
+      offersBox.innerHTML = "";
+      return;
+    }
+
+    // Dynamic placeholder suggestion
+    const couponInput = document.getElementById("cartCouponInput");
+    const activeValid = liveCoupons.filter(c => c.isActive && (!c.validUntil || new Date(c.validUntil) >= today));
+    if (couponInput && !totals.coupon) {
+      couponInput.placeholder = activeValid.length > 0
+        ? `Promo Code (Try '${activeValid[0].code}')`
+        : "Enter Promo Code";
+    }
+
+    let html = `
+      <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.6rem 0.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <span style="font-size: 0.72rem; font-weight: 800; color: var(--color-gold); letter-spacing: 0.04em;">
+            🏷️ AVAILABLE OFFERS &amp; CODES
+          </span>
+          <span style="font-size: 0.65rem; color: var(--text-muted);">Real-Time</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.35rem; max-height: 180px; overflow-y: auto;">
+    `;
+
+    // Live Coupons
+    liveCoupons.forEach(c => {
+      const isExpired = c.validUntil && new Date(c.validUntil) < today;
+      const isAvailable = c.isActive && !isExpired;
+      const isCurrentApplied = totals.coupon && totals.coupon.code === c.code;
+
+      if (!isAvailable) {
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.5rem; background: rgba(239, 68, 68, 0.06); border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 4px;">
+            <div>
+              <span style="font-family: monospace; font-weight: 700; font-size: 0.75rem; text-decoration: line-through; color: var(--text-muted);">${c.code}</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.35rem;">${c.title}</span>
+            </div>
+            <span style="font-size: 0.65rem; font-weight: 800; color: #DC2626; background: rgba(239, 68, 68, 0.12); padding: 0.12rem 0.4rem; border-radius: 3px;">
+              Not Available
+            </span>
+          </div>
+        `;
+      } else {
+        const benefit = c.discountType === "flat" ? `₹${c.discountAmount} Flat OFF` : `${c.discountPercent}% OFF`;
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.5rem; background: var(--bg-surface); border: 1px dashed ${isCurrentApplied ? 'var(--color-gold)' : 'var(--border-color)'}; border-radius: 4px;">
+            <div style="flex: 1; min-width: 0; padding-right: 0.4rem;">
+              <div style="display: flex; align-items: center; gap: 0.35rem;">
+                <strong style="font-family: monospace; color: var(--color-gold); font-size: 0.78rem; font-weight: 800;">${c.code}</strong>
+                <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">${benefit}</span>
+              </div>
+              <div style="font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${c.title}${c.minOrderValue > 0 ? ` • Min ₹${c.minOrderValue.toLocaleString('en-IN')}` : ''}
+              </div>
+            </div>
+            <div>
+              ${isCurrentApplied
+                ? `<span style="font-size: 0.7rem; color: #059669; font-weight: 800;">Applied ✓</span>`
+                : `<button type="button" class="btn btn-gold btn-xs" style="font-size: 0.68rem; padding: 0.15rem 0.5rem; font-weight: 700;" onclick="window.storefront && window.storefront.quickApplyCoupon('${c.code}')">Apply</button>`
+              }
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    // Recently deleted coupons explicitly marked as "Not Available"
+    deletedCoupons.slice(0, 3).forEach(dc => {
+      html += `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.5rem; background: rgba(239, 68, 68, 0.06); border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 4px;">
+          <div>
+            <span style="font-family: monospace; font-weight: 700; font-size: 0.75rem; text-decoration: line-through; color: #DC2626;">${dc.code}</span>
+            <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.35rem;">${dc.title || 'Removed Offer'}</span>
+          </div>
+          <span style="font-size: 0.65rem; font-weight: 800; color: #DC2626; background: rgba(239, 68, 68, 0.15); padding: 0.12rem 0.45rem; border-radius: 3px;">
+            ⚠️ Not Available
+          </span>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    offersBox.innerHTML = html;
+  }
+
+  quickApplyCoupon(code) {
+    if (!window.store) return;
+    const res = window.store.applyCoupon(code);
+    this.showToast(res.message, res.success ? "success" : "warning");
+    this.updateCartUI();
+  }
+
+  renderFestiveVouchers() {
+    const grid = document.getElementById("festiveVouchersGrid");
+    if (!grid) return;
+
+    if (!window.store) return;
+
+    const liveCoupons = window.store.getCoupons() || [];
+    const deletedCoupons = window.store.getDeletedCoupons() || [];
+
+    // The key festive vouchers from the storefront offer cards
+    const festivePreferredCodes = ["FESTIVE20", "BRIDAL15", "KIDSGIFT", "PREPAID500"];
+
+    let itemsToDisplay = [];
+
+    // 1. Add all live coupons that are turned ON (isActive === true)
+    // When turned OFF, the coupon is completely removed from the main store page!
+    const activeCoupons = liveCoupons.filter(c => c.isActive);
+    activeCoupons.forEach(c => {
+      itemsToDisplay.push({ coupon: c, isDeleted: false });
+    });
+
+    // 2. Add deleted coupons so they explicitly show as "Not Available" right where they were
+    deletedCoupons.forEach(dc => {
+      if (!itemsToDisplay.some(item => (item.coupon.code || "").toUpperCase() === (dc.code || "").toUpperCase())) {
+        itemsToDisplay.push({ coupon: dc, isDeleted: true });
+      }
+    });
+
+    // 3. Sort so festive codes appear first in order, followed by other active coupons
+    itemsToDisplay.sort((a, b) => {
+      const codeA = (a.coupon.code || "").toUpperCase();
+      const codeB = (b.coupon.code || "").toUpperCase();
+      const idxA = festivePreferredCodes.indexOf(codeA);
+      const idxB = festivePreferredCodes.indexOf(codeB);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return 0;
+    });
+
+    // Take top 8 cards for clean grid presentation
+    itemsToDisplay = itemsToDisplay.slice(0, 8);
+
+    if (itemsToDisplay.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: var(--bg-surface-alt); border-radius: var(--radius-md); border: 1.5px dashed var(--border-color); color: var(--text-muted);">
+          <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🏷️</span>
+          <h4 style="margin: 0 0 0.35rem 0; color: var(--text-heading); font-family: var(--font-serif-display);">Festive Offers Update</h4>
+          <p style="margin: 0; font-size: 0.85rem;">Seasonal vouchers are currently undergoing updates. Check back soon!</p>
+        </div>
+      `;
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    grid.innerHTML = itemsToDisplay.map(({ coupon: c, isDeleted }) => {
+      const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
+      const isUnavailable = isDeleted || !c.isActive || isExpired;
+
+      const badgeText = isUnavailable
+        ? "⚠️ NOT AVAILABLE"
+        : (c.badge || (c.discountType === "flat" ? "SPECIAL PRIVILEGE" : "FESTIVE OFFER"));
+
+      const badgeStyle = isUnavailable
+        ? "background: linear-gradient(135deg, #DC2626, #EF4444); color: #FFF;"
+        : "";
+
+      const cardClass = `festive-voucher-card ${isUnavailable ? 'festive-voucher-unavailable' : ''}`;
+      const cardStyle = isUnavailable
+        ? "border: 1.5px dashed rgba(239, 68, 68, 0.6); background: rgba(239, 68, 68, 0.03);"
+        : "";
+
+      const titleHtml = isUnavailable
+        ? `<h4 style="text-decoration: line-through; color: var(--text-muted); opacity: 0.85;">${c.title}</h4>`
+        : `<h4>${c.title}</h4>`;
+
+      const descHtml = isUnavailable
+        ? `<p style="color: #DC2626; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.82rem;">⚠️ This coupon code is Not Available (${isDeleted ? 'Removed by Store Management' : (isExpired ? 'Expired' : 'Temporarily Disabled')})</p>
+           <p style="text-decoration: line-through; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">${c.description || ''}</p>`
+        : `<p>${c.description || (c.minOrderValue > 0 ? `Valid on orders over ₹${c.minOrderValue.toLocaleString('en-IN')}.` : 'Exclusive handloom silk privilege savings.')}</p>`;
+
+      const codeRowHtml = isUnavailable
+        ? `<div class="festive-code-row" style="border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.08);">
+            <span class="festive-code-text" style="text-decoration: line-through; color: #DC2626; opacity: 0.75;">${c.code}</span>
+            <button type="button" class="festive-copy-btn disabled" disabled style="background: rgba(239, 68, 68, 0.15); color: #DC2626; border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed; opacity: 0.9; font-weight: 700;">Not Available</button>
+           </div>`
+        : `<div class="festive-code-row">
+            <span class="festive-code-text">${c.code}</span>
+            <button type="button" class="festive-copy-btn"
+              onclick="navigator.clipboard?.writeText('${c.code}'); window.storefront.showToast('Copied voucher code ${c.code}!', 'success');">Copy Code</button>
+           </div>`;
+
+      return `
+        <div class="${cardClass}" style="${cardStyle}">
+          <span class="festive-voucher-badge" style="${badgeStyle}">${badgeText}</span>
+          <div class="festive-voucher-content">
+            ${titleHtml}
+            ${descHtml}
+          </div>
+          ${codeRowHtml}
+        </div>
+      `;
+    }).join("");
   }
 
   updateWishlistCount() {

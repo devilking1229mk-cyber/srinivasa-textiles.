@@ -2308,3 +2308,70 @@
     font-size: 0.685rem !important;
   }
 }
+
+/* ==========================================================================
+   COUPON LIVE ON / OFF TOGGLE SWITCH BUTTON
+   ========================================================================== */
+.coupon-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 76px;
+  height: 30px;
+  padding: 3px 6px;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  user-select: none;
+  outline: none;
+}
+
+.coupon-switch-btn.switch-on {
+  background: #059669;
+  border-color: #10B981;
+  color: #FFFFFF;
+  flex-direction: row-reverse;
+}
+
+.coupon-switch-btn.switch-on .switch-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.coupon-switch-btn.switch-off {
+  background: #374151;
+  border-color: #4B5563;
+  color: #9CA3AF;
+  flex-direction: row;
+}
+
+.coupon-switch-btn.switch-off .switch-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #9CA3AF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.coupon-switch-btn:hover {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.coupon-switch-btn:active {
+  transform: scale(0.97);
+}
+

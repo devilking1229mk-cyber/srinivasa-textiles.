@@ -165,6 +165,56 @@ class AdminController {
       fbExport.addEventListener("click", () => this.handleExportFeedbacksCSV());
     }
 
+    // Coupon Reactivity & Controls
+    window.addEventListener("couponsUpdated", () => {
+      this.renderDashboardKPIs();
+      this.renderCouponKPIs();
+      if (this.currentTab === "coupons") {
+        this.renderCouponsTab();
+      }
+    });
+
+    const cpSearch = document.getElementById("couponSearchInput");
+    const cpStatus = document.getElementById("couponStatusFilter");
+    const cpType = document.getElementById("couponTypeFilter");
+    const cpReset = document.getElementById("resetCouponFilterBtn");
+    const cpForm = document.getElementById("adminCouponForm");
+    const cpDiscountType = document.getElementById("couponFormDiscountType");
+
+    if (cpSearch) cpSearch.addEventListener("input", () => this.renderCouponsTab());
+    if (cpStatus) cpStatus.addEventListener("change", () => this.renderCouponsTab());
+    if (cpType) cpType.addEventListener("change", () => this.renderCouponsTab());
+    if (cpReset) {
+      cpReset.addEventListener("click", () => {
+        if (cpSearch) cpSearch.value = "";
+        if (cpStatus) cpStatus.value = "ALL";
+        if (cpType) cpType.value = "ALL";
+        this.renderCouponsTab();
+      });
+    }
+    if (cpDiscountType) {
+      cpDiscountType.addEventListener("change", (e) => {
+        const valInput = document.getElementById("couponFormValue");
+        const valLabel = document.getElementById("couponValueLabel");
+        if (e.target.value === "flat") {
+          if (valLabel) valLabel.textContent = "Flat Discount Amount (₹ INR) *";
+          if (valInput) {
+            valInput.removeAttribute("max");
+            valInput.placeholder = "e.g. 500";
+          }
+        } else {
+          if (valLabel) valLabel.textContent = "Discount Percentage (% OFF) *";
+          if (valInput) {
+            valInput.setAttribute("max", "100");
+            valInput.placeholder = "e.g. 15";
+          }
+        }
+      });
+    }
+    if (cpForm) {
+      cpForm.addEventListener("submit", (e) => this.handleSaveCoupon(e));
+    }
+
     // Add Product Form
     const productForm = document.getElementById("adminAddProductForm");
     if (productForm) {
@@ -389,6 +439,9 @@ class AdminController {
       this.renderFeedbacksTable();
     } else if (normTab === "subscribers") {
       this.renderSubscribersTable();
+    } else if (normTab === "coupons") {
+      this.renderCouponsTab();
+      this.renderCouponKPIs();
     } else if (normTab === "overview") {
       this.renderDashboardKPIs();
     }
@@ -415,6 +468,7 @@ class AdminController {
     if (ordersEl) ordersEl.textContent = stats.activeOrdersCount;
     if (lowStockEl) lowStockEl.textContent = stats.lowStockCount;
     if (skusEl) skusEl.textContent = stats.totalSKUs;
+    this.renderCouponKPIs();
 
     // Calculate rating metrics
     const totalFeedbacks = feedbacks.length;
@@ -2827,6 +2881,351 @@ Warm regards,
     document.body.removeChild(link);
     if (window.storefront) {
       window.storefront.showToast("Exported confidential Patron Feedbacks CSV for Store Owner!", "success");
+    }
+  }
+
+  // =========================================================================
+  // DYNAMIC COUPONS & OFFERS CONTROLLER
+  // =========================================================================
+  renderCouponKPIs() {
+    if (!window.store) return;
+    const coupons = window.store.getCoupons() || [];
+    const total = coupons.length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const activeCoupons = coupons.filter(c => {
+      if (!c.isActive) return false;
+      if (c.validUntil) {
+        return new Date(c.validUntil) >= today;
+      }
+      return true;
+    });
+
+    const activeCount = activeCoupons.length;
+    const inactiveCount = total - activeCount;
+
+    let maxBenefitStr = "0%";
+    let maxPct = 0;
+    coupons.forEach(c => {
+      if (c.isActive) {
+        if (c.discountType === "percent" && c.discountPercent > maxPct) {
+          maxPct = c.discountPercent;
+          maxBenefitStr = `${maxPct}% OFF`;
+        } else if (c.discountType === "flat" && maxPct === 0) {
+          maxBenefitStr = `₹${c.discountAmount} Flat`;
+        }
+      }
+    });
+
+    const elTotal = document.getElementById("kpiTotalCoupons");
+    const elActive = document.getElementById("kpiActiveCoupons");
+    const elInactive = document.getElementById("kpiInactiveCoupons");
+    const elMax = document.getElementById("kpiMaxCouponDiscount");
+
+    if (elTotal) elTotal.textContent = total;
+    if (elActive) elActive.textContent = activeCount;
+    if (elInactive) elInactive.textContent = inactiveCount;
+    if (elMax) elMax.textContent = maxBenefitStr;
+
+    // Badges in sidebars
+    const sideBadge = document.getElementById("sidebarCouponsBadge");
+    if (sideBadge) sideBadge.textContent = `${activeCount} Active`;
+
+    const mobBadge = document.getElementById("mobileSidebarCouponsBadge");
+    if (mobBadge) mobBadge.textContent = `${activeCount} Offers`;
+  }
+
+  renderCouponsTab() {
+    if (!window.store) return;
+    const tbody = document.getElementById("adminCouponsTableBody");
+    if (!tbody) return;
+
+    this.renderCouponKPIs();
+
+    const searchVal = (document.getElementById("couponSearchInput")?.value || "").trim().toLowerCase();
+    const statusVal = document.getElementById("couponStatusFilter")?.value || "ALL";
+    const typeVal = document.getElementById("couponTypeFilter")?.value || "ALL";
+
+    const allCoupons = window.store.getCoupons() || [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const filtered = allCoupons.filter(c => {
+      if (searchVal) {
+        const matchesCode = (c.code || "").toLowerCase().includes(searchVal);
+        const matchesTitle = (c.title || "").toLowerCase().includes(searchVal);
+        const matchesDesc = (c.description || "").toLowerCase().includes(searchVal);
+        if (!matchesCode && !matchesTitle && !matchesDesc) return false;
+      }
+
+      const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
+      const isEffectivelyActive = c.isActive && !isExpired;
+
+      if (statusVal === "ACTIVE" && !isEffectivelyActive) return false;
+      if (statusVal === "INACTIVE" && isEffectivelyActive) return false;
+
+      if (typeVal === "percent" && c.discountType !== "percent") return false;
+      if (typeVal === "flat" && c.discountType !== "flat") return false;
+
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏷️</div>
+            <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-heading); margin-bottom: 0.25rem;">No Promotional Coupons Found</div>
+            <p style="font-size: 0.85rem; margin: 0 0 1rem 0;">No coupons match your filter or none have been created yet.</p>
+            <button class="btn btn-gold btn-sm" onclick="window.admin.openCouponModal()">➕ Create New Coupon</button>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(c => {
+      const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
+      let statusBadge = "";
+      if (isExpired) {
+        statusBadge = `<span class="status-badge" style="background: rgba(239, 68, 68, 0.12); color: #DC2626; border: 1px solid rgba(239, 68, 68, 0.3);">⚠️ Expired</span>`;
+      } else if (!c.isActive) {
+        statusBadge = `<span class="status-badge" style="background: rgba(107, 114, 128, 0.15); color: var(--text-muted); border: 1px solid rgba(107, 114, 128, 0.3);">⏸️ Inactive</span>`;
+      } else {
+        statusBadge = `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35);">🟢 Live Active</span>`;
+      }
+
+      const discountDisplay = c.discountType === "flat"
+        ? `<strong style="font-size: 0.95rem; color: #059669;">₹${(c.discountAmount || 0).toLocaleString("en-IN")} Flat OFF</strong>`
+        : `<strong style="font-size: 0.95rem; color: #059669;">${c.discountPercent}% OFF</strong>${c.maxDiscount ? `<div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Cap: ₹${c.maxDiscount.toLocaleString("en-IN")}</div>` : ""}`;
+
+      const minOrderDisplay = c.minOrderValue > 0
+        ? `₹${c.minOrderValue.toLocaleString("en-IN")}`
+        : `<span style="color: var(--text-muted);">No Minimum</span>`;
+
+      const validDisplay = c.validUntil
+        ? `${new Date(c.validUntil).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+        : `<span style="color: var(--color-gold); font-weight: 600;">Never Expires ∞</span>`;
+
+      return `
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span style="font-family: monospace; font-size: 0.92rem; font-weight: 800; background: rgba(212, 175, 55, 0.14); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.4); padding: 0.2rem 0.55rem; border-radius: 4px; letter-spacing: 0.04em;">
+                ${c.code}
+              </span>
+              <button type="button" class="btn btn-outline btn-xs" style="padding: 0.15rem 0.4rem; font-size: 0.7rem;" onclick="window.admin.copyCouponCode('${c.code}')" title="Copy coupon code">
+                📋 Copy
+              </button>
+            </div>
+            <div style="font-weight: 700; color: var(--text-heading); font-size: 0.85rem; margin-top: 0.3rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+              <span>${c.title}</span>
+              ${c.badge ? `<span style="font-size: 0.65rem; background: rgba(212, 175, 55, 0.2); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.5); padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;">🏷️ ${c.badge}</span>` : ""}
+            </div>
+            ${c.description ? `<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.3;">${c.description}</div>` : ""}
+          </td>
+          <td>${discountDisplay}</td>
+          <td>${minOrderDisplay}</td>
+          <td>
+            <div>${validDisplay}</div>
+            <div style="margin-top: 0.25rem;">${statusBadge}</div>
+          </td>
+          <td style="text-align: center;">
+            <span style="font-size: 0.85rem; font-weight: 700;">${c.usageCount || 0}</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">orders</span>
+          </td>
+          <td style="text-align: center;">
+            <button type="button" class="coupon-switch-btn ${c.isActive ? 'switch-on' : 'switch-off'}" onclick="window.admin.toggleCoupon('${c.id}')" title="Click to turn ${c.isActive ? 'OFF (Remove from website & cart sessions)' : 'ON (Show on website)'}">
+              <span class="switch-knob"></span>
+              <span class="switch-label">${c.isActive ? 'ON' : 'OFF'}</span>
+            </button>
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.4rem; justify-content: flex-end;">
+              <button type="button" class="btn btn-outline btn-xs" onclick="window.admin.openCouponModal('${c.id}')" title="Alter or edit coupon">
+                ✏️ Alter
+              </button>
+              <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: rgba(239, 68, 68, 0.4);" onclick="window.admin.deleteCoupon('${c.id}')" title="Delete coupon">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  openCouponModal(couponId = null) {
+    const modal = document.getElementById("adminCouponModal");
+    if (!modal) return;
+
+    const form = document.getElementById("adminCouponForm");
+    if (form) form.reset();
+
+    const titleEl = document.getElementById("couponModalTitleText");
+    const valLabel = document.getElementById("couponValueLabel");
+    const valInput = document.getElementById("couponFormValue");
+    const codeInput = document.getElementById("couponFormCode");
+    const badgeInput = document.getElementById("couponFormBadge");
+
+    if (couponId) {
+      const coupon = window.store.getCouponById(couponId);
+      if (!coupon) return;
+
+      document.getElementById("couponFormId").value = coupon.id;
+      if (codeInput) codeInput.value = coupon.code;
+      if (badgeInput) badgeInput.value = coupon.badge || "";
+      document.getElementById("couponFormTitle").value = coupon.title || "";
+      const typeSelect = document.getElementById("couponFormDiscountType");
+      if (typeSelect) typeSelect.value = coupon.discountType || "percent";
+
+      if (coupon.discountType === "flat") {
+        if (valLabel) valLabel.textContent = "Flat Discount Amount (₹ INR) *";
+        if (valInput) {
+          valInput.removeAttribute("max");
+          valInput.placeholder = "e.g. 500";
+          valInput.value = coupon.discountAmount || 0;
+        }
+      } else {
+        if (valLabel) valLabel.textContent = "Discount Percentage (% OFF) *";
+        if (valInput) {
+          valInput.setAttribute("max", "100");
+          valInput.placeholder = "e.g. 15";
+          valInput.value = coupon.discountPercent || 0;
+        }
+      }
+
+      document.getElementById("couponFormMinOrder").value = coupon.minOrderValue || "";
+      document.getElementById("couponFormMaxDiscount").value = coupon.maxDiscount || "";
+      document.getElementById("couponFormValidUntil").value = coupon.validUntil || "";
+      document.getElementById("couponFormIsActive").checked = coupon.isActive !== false;
+      document.getElementById("couponFormDesc").value = coupon.description || "";
+
+      if (titleEl) titleEl.textContent = `Alter Coupon: ${coupon.code}`;
+    } else {
+      document.getElementById("couponFormId").value = "";
+      if (titleEl) titleEl.textContent = "Create Promotional Coupon";
+      if (valLabel) valLabel.textContent = "Discount Percentage (% OFF) *";
+      if (valInput) {
+        valInput.setAttribute("max", "100");
+        valInput.placeholder = "e.g. 15";
+        valInput.value = 15;
+      }
+      if (badgeInput) badgeInput.value = "";
+      document.getElementById("couponFormIsActive").checked = true;
+    }
+
+    modal.style.display = "flex";
+  }
+
+  closeCouponModal() {
+    const modal = document.getElementById("adminCouponModal");
+    if (!modal) return;
+
+    const form = document.getElementById("adminCouponForm");
+    if (form) form.reset();
+    modal.style.display = "none";
+  }
+
+  handleSaveCoupon(e) {
+    e.preventDefault();
+    const id = document.getElementById("couponFormId")?.value;
+    const code = (document.getElementById("couponFormCode")?.value || "").trim().toUpperCase();
+    const badge = (document.getElementById("couponFormBadge")?.value || "").trim();
+    const title = (document.getElementById("couponFormTitle")?.value || "").trim();
+    const discountType = document.getElementById("couponFormDiscountType")?.value || "percent";
+    const rawVal = parseFloat(document.getElementById("couponFormValue")?.value) || 0;
+    const minOrderValue = parseFloat(document.getElementById("couponFormMinOrder")?.value) || 0;
+    const maxDiscount = parseFloat(document.getElementById("couponFormMaxDiscount")?.value) || null;
+    const validUntil = document.getElementById("couponFormValidUntil")?.value || "";
+    const isActive = document.getElementById("couponFormIsActive")?.checked;
+    const description = (document.getElementById("couponFormDesc")?.value || "").trim();
+
+    if (!code) {
+      this.showToast("Please provide a valid coupon code.", "warning");
+      return;
+    }
+
+    const payload = {
+      code,
+      badge,
+      title: title || `${code} Special Offer`,
+      discountType,
+      discountPercent: discountType === "percent" ? rawVal : 0,
+      discountAmount: discountType === "flat" ? rawVal : 0,
+      minOrderValue,
+      maxDiscount,
+      validUntil,
+      isActive,
+      description
+    };
+
+    let res;
+    if (id) {
+      res = window.store.updateCoupon(id, payload);
+    } else {
+      res = window.store.addCoupon(payload);
+    }
+
+    if (res.success) {
+      this.showToast(res.message, "success");
+      this.closeCouponModal();
+      this.renderCouponsTab();
+      this.renderCouponKPIs();
+    } else {
+      this.showToast(res.message, "warning");
+    }
+  }
+
+  toggleCoupon(id) {
+    if (!window.store) return;
+    const res = window.store.toggleCouponStatus(id);
+    if (res.success) {
+      this.showToast(res.message, res.isActive ? "success" : "info");
+      this.renderCouponsTab();
+      this.renderCouponKPIs();
+    } else {
+      this.showToast(res.message, "warning");
+    }
+  }
+
+  deleteCoupon(id) {
+    if (!window.store) return;
+    const coupon = window.store.getCouponById(id);
+    if (!coupon) return;
+    const confirmDelete = confirm(`Are you sure you want to permanently remove coupon "${coupon.code}"?\n\nCustomers will no longer be able to use this code.`);
+    if (!confirmDelete) return;
+
+    const res = window.store.deleteCoupon(id);
+    if (res.success) {
+      this.showToast(res.message, "success");
+      this.renderCouponsTab();
+      this.renderCouponKPIs();
+    } else {
+      this.showToast(res.message, "warning");
+    }
+  }
+
+  copyCouponCode(code) {
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+      this.showToast(`📋 Code "${code}" copied to clipboard!`, "success");
+    }).catch(() => {
+      prompt("Copy coupon code:", code);
+    });
+  }
+
+  showToast(message, type = "info") {
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(message, type);
+    } else {
+      const toast = document.createElement("div");
+      toast.className = `admin-toast ${type}`;
+      toast.style.cssText = "position: fixed; bottom: 2rem; right: 2rem; z-index: 999999; background: #14161D; color: #F3F4F6; border: 1.5px solid #D4AF37; padding: 0.85rem 1.4rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: 600; font-size: 0.875rem;";
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
     }
   }
 }
