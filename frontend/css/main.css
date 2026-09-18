@@ -151,23 +151,55 @@ html.theme-transitioning *,
 html.theme-transitioning *::before,
 html.theme-transitioning *::after {
   transition: background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1) !important,
-              color 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important,
-              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1) !important,
-              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1) !important,
-              fill 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important,
-              stroke 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    color 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important,
+    border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1) !important,
+    box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1) !important,
+    fill 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important,
+    stroke 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
 /* Ensure all wordings, headings, and labels maintain standard arrow cursor */
-h1, h2, h3, h4, h5, h6,
-p, span, div, section, article, header, footer, main, aside, nav,
-table, th, td, tr, tbody, thead,
-label, li, ul, ol, strong, b, em, i, small {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+section,
+article,
+header,
+footer,
+main,
+aside,
+nav,
+table,
+th,
+td,
+tr,
+tbody,
+thead,
+label,
+li,
+ul,
+ol,
+strong,
+b,
+em,
+i,
+small {
   cursor: default;
 }
 
 /* Unified Royal Srinivasa Typography Theme */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-serif-display);
   font-weight: 700;
   color: var(--color-primary);
@@ -369,10 +401,10 @@ textarea {
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(59, 6, 22, 0.35);
   transition: background-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-              color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-              transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
 }
@@ -1208,8 +1240,10 @@ textarea {
 }
 
 @media (max-width: 768px) {
+
   /* Prevent any horizontal body overflow */
-  html, body {
+  html,
+  body {
     overflow-x: hidden !important;
     width: 100% !important;
     position: relative !important;
@@ -1398,10 +1432,20 @@ textarea {
     border-radius: 20px !important;
   }
 
-  /* Mobile Hero & Headings */
+  /* Mobile Hero & Headings - Compact without redundant spacing */
   .hero-section {
-    padding: 2rem 0.75rem 1.75rem 0.75rem !important;
+    min-height: auto !important;
+    padding: 1.5rem 0.75rem 1.25rem 0.75rem !important;
     text-align: center !important;
+  }
+
+  .hero-content {
+    padding: 0 !important;
+  }
+
+  /* Eliminate massive section spacing & padding on mobile */
+  .section {
+    padding: 1.5rem 0 !important;
   }
 
   .hero-pill {
@@ -1513,6 +1557,7 @@ textarea {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 0.55rem !important;
+    margin-bottom: 1.25rem !important;
   }
 
   .gateway-card {
@@ -1532,10 +1577,25 @@ textarea {
   .family-combo-banner {
     display: flex !important;
     flex-direction: column !important;
-    padding: 1.25rem 1rem !important;
-    gap: 1rem !important;
+    padding: 1rem 0.85rem !important;
+    gap: 0.85rem !important;
     text-align: center !important;
     border-radius: 12px !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .combo-banner-content {
+    padding: 0.5rem 0 !important;
+  }
+
+  .combo-banner-image {
+    min-height: 180px !important;
+    max-height: 200px !important;
+  }
+
+  .combo-features-list {
+    margin: 0.65rem 0 0.85rem !important;
+    gap: 0.4rem !important;
   }
 
   .family-combo-media img {
@@ -1673,9 +1733,55 @@ textarea {
     border-radius: 12px !important;
   }
 
+  /* Heritage Story & Owner Showcases on Mobile */
+  .heritage-story-grid,
+  .owner-showcase-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .heritage-media-box,
+  .owner-media-box {
+    height: 200px !important;
+    max-height: 200px !important;
+  }
+
+  .owner-quote-box {
+    margin: 0.75rem 0 !important;
+    padding: 0.75rem 0.85rem !important;
+  }
+
+  /* VIP Video Shopping Banner on Mobile */
+  .video-shopping-banner {
+    margin-top: 1.25rem !important;
+    padding: 1.25rem 0.85rem !important;
+    gap: 1rem !important;
+  }
+
+  /* Festive Offers Section on Mobile */
+  .festive-offers-section {
+    padding: 1.5rem 0 !important;
+  }
+
+  .festive-vouchers-grid {
+    margin-bottom: 1.25rem !important;
+  }
+
+  /* Catalog Toolbar on Mobile */
+  .catalog-toolbar {
+    margin-bottom: 1.25rem !important;
+    gap: 0.5rem !important;
+  }
+
   /* Bottom Explore CTA */
+  .explore-cta-section {
+    padding: 1.75rem 0 !important;
+  }
+
   .explore-cta-card {
-    padding: 2rem 1rem !important;
+    padding: 1.25rem 0.5rem !important;
     text-align: center !important;
     border-radius: 12px !important;
   }
@@ -1683,6 +1789,10 @@ textarea {
   .explore-cta-card h2 {
     font-size: 1.5rem !important;
     line-height: 1.25 !important;
+  }
+
+  .explore-cta-card p {
+    margin: 0 auto 1.25rem !important;
   }
 
   .explore-cta-actions {
@@ -1699,11 +1809,17 @@ textarea {
   }
 
   /* Footer on Mobile */
+  .site-footer {
+    margin-top: 1.5rem !important;
+    padding: 1.75rem 0 1.25rem !important;
+  }
+
   .footer-grid {
     display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
+    gap: 1.25rem !important;
     text-align: center !important;
+    margin-bottom: 1.5rem !important;
   }
 
   .footer-brand {
@@ -1719,6 +1835,61 @@ textarea {
     flex-direction: column !important;
     gap: 0.75rem !important;
     text-align: center !important;
+  }
+}
+
+/* Compact rules for smaller mobile screens (<= 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.65rem !important;
+  }
+
+  .brand-text h1 {
+    font-size: 0.85rem !important;
+  }
+
+  .brand-text span {
+    font-size: 0.52rem !important;
+  }
+
+  .header-actions {
+    gap: 0.2rem !important;
+  }
+
+  .search-trigger-btn,
+  .wishlist-btn,
+  .cart-btn,
+  .theme-toggle-btn,
+  .mobile-menu-btn {
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+  }
+
+  .hero-section {
+    padding: 1.25rem 0.5rem 1rem 0.5rem !important;
+  }
+
+  .hero-title {
+    font-size: 1.45rem !important;
+  }
+
+  .section-title {
+    font-size: 1.35rem !important;
+  }
+
+  .product-image-box {
+    height: 160px !important;
+  }
+
+  .festive-voucher-card {
+    flex: 0 0 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    padding: 0.85rem !important;
   }
 }
 
@@ -2006,7 +2177,7 @@ textarea {
   vertical-align: -6px;
   border: 2px solid var(--color-gold);
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   display: inline-block;
 }
 
