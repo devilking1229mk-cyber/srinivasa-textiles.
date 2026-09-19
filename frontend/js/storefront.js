@@ -22,6 +22,8 @@ class StorefrontController {
     this.renderReviews();
     this.renderHomePageFeatured();
     this.renderFestiveVouchers();
+    this.initFestiveCampaignSync();
+    this.renderFestiveCampaign();
     this.updateCartUI();
     this.updateWishlistCount();
     this.setupWishlistDrawer();
@@ -536,6 +538,8 @@ class StorefrontController {
 
       this.renderProductsForDepartment(deptMeta.filterDept);
     }
+
+    this.renderFestiveCampaign();
   }
 
   getDepartmentMeta(pageKey) {
@@ -1743,6 +1747,252 @@ class StorefrontController {
         </div>
       `;
     }).join("");
+  }
+
+  // ==========================================================================
+  // "LIMITED TIME FESTIVE SPECIAL 2026" REAL-TIME STOREFRONT ENGINE
+  // ==========================================================================
+  initFestiveCampaignSync() {
+    // 1. Cross-tab BroadcastChannel for 0ms instant sync
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      try {
+        const channel = new BroadcastChannel("st_festive_channel_v1");
+        channel.onmessage = (event) => {
+          if (event.data && event.data.type === "FESTIVE_CAMPAIGN_UPDATED") {
+            this.renderFestiveCampaign(event.data.campaign);
+          }
+        };
+      } catch (e) {
+        console.warn("[Storefront] Festive BroadcastChannel notice:", e);
+      }
+    }
+
+    // 2. Storage event listener (when admin toggles or edits in another tab/window)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "st_festive_campaign_v1") {
+        this.renderFestiveCampaign();
+      }
+    });
+
+    // 3. Same-window custom event
+    window.addEventListener("festiveCampaignUpdated", (e) => {
+      this.renderFestiveCampaign(e.detail);
+    });
+  }
+
+  renderFestiveCampaign(customCampaign) {
+    if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+    const campaign = customCampaign || window.store.getFestiveCampaign();
+    const isLive = Boolean(campaign && campaign.enabled);
+
+    const containers = document.querySelectorAll("#festiveCampaignContainer, #festiveOffersSection, .festive-offers-section");
+    const ticker = document.getElementById("festiveTopTickerBar");
+
+    // Clear any existing timer interval
+    if (this.festiveTimerInterval) {
+      clearInterval(this.festiveTimerInterval);
+      this.festiveTimerInterval = null;
+    }
+
+    // =========================================================================
+    // CASE 1: OFF -> COMPLETELY HIDDEN IN REAL-TIME WITH ZERO FOOTPRINT
+    // =========================================================================
+    if (!isLive) {
+      containers.forEach(c => {
+        c.style.display = "none";
+        c.innerHTML = "";
+      });
+      if (ticker) {
+        ticker.style.display = "none";
+        ticker.innerHTML = "";
+      }
+      return;
+    }
+
+    // =========================================================================
+    // CASE 2: ON -> RENDER GRAND FESTIVE SESSION IN REAL-TIME
+    // =========================================================================
+    // Top Ticker Announcement
+    if (ticker) {
+      if (campaign.topBannerEnabled && campaign.topBannerText) {
+        ticker.style.display = "block";
+        ticker.innerHTML = `
+          <div class="container">
+            <div class="festive-ticker-inner">
+              <span class="festive-ticker-sparkle">🎉</span>
+              <span class="festive-ticker-text">${this.escapeHtml(campaign.topBannerText)}</span>
+              <span class="festive-ticker-sparkle">✨</span>
+            </div>
+          </div>
+        `;
+      } else {
+        ticker.style.display = "none";
+        ticker.innerHTML = "";
+      }
+    }
+
+    const badge = campaign.badge || "🎉 LIMITED TIME FESTIVE SPECIAL 2026";
+    const headline = campaign.headline || "Grand Festive & Wedding Handloom Offers";
+    const subtitle = campaign.subtitle || "Celebrate your family milestones with exclusive seasonal vouchers, complimentary silver-tested purity certificates, and festive combo savings up to 22%.";
+
+    // Build Vouchers HTML
+    const activeOffers = (campaign.offers || []).filter(o => o.isActive !== false);
+    const vouchersHtml = activeOffers.map(o => `
+      <div class="festive-voucher-card">
+        <span class="festive-voucher-badge">${this.escapeHtml(o.badge || "Festive Offer")}</span>
+        <div class="festive-voucher-content">
+          <h4>${this.escapeHtml(o.title || "Festive Discount")}</h4>
+          <p>${this.escapeHtml(o.description || "")}</p>
+        </div>
+        <div class="festive-code-row">
+          <span class="festive-code-text">${this.escapeHtml(o.code || "")}</span>
+          <button type="button" class="festive-copy-btn" onclick="navigator.clipboard?.writeText('${this.escapeHtml(o.code || '')}'); window.storefront.showToast('Copied voucher code ${this.escapeHtml(o.code || '')}!', 'success');">
+            Copy Code
+          </button>
+        </div>
+      </div>
+    `).join("");
+
+    // Build Featured Deals HTML
+    const activeDeals = (campaign.deals || []).filter(d => d.isActive !== false);
+    const dealsHtml = activeDeals.map(d => {
+      const orig = Number(d.originalPrice || 0);
+      const fest = Number(d.festivePrice || 0);
+      const img = d.image || "assets/images/family_matching_combo.jpg";
+      const pct = orig > fest ? Math.round(((orig - fest) / orig) * 100) : 0;
+      return `
+        <div class="festive-deal-card">
+          <div class="festive-deal-media">
+            <img src="${img}" alt="${this.escapeHtml(d.title || "")}" onerror="this.src='assets/images/family_matching_combo.jpg'" />
+            <span class="festive-deal-badge">${this.escapeHtml(d.badge || "Festive Deal")}</span>
+          </div>
+          <div class="festive-deal-body">
+            <div>
+              <h4 class="festive-deal-title">${this.escapeHtml(d.title || "")}</h4>
+              <p class="festive-deal-desc">${this.escapeHtml(d.description || "")}</p>
+            </div>
+            <div>
+              <div class="festive-price-row">
+                <span class="festive-price-current">₹${fest.toLocaleString("en-IN")}</span>
+                ${orig > fest ? `<span class="festive-price-original">₹${orig.toLocaleString("en-IN")}</span>` : ""}
+                ${pct > 0 ? `<span class="festive-price-save">(${pct}% OFF)</span>` : ""}
+              </div>
+              <button type="button" class="btn btn-gold btn-sm" style="width: 100%; font-weight: 800;" onclick="window.storefront.openPDP('${this.escapeHtml(d.productId || '')}')">
+                Inspect Festive Deal ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // Build Perks HTML
+    const perks = campaign.perks || [];
+    const perksHtml = perks.map(p => `
+      <div class="festive-perk-item">
+        <span class="festive-perk-icon">${p.icon || "✨"}</span>
+        <div class="festive-perk-text">
+          <strong>${this.escapeHtml(p.title || "")}</strong>
+          <span>${this.escapeHtml(p.desc || "")}</span>
+        </div>
+      </div>
+    `).join("");
+
+    containers.forEach(container => {
+      // Respect Home vs Explore section classes
+      if (container.classList.contains("home-only-section") && this.currentPage !== "home") {
+        container.style.display = "none";
+        return;
+      }
+      if (container.classList.contains("explore-only-section") && this.currentPage !== "explore") {
+        container.style.display = "none";
+        return;
+      }
+
+      container.style.display = "block";
+      container.innerHTML = `
+        <div class="container">
+          <!-- Festive Grand Header -->
+          <div class="section-header">
+            <span class="section-tag festive-section-tag">${this.escapeHtml(badge)}</span>
+            <h2 class="section-title">${this.escapeHtml(headline)}</h2>
+            <p class="section-subtitle">${this.escapeHtml(subtitle)}</p>
+            <div class="section-divider"><span class="section-divider-motif">✦</span></div>
+          </div>
+
+          <!-- Live Countdown Timer Banner -->
+          <div class="festive-countdown-banner">
+            <div class="festive-countdown-header">
+              <span class="countdown-sparkle">⏰</span>
+              <span class="countdown-title">FESTIVAL CELEBRATION OFFERS END IN:</span>
+            </div>
+            <div class="festive-timer-display sf-festive-timer">
+              <div class="timer-box"><span class="timer-num sf-timer-days">00</span><span class="timer-lbl">DAYS</span></div>
+              <div class="timer-box"><span class="timer-num sf-timer-hours">00</span><span class="timer-lbl">HRS</span></div>
+              <div class="timer-box"><span class="timer-num sf-timer-mins">00</span><span class="timer-lbl">MINS</span></div>
+              <div class="timer-box"><span class="timer-num sf-timer-secs">00</span><span class="timer-lbl">SECS</span></div>
+            </div>
+          </div>
+
+          <!-- Interactive Click-to-Copy Festival Vouchers -->
+          ${activeOffers.length > 0 ? `
+            <div class="festive-vouchers-grid">
+              ${vouchersHtml}
+            </div>
+          ` : ""}
+
+          <!-- Featured Festive Deal Cards Grid -->
+          ${activeDeals.length > 0 ? `
+            <div class="festive-deals-grid">
+              ${dealsHtml}
+            </div>
+          ` : ""}
+
+          <!-- Festive Patron Perks Strip -->
+          ${perks.length > 0 ? `
+            <div class="festive-perks-bar">
+              ${perksHtml}
+            </div>
+          ` : ""}
+        </div>
+      `;
+    });
+
+    // Start Live Storefront Countdown Timer Interval
+    this.startFestiveTimer(campaign.countdownEnd);
+  }
+
+  startFestiveTimer(countdownEnd) {
+    if (this.festiveTimerInterval) {
+      clearInterval(this.festiveTimerInterval);
+    }
+    const target = countdownEnd ? new Date(countdownEnd).getTime() : 0;
+
+    const tick = () => {
+      const diff = Math.max(0, target - Date.now());
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.querySelectorAll(".sf-timer-days").forEach(el => el.textContent = String(days).padStart(2, "0"));
+      document.querySelectorAll(".sf-timer-hours").forEach(el => el.textContent = String(hours).padStart(2, "0"));
+      document.querySelectorAll(".sf-timer-mins").forEach(el => el.textContent = String(mins).padStart(2, "0"));
+      document.querySelectorAll(".sf-timer-secs").forEach(el => el.textContent = String(secs).padStart(2, "0"));
+    };
+
+    tick();
+    this.festiveTimerInterval = setInterval(tick, 1000);
+  }
+
+  escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   updateWishlistCount() {

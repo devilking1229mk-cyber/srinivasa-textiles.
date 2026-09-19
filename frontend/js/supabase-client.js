@@ -448,6 +448,26 @@ class SupabaseService {
       return null;
     }
   }
+
+  // ==========================================
+  // FESTIVE CAMPAIGN REALTIME SYNC
+  // ==========================================
+  async syncFestiveCampaign(campaign) {
+    if (!this.isConfigured()) return null;
+    try {
+      // Broadcast over Supabase Realtime Channel if available
+      const channel = this.client.channel("st_festive_realtime");
+      await channel.send({
+        type: "broadcast",
+        event: "FESTIVE_CAMPAIGN_UPDATED",
+        payload: campaign
+      });
+      return true;
+    } catch (err) {
+      console.warn("Supabase syncFestiveCampaign note:", err.message);
+      return null;
+    }
+  }
 }
 
 // Global initialization

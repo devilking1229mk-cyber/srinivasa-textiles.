@@ -137,6 +137,9 @@
     </div>
   </div>
 
+  <!-- Dynamic Festive Announcement Ticker Bar (Controlled by Admin Festive Session Switch) -->
+  <div id="festiveTopTickerBar" class="festive-top-ticker-bar" style="display: none;"></div>
+
   <!-- ==========================================================================
        TOP ANNOUNCEMENT BAR & THEME SWITCHER
        ========================================================================== -->
@@ -215,7 +218,8 @@
             </button>
 
             <!-- Mobile 3-Lines (☰) Navigation & Departments Menu -->
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Departments Menu" title="Browse Departments &amp; Feedback">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Departments Menu"
+              title="Browse Departments &amp; Feedback">
               ☰
             </button>
           </div>
@@ -268,6 +272,14 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ==========================================================================
+         REAL-TIME "LIMITED TIME FESTIVE SPECIAL 2026" SESSION (HOME SPOTLIGHT)
+         Controlled entirely via Admin Page Master Switch & Festive Campaign Console
+         ========================================================================== -->
+    <section class="section festive-offers-section home-only-section" id="festiveCampaignContainer" style="display: none;">
+      <!-- Populated dynamically by storefront.renderFestiveCampaign() -->
     </section>
 
     <!-- ==========================================================================
@@ -570,8 +582,10 @@
         <strong>🏛️ Kanchipuram Emporium</strong>
         <p>108 Raja Veedhi, Temple District, Kanchipuram - 631501</p>
         <div style="margin-top: 0.65rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-          <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-xs" style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📍 Directions</a>
-          <a href="tel:+916381265149" class="btn btn-outline btn-xs" style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📞 Call Support</a>
+          <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-xs"
+            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📍 Directions</a>
+          <a href="tel:+916381265149" class="btn btn-outline btn-xs"
+            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📞 Call Support</a>
         </div>
       </div>
     </div>
