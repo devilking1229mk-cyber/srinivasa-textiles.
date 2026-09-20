@@ -15,8 +15,116 @@ const STORE_KEYS = {
   ORDER_SHEET: "st_order_sheet_config_v2",
   FEEDBACK: "st_feedbacks_data_v2",
   BULK_ORDERS: "st_bulk_orders_data_v2",
+  BULK_PACKAGES: "st_bulk_packages_data_v2",
+  BULK_SETTINGS: "st_bulk_settings_data_v2",
   COUPONS: "st_coupons_data_v2",
-  DELETED_COUPONS: "st_deleted_coupons_data_v2"
+  DELETED_COUPONS: "st_deleted_coupons_data_v2",
+  FESTIVE_CAMPAIGN: "st_festive_campaign_v1"
+};
+
+const DEFAULT_FESTIVE_CAMPAIGN = {
+  enabled: true,
+  title: "LIMITED TIME FESTIVE SPECIAL 2026",
+  badge: "🎉 LIMITED TIME FESTIVE SPECIAL 2026",
+  headline: "Grand Festive & Wedding Handloom Offers",
+  subtitle: "Celebrate your family milestones with exclusive seasonal vouchers, complimentary silver-tested purity certificates, and festive combo savings up to 22%.",
+  countdownEnd: "2026-11-20T23:59:59",
+  topBannerEnabled: true,
+  topBannerText: "✨ LIMITED TIME FESTIVE SPECIAL 2026: Up to 22% OFF Family Combos + Complimentary Pure Silver Silk Mark Gifts! ✨",
+  offers: [
+    {
+      id: "fo-1",
+      code: "FESTIVE20",
+      badge: "Family Bundle Special",
+      title: "Flat 20% Off Family Combos",
+      description: "Valid on all 4-piece and 2-piece synchronized color-matched festive ensembles.",
+      discount: "20% OFF",
+      isActive: true
+    },
+    {
+      id: "fo-2",
+      code: "BRIDAL15",
+      badge: "Bridal Trousseau",
+      title: "Flat 15% Off Bridal Korvai",
+      description: "Exclusive on Pure Kanchipuram 3-ply bridal silks + Complimentary pure muslin saree cover.",
+      discount: "15% OFF",
+      isActive: true
+    },
+    {
+      id: "fo-3",
+      code: "KIDSGIFT",
+      badge: "Kids Celebration",
+      title: "₹1,000 Off Kids Wear",
+      description: "On all scratch-free Girls' Pattu Pavadai & Boys' Dhoti orders over ₹5,000.",
+      discount: "₹1,000 OFF",
+      isActive: true
+    },
+    {
+      id: "fo-4",
+      code: "PREPAID500",
+      badge: "Prepaid Privilege",
+      title: "Instant ₹500 + Free Air Delivery",
+      description: "Instant cashback discount on UPI / Card payments with free insured courier.",
+      discount: "₹500 OFF",
+      isActive: true
+    }
+  ],
+  deals: [
+    {
+      id: "fd-1",
+      productId: "ST-FAM-010",
+      title: "Samanvaya 4-Piece Grand Muhurtham Combo",
+      description: "Pure Kanchipuram Crimson & Gold attire for Father, Mother, Son & Daughter in unified dye baths.",
+      image: "assets/images/family_matching_combo.jpg",
+      originalPrice: 72000,
+      festivePrice: 58500,
+      badge: "🔥 Save ₹13,500 (19% OFF)",
+      department: "Family Combos",
+      isActive: true
+    },
+    {
+      id: "fd-2",
+      productId: "ST-FAM-012",
+      title: "Vatsalya Mother & Daughter Silk Pair",
+      description: "Matching Bridal Saree (Mother) & Stitched Silk Pattu Pavadai (Daughter) with soft cotton underside.",
+      image: "assets/images/hero_banner.jpg",
+      originalPrice: 48000,
+      festivePrice: 39900,
+      badge: "✨ Save ₹8,100 (17% OFF)",
+      department: "Family Combos",
+      isActive: true
+    },
+    {
+      id: "fd-3",
+      productId: "ST-FAM-013",
+      title: "Pithamaha Father & Son Silk Wedding Pair",
+      description: "Matching Pure Mulberry Silk Shirt & 8-Muzham Dhoti with Boys' Silk Jacquard Kurta & Elastic Dhoti.",
+      image: "assets/images/mens_silk_dhoti.jpg",
+      originalPrice: 25000,
+      festivePrice: 19900,
+      badge: "👔 Save ₹5,100 (20% OFF)",
+      department: "Family Combos",
+      isActive: true
+    },
+    {
+      id: "fd-4",
+      productId: "ST-INF-050",
+      title: "GOTS Organic Newborn 3-Piece Festive Hamper",
+      description: "100% Organic Muslin Cotton Jhabla, Swaddle Blanket & Cap with hypoallergenic herbal natural dyes.",
+      image: "assets/images/infant_organic_jhabla.jpg",
+      originalPrice: 3200,
+      festivePrice: 2490,
+      badge: "🌿 Save ₹710 (22% OFF)",
+      department: "Born Babies",
+      isActive: true
+    }
+  ],
+  perks: [
+    { icon: "✈️", title: "Free Insured Air Delivery", desc: "On all family orders over ₹1,999" },
+    { icon: "🎁", title: "Complimentary Festive Gift Box", desc: "Gold-embossed royal keepsake gift boxes" },
+    { icon: "🏛️", title: "SMOI Pure Silk Guarantee", desc: "Tested pure silver gold zari certificates" },
+    { icon: "🛡️", title: "Scratch-Free Inner Linings", desc: "100% baby-safe cotton underside stitching" }
+  ]
 };
 
 const DEFAULT_COUPONS = [
@@ -185,9 +293,9 @@ const DEFAULT_COUPONS = [
 const DEFAULT_SETTINGS = {
   storeName: "Srinivasa Textiles",
   tagline: "Master Weavers & Pure Silk Family Emporium Since 1978",
-  phone: "91 6381265149",
-  whatsapp: "91 6381265149",
-  email: "kavithaikaithi@gmail.com",
+  phone: "6381265149",
+  whatsapp: "6381265149",
+  email: "care@srinivasatextiles.com",
   gstin: "33AABCS9876C1ZT",
   address: "Srinivasa Heritage Weaving Mansion, 108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India",
   freeShippingThresholdINR: 0,
@@ -226,6 +334,12 @@ class TextileStore {
     this.catalog = this.load(STORE_KEYS.CATALOG, INITIAL_CATALOG);
     this.orders = this.load(STORE_KEYS.ORDERS, INITIAL_ORDERS);
     this.bulkOrders = this.load(STORE_KEYS.BULK_ORDERS, (typeof INITIAL_BULK_ORDERS !== "undefined" ? INITIAL_BULK_ORDERS : []));
+    this.bulkPackages = this.load(STORE_KEYS.BULK_PACKAGES, (typeof DEFAULT_BULK_PACKAGES !== "undefined" ? DEFAULT_BULK_PACKAGES : []));
+    if (!Array.isArray(this.bulkPackages) || this.bulkPackages.length === 0) {
+      this.bulkPackages = (typeof DEFAULT_BULK_PACKAGES !== "undefined" ? JSON.parse(JSON.stringify(DEFAULT_BULK_PACKAGES)) : []);
+      this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    }
+    this.bulkSettings = this.load(STORE_KEYS.BULK_SETTINGS, (typeof DEFAULT_BULK_SETTINGS !== "undefined" ? DEFAULT_BULK_SETTINGS : { enabled: true }));
     this.cart = this.load(STORE_KEYS.CART, []);
     // Wishlist: Starts strictly at 0 items by default (empty array)
     const storedWishlist = this.load(STORE_KEYS.WISHLIST, []);
@@ -1657,6 +1771,101 @@ class TextileStore {
     };
   }
 
+  // ==========================================
+  // BULK STOREFRONT SETTINGS & ON/OFF ENGINE
+  // ==========================================
+  getBulkSettings() {
+    if (!this.bulkSettings) {
+      this.bulkSettings = this.load(STORE_KEYS.BULK_SETTINGS, (typeof DEFAULT_BULK_SETTINGS !== "undefined" ? DEFAULT_BULK_SETTINGS : { enabled: true }));
+    }
+    return this.bulkSettings;
+  }
+
+  saveBulkSettings(newSettings) {
+    this.bulkSettings = { ...this.getBulkSettings(), ...newSettings };
+    this.save(STORE_KEYS.BULK_SETTINGS, this.bulkSettings);
+    window.dispatchEvent(new CustomEvent("bulkSettingsUpdated", { detail: this.bulkSettings }));
+    return this.bulkSettings;
+  }
+
+  setBulkEnabled(enabled) {
+    return this.saveBulkSettings({ enabled: Boolean(enabled) });
+  }
+
+  // ==========================================
+  // WEBSITE BULK PACKAGES & OFFERINGS (CATALOG)
+  // ==========================================
+  getBulkPackages() {
+    return this.bulkPackages || [];
+  }
+
+  getBulkPackageById(id) {
+    return (this.bulkPackages || []).find(p => p.id === id);
+  }
+
+  addBulkPackage(data) {
+    if (!data) return null;
+    const id = data.id || `BLK-PKG-${Date.now().toString().slice(-4)}`;
+    const wholesalePrice = parseFloat(data.wholesalePrice) || 3500;
+    const retailMrp = parseFloat(data.retailMrp) || (wholesalePrice ? Math.round(wholesalePrice * 2) : 7000);
+    const discountPercent = data.discountPercent || (retailMrp && wholesalePrice ? Math.round(((retailMrp - wholesalePrice) / retailMrp) * 100) : 50);
+
+    const newPkg = {
+      id,
+      title: data.title || "Custom Handloom Bulk Lot",
+      category: data.category || "Wholesale Lot",
+      badge: data.badge || "✨ Verified Bulk Lot",
+      moq: parseInt(data.moq, 10) || 15,
+      unitLabel: data.unitLabel || "Pieces",
+      wholesalePrice,
+      retailMrp,
+      discountPercent,
+      timeline: data.timeline || "10-14 Working Days",
+      fabric: data.fabric || "Pure Handloom Silk with Certified Silk Mark",
+      description: data.description || "Direct pitloom woven authentic handloom collection for bulk buyers and wedding troupes.",
+      inclusions: data.inclusions || "Matching unstitched blouses + Silk Mark authenticity tags + Insured shipping",
+      image: data.image || "assets/images/family_matching_combo.jpg",
+      isActive: data.isActive !== false,
+      createdAt: new Date().toISOString()
+    };
+
+    if (!Array.isArray(this.bulkPackages)) this.bulkPackages = [];
+    this.bulkPackages.unshift(newPkg);
+    this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    window.dispatchEvent(new CustomEvent("bulkPackagesUpdated", { detail: newPkg }));
+    return newPkg;
+  }
+
+  updateBulkPackage(id, updatedData) {
+    const idx = (this.bulkPackages || []).findIndex(p => p.id === id);
+    if (idx === -1) return false;
+    this.bulkPackages[idx] = { ...this.bulkPackages[idx], ...updatedData };
+    this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    window.dispatchEvent(new CustomEvent("bulkPackagesUpdated", { detail: this.bulkPackages[idx] }));
+    return true;
+  }
+
+  deleteBulkPackage(id) {
+    if (!this.bulkPackages) return false;
+    const initialLen = this.bulkPackages.length;
+    this.bulkPackages = this.bulkPackages.filter(p => p.id !== id);
+    if (this.bulkPackages.length !== initialLen) {
+      this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+      window.dispatchEvent(new CustomEvent("bulkPackagesUpdated"));
+      return true;
+    }
+    return false;
+  }
+
+  toggleBulkPackageStatus(id) {
+    const pkg = this.getBulkPackageById(id);
+    if (!pkg) return false;
+    pkg.isActive = !pkg.isActive;
+    this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    window.dispatchEvent(new CustomEvent("bulkPackagesUpdated", { detail: pkg }));
+    return pkg.isActive;
+  }
+
   exportBulkOrdersToCSV() {
     const headers = [
       "Bulk_Order_ID", "Client_Company", "Contact_Person", "Phone_WhatsApp", "Email",
@@ -1949,6 +2158,129 @@ class TextileStore {
     ].join(","));
 
     return [headers.join(","), ...rows].join("\r\n");
+  }
+
+  // ==========================================================================
+  // FESTIVE CAMPAIGN 2026 OPERATIONS (REAL-TIME ENGINE)
+  // ==========================================================================
+  getFestiveCampaign() {
+    try {
+      const raw = localStorage.getItem(STORE_KEYS.FESTIVE_CAMPAIGN);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return Object.assign({}, DEFAULT_FESTIVE_CAMPAIGN, parsed);
+      }
+    } catch (e) {
+      console.warn("[Store] Error reading festive campaign:", e);
+    }
+    return JSON.parse(JSON.stringify(DEFAULT_FESTIVE_CAMPAIGN));
+  }
+
+  saveFestiveCampaign(data, notify = true) {
+    const current = this.getFestiveCampaign();
+    const updated = Object.assign({}, current, data, { updatedAt: new Date().toISOString() });
+    try {
+      localStorage.setItem(STORE_KEYS.FESTIVE_CAMPAIGN, JSON.stringify(updated));
+    } catch (e) {
+      console.warn("[Store] Error saving festive campaign to localStorage:", e);
+    }
+
+    if (notify) {
+      this.broadcastFestiveCampaign(updated);
+    }
+    return updated;
+  }
+
+  toggleFestiveCampaign(enabled) {
+    const targetState = (enabled === undefined) ? !this.getFestiveCampaign().enabled : Boolean(enabled);
+    return this.saveFestiveCampaign({ enabled: targetState });
+  }
+
+  broadcastFestiveCampaign(campaign) {
+    // 1. In-window custom event
+    try {
+      window.dispatchEvent(new CustomEvent("festiveCampaignUpdated", { detail: campaign }));
+    } catch (e) {}
+
+    // 2. Cross-tab BroadcastChannel (instant 0ms synchronization)
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      try {
+        const ch = new BroadcastChannel("st_festive_channel_v1");
+        ch.postMessage({ type: "FESTIVE_CAMPAIGN_UPDATED", campaign: campaign });
+        ch.close();
+      } catch (e) {}
+    }
+
+    // 3. Cloud Supabase Sync if active
+    if (window.supabaseService && typeof window.supabaseService.syncFestiveCampaign === "function") {
+      window.supabaseService.syncFestiveCampaign(campaign).catch(err => {
+        console.warn("[Supabase] Festive sync note:", err);
+      });
+    }
+  }
+
+  resetFestiveCampaign() {
+    const fresh = JSON.parse(JSON.stringify(DEFAULT_FESTIVE_CAMPAIGN));
+    return this.saveFestiveCampaign(fresh);
+  }
+
+  addFestiveOffer(offer) {
+    const campaign = this.getFestiveCampaign();
+    const offers = Array.isArray(campaign.offers) ? [...campaign.offers] : [];
+    const newOffer = Object.assign({
+      id: "fo-" + Date.now(),
+      code: "FESTIVE" + Math.floor(10 + Math.random() * 90),
+      badge: "Festive Special",
+      title: "Festive Discount",
+      description: "Special celebratory voucher for family handlooms.",
+      discount: "15% OFF",
+      isActive: true
+    }, offer);
+    offers.unshift(newOffer);
+    return this.saveFestiveCampaign({ offers });
+  }
+
+  updateFestiveOffer(id, updatedFields) {
+    const campaign = this.getFestiveCampaign();
+    const offers = (campaign.offers || []).map(o => o.id === id ? Object.assign({}, o, updatedFields) : o);
+    return this.saveFestiveCampaign({ offers });
+  }
+
+  deleteFestiveOffer(id) {
+    const campaign = this.getFestiveCampaign();
+    const offers = (campaign.offers || []).filter(o => o.id !== id);
+    return this.saveFestiveCampaign({ offers });
+  }
+
+  addFestiveDeal(deal) {
+    const campaign = this.getFestiveCampaign();
+    const deals = Array.isArray(campaign.deals) ? [...campaign.deals] : [];
+    const newDeal = Object.assign({
+      id: "fd-" + Date.now(),
+      productId: "ST-FAM-010",
+      title: "Handloom Festive Ensemble",
+      description: "Pure heirloom silk handloom woven for festival celebrations.",
+      image: "assets/images/family_matching_combo.jpg",
+      originalPrice: 10000,
+      festivePrice: 8000,
+      badge: "Festive Deal",
+      department: "Family Combos",
+      isActive: true
+    }, deal);
+    deals.unshift(newDeal);
+    return this.saveFestiveCampaign({ deals });
+  }
+
+  updateFestiveDeal(id, updatedFields) {
+    const campaign = this.getFestiveCampaign();
+    const deals = (campaign.deals || []).map(d => d.id === id ? Object.assign({}, d, updatedFields) : d);
+    return this.saveFestiveCampaign({ deals });
+  }
+
+  deleteFestiveDeal(id) {
+    const campaign = this.getFestiveCampaign();
+    const deals = (campaign.deals || []).filter(d => d.id !== id);
+    return this.saveFestiveCampaign({ deals });
   }
 }
 

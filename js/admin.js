@@ -20,6 +20,8 @@ class AdminController {
     try { this.renderSubscribersTable(); } catch (e) { console.error("renderSubscribersTable error:", e); }
     try { this.renderFeedbacksTable(); } catch (e) { console.error("renderFeedbacksTable error:", e); }
     try { this.setupMediaUploader(); } catch (e) { console.error("setupMediaUploader error:", e); }
+    try { this.updateFestiveBadges(); } catch (e) { console.error("updateFestiveBadges error:", e); }
+    try { this.initFestiveCountdownPreview(); } catch (e) { console.error("initFestiveCountdownPreview error:", e); }
   }
 
   setupMobileSidebar() {
@@ -140,6 +142,13 @@ class AdminController {
     window.addEventListener("feedbacksUpdated", () => {
       this.renderDashboardKPIs();
       this.renderFeedbacksTable();
+    });
+
+    window.addEventListener("festiveCampaignUpdated", () => {
+      this.updateFestiveBadges();
+      if (this.currentTab === "festive") {
+        this.renderFestivePanel();
+      }
     });
 
     // Feedback Filter Controls
@@ -433,7 +442,9 @@ class AdminController {
       this.renderInventoryKPIs();
       this.renderInventoryTable();
     } else if (normTab === "bulk") {
+      this.renderBulkOrdersMasterSwitch();
       this.renderBulkOrdersSession();
+      this.renderBulkPackagesSection();
       this.renderBulkOrderKPIs();
     } else if (normTab === "feedbacks" || normTab === "feedback") {
       this.renderFeedbacksTable();
@@ -442,6 +453,8 @@ class AdminController {
     } else if (normTab === "coupons") {
       this.renderCouponsTab();
       this.renderCouponKPIs();
+    } else if (normTab === "festive") {
+      this.renderFestivePanel();
     } else if (normTab === "overview") {
       this.renderDashboardKPIs();
     }
@@ -998,17 +1011,335 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
         if (window.storefront) {
           window.storefront.showToast(`Batch imported ${res.count} family SKUs successfully!`, "success");
         }
-      this.renderInventoryTable();
-      this.renderDashboardKPIs();
-    } else {
-      alert(`Error importing CSV: ${res.message}`);
-    }
-  };
-  reader.readAsText(file);
-}
+        this.renderInventoryTable();
+        this.renderDashboardKPIs();
+      } else {
+        alert(`Error importing CSV: ${res.message}`);
+      }
+    };
+    reader.readAsText(file);
+  }
 
   // ==========================================================================
-  // BULK ORDER SESSION & B2B OPERATIONS
+  // BULK ORDER 2 SESSIONS & MASTER SWITCH CONTROLS
+  // ==========================================================================
+  switchBulkSubTab(subTab) {
+    const btnInquiries = document.getElementById("btnSubtabBulkInquiries");
+    const btnPackages = document.getElementById("btnSubtabBulkPackages");
+    const paneInquiries = document.getElementById("bulkSubSession-inquiries");
+    const panePackages = document.getElementById("bulkSubSession-packages");
+
+    if (subTab === "packages") {
+      if (btnInquiries) btnInquiries.classList.remove("active");
+      if (btnPackages) btnPackages.classList.add("active");
+      if (paneInquiries) paneInquiries.classList.remove("active");
+      if (panePackages) panePackages.classList.add("active");
+      this.renderBulkPackagesSection();
+    } else {
+      if (btnInquiries) btnInquiries.classList.add("active");
+      if (btnPackages) btnPackages.classList.remove("active");
+      if (paneInquiries) paneInquiries.classList.add("active");
+      if (panePackages) panePackages.classList.remove("active");
+      this.renderBulkOrdersSession();
+    }
+  }
+
+  handleMasterBulkToggle(checked) {
+    if (!window.store) return;
+    window.store.setBulkEnabled(checked);
+    this.renderBulkOrdersMasterSwitch();
+    const msg = checked
+      ? "Wholesale & Bulk Orders session is now ON (Visible on live website)!"
+      : "Wholesale & Bulk Orders session is now OFF (Removed from live website).";
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(msg, checked ? "success" : "warning");
+    } else {
+      alert(msg);
+    }
+  }
+
+  renderBulkOrdersMasterSwitch() {
+    if (!window.store) return;
+    const settings = window.store.getBulkSettings();
+    const toggle = document.getElementById("bulkMasterToggle");
+    const label = document.getElementById("bulkToggleStateLabel");
+    if (toggle) {
+      toggle.checked = Boolean(settings && settings.enabled);
+    }
+    if (label) {
+      if (settings && settings.enabled) {
+        label.textContent = "SESSION ON (VISIBLE ON WEBSITE)";
+        label.style.color = "var(--color-success, #10B981)";
+      } else {
+        label.textContent = "SESSION OFF (REMOVED FROM WEBSITE)";
+        label.style.color = "#EF4444";
+      }
+    }
+  }
+
+  // ==========================================================================
+  // SESSION 2: WEBSITE BULK PACKAGES (CATALOG & ADD NEW)
+  // ==========================================================================
+  renderBulkPackagesSection() {
+    if (!window.store) return;
+    const packages = window.store.getBulkPackages() || [];
+    const container = document.getElementById("adminBulkPackagesList");
+    const activeCount = packages.filter(p => p.isActive).length;
+
+    const countBadge = document.getElementById("adminBulkPackagesCountBadge");
+    if (countBadge) {
+      countBadge.textContent = `${activeCount} Active`;
+    }
+
+    const summaryBadge = document.getElementById("bulkPackagesActiveSummaryBadge");
+    if (summaryBadge) {
+      summaryBadge.textContent = `${activeCount} of ${packages.length} Packages Active`;
+    }
+
+    if (!container) return;
+
+    if (packages.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2.5rem; color: var(--text-muted); background: var(--bg-surface-alt); border-radius: 8px;">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>
+          <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Packages Created Yet</h4>
+          <p style="font-size: 0.825rem; margin: 0;">Use the form above to add your first wholesale package for the website.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = packages.map(pkg => {
+      const wholesalePrice = Number(pkg.wholesalePrice || 0).toLocaleString("en-IN");
+      const retailMrp = Number(pkg.retailMrp || 0).toLocaleString("en-IN");
+      const statusBadge = pkg.isActive
+        ? `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; font-size: 0.72rem;">🟢 Live on Website</span>`
+        : `<span class="status-badge" style="background: rgba(156, 163, 175, 0.15); color: #9CA3AF; border: 1px solid #9CA3AF; font-size: 0.72rem;">⚪ Paused (Hidden)</span>`;
+
+      return `
+        <div class="admin-bulk-pkg-card" data-pkg-id="${pkg.id}">
+          <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--border-color); background: var(--bg-surface-alt); flex-shrink: 0;">
+            <img src="${pkg.image || 'assets/images/family_matching_combo.jpg'}" alt="${pkg.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/family_matching_combo.jpg'" />
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <strong style="color: var(--text-heading); font-size: 1.05rem;">${pkg.title}</strong>
+              <span class="status-badge" style="background: rgba(212, 175, 55, 0.15); color: var(--color-gold); font-size: 0.7rem;">${pkg.category}</span>
+              ${pkg.badge ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-size: 0.7rem;">${pkg.badge}</span>` : ""}
+              ${statusBadge}
+            </div>
+
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+              ${pkg.description}
+            </p>
+
+            <div style="display: flex; gap: 1.25rem; font-size: 0.825rem; flex-wrap: wrap; margin-top: 0.25rem;">
+              <span><strong>MOQ:</strong> <span style="color: var(--color-gold);">${pkg.moq} ${pkg.unitLabel || 'Pcs'}</span></span>
+              <span><strong>Wholesale:</strong> <span style="color: var(--text-heading); font-weight: 800;">₹${wholesalePrice}</span> <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.75rem;">₹${retailMrp}</span></span>
+              <span style="color: #10B981; font-weight: 700;">${pkg.discountPercent || 50}% OFF Wholesale</span>
+              <span style="color: var(--text-muted);">⏳ ${pkg.timeline || '10-14 Days'}</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; min-width: 140px;">
+            <button type="button" class="btn ${pkg.isActive ? 'btn-outline' : 'btn-outline-gold'} btn-xs" onclick="window.admin && window.admin.handleToggleBulkPackage('${pkg.id}')">
+              ${pkg.isActive ? '⏸️ Pause on Website' : '▶️ Publish on Website'}
+            </button>
+            <div style="display: flex; gap: 0.35rem;">
+              <button type="button" class="btn btn-outline btn-xs" style="flex: 1;" onclick="window.admin && window.admin.handleEditBulkPackage('${pkg.id}')">
+                ✏️ Edit
+              </button>
+              <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: #FECDD3;" onclick="window.admin && window.admin.handleDeleteBulkPackage('${pkg.id}')">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  handleSaveBulkPackage(e) {
+    if (e) e.preventDefault();
+    if (!window.store) return;
+
+    const editId = document.getElementById("bulkPkgEditId")?.value?.trim();
+    const title = document.getElementById("bulkPkgTitle")?.value?.trim();
+    const category = document.getElementById("bulkPkgCategory")?.value;
+    const badge = document.getElementById("bulkPkgBadge")?.value?.trim();
+    const moq = parseInt(document.getElementById("bulkPkgMOQ")?.value, 10) || 15;
+    const unitLabel = document.getElementById("bulkPkgUnitLabel")?.value || "Pieces";
+    const wholesalePrice = parseFloat(document.getElementById("bulkPkgWholesalePrice")?.value) || 3500;
+    const retailMrp = parseFloat(document.getElementById("bulkPkgRetailMrp")?.value) || (wholesalePrice * 2);
+    const timeline = document.getElementById("bulkPkgTimeline")?.value?.trim() || "10-14 Working Days";
+    const fabric = document.getElementById("bulkPkgFabric")?.value?.trim();
+    const desc = document.getElementById("bulkPkgDesc")?.value?.trim();
+    const inclusions = document.getElementById("bulkPkgInclusions")?.value?.trim();
+    const image = document.getElementById("bulkPkgImageURL")?.value?.trim() || "assets/images/family_matching_combo.jpg";
+    const isActive = document.getElementById("bulkPkgIsActive") ? document.getElementById("bulkPkgIsActive").checked : true;
+
+    if (!title || !wholesalePrice) {
+      alert("Please enter package title and wholesale price.");
+      return;
+    }
+
+    const discountPercent = retailMrp > wholesalePrice ? Math.round(((retailMrp - wholesalePrice) / retailMrp) * 100) : 50;
+
+    const pkgData = {
+      title,
+      category,
+      badge,
+      moq,
+      unitLabel,
+      wholesalePrice,
+      retailMrp,
+      discountPercent,
+      timeline,
+      fabric,
+      description: desc,
+      inclusions,
+      image,
+      isActive
+    };
+
+    if (editId) {
+      window.store.updateBulkPackage(editId, pkgData);
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast(`Updated bulk package "${title}" successfully!`, "success");
+      }
+    } else {
+      window.store.addBulkPackage(pkgData);
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast(`Published new bulk package "${title}" to website!`, "success");
+      }
+    }
+
+    this.resetBulkPackageForm();
+    this.renderBulkPackagesSection();
+  }
+
+  resetBulkPackageForm() {
+    const form = document.getElementById("adminAddBulkPackageForm");
+    if (form) form.reset();
+    const editIdInput = document.getElementById("bulkPkgEditId");
+    if (editIdInput) editIdInput.value = "";
+    const heading = document.getElementById("bulkPackageFormHeading");
+    if (heading) heading.innerHTML = `<span>➕</span> Add New Bulk Order Package for Website`;
+    const btn = document.getElementById("saveBulkPkgSubmitBtn");
+    if (btn) btn.innerHTML = `<span>🚀</span> Publish Bulk Package to Website`;
+    const imgThumb = document.getElementById("bulkPkgPreviewImg");
+    if (imgThumb) imgThumb.src = "assets/images/family_matching_combo.jpg";
+    const urlInput = document.getElementById("bulkPkgImageURL");
+    if (urlInput) urlInput.value = "assets/images/family_matching_combo.jpg";
+    this.recalcBulkSavings();
+  }
+
+  handleEditBulkPackage(id) {
+    if (!window.store) return;
+    const pkg = window.store.getBulkPackageById(id);
+    if (!pkg) return;
+
+    const editId = document.getElementById("bulkPkgEditId");
+    if (editId) editId.value = pkg.id;
+    const title = document.getElementById("bulkPkgTitle");
+    if (title) title.value = pkg.title || "";
+    const cat = document.getElementById("bulkPkgCategory");
+    if (cat) cat.value = pkg.category || "Wedding Troupe";
+    const badge = document.getElementById("bulkPkgBadge");
+    if (badge) badge.value = pkg.badge || "";
+    const moq = document.getElementById("bulkPkgMOQ");
+    if (moq) moq.value = pkg.moq || 15;
+    const unit = document.getElementById("bulkPkgUnitLabel");
+    if (unit) unit.value = pkg.unitLabel || "Sets";
+    const wsPrice = document.getElementById("bulkPkgWholesalePrice");
+    if (wsPrice) wsPrice.value = pkg.wholesalePrice || 3500;
+    const mrp = document.getElementById("bulkPkgRetailMrp");
+    if (mrp) mrp.value = pkg.retailMrp || 7000;
+    const tl = document.getElementById("bulkPkgTimeline");
+    if (tl) tl.value = pkg.timeline || "10-14 Working Days";
+    const fab = document.getElementById("bulkPkgFabric");
+    if (fab) fab.value = pkg.fabric || "";
+    const desc = document.getElementById("bulkPkgDesc");
+    if (desc) desc.value = pkg.description || "";
+    const inc = document.getElementById("bulkPkgInclusions");
+    if (inc) inc.value = pkg.inclusions || "";
+    const url = document.getElementById("bulkPkgImageURL");
+    if (url) url.value = pkg.image || "";
+    const imgThumb = document.getElementById("bulkPkgPreviewImg");
+    if (imgThumb) imgThumb.src = pkg.image || "assets/images/family_matching_combo.jpg";
+    const activeCheck = document.getElementById("bulkPkgIsActive");
+    if (activeCheck) activeCheck.checked = pkg.isActive !== false;
+
+    const heading = document.getElementById("bulkPackageFormHeading");
+    if (heading) heading.innerHTML = `<span>✏️</span> Edit Bulk Package: ${pkg.title}`;
+    const btn = document.getElementById("saveBulkPkgSubmitBtn");
+    if (btn) btn.innerHTML = `<span>💾</span> Update Bulk Package`;
+
+    this.recalcBulkSavings();
+    document.getElementById("adminAddBulkPackageForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  handleToggleBulkPackage(id) {
+    if (!window.store) return;
+    const newState = window.store.toggleBulkPackageStatus(id);
+    this.renderBulkPackagesSection();
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(newState ? "Bulk package is now Live on website." : "Bulk package has been Paused from website.", "info");
+    }
+  }
+
+  handleDeleteBulkPackage(id) {
+    if (!window.store) return;
+    const pkg = window.store.getBulkPackageById(id);
+    if (!pkg) return;
+    if (confirm(`Are you sure you want to remove the bulk package "${pkg.title}" from the website?`)) {
+      window.store.deleteBulkPackage(id);
+      this.renderBulkPackagesSection();
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast("Bulk package removed from website.", "warning");
+      }
+    }
+  }
+
+  recalcBulkSavings() {
+    const wholesale = parseFloat(document.getElementById("bulkPkgWholesalePrice")?.value) || 0;
+    const retail = parseFloat(document.getElementById("bulkPkgRetailMrp")?.value) || 0;
+    const badge = document.getElementById("bulkPkgSavingsBadge");
+    if (!badge) return;
+
+    if (retail > wholesale && retail > 0) {
+      const pct = Math.round(((retail - wholesale) / retail) * 100);
+      const savingsPerUnit = retail - wholesale;
+      badge.textContent = `${pct}% OFF (Save ₹${savingsPerUnit.toLocaleString("en-IN")}/unit)`;
+      badge.style.color = "#10B981";
+      badge.style.borderColor = "#10B981";
+    } else {
+      badge.textContent = "Wholesale Pricing Tier";
+      badge.style.color = "var(--color-gold)";
+      badge.style.borderColor = "var(--color-gold)";
+    }
+  }
+
+  setBulkPkgPresetImage(url) {
+    const urlInput = document.getElementById("bulkPkgImageURL");
+    const imgThumb = document.getElementById("bulkPkgPreviewImg");
+    if (urlInput) urlInput.value = url;
+    if (imgThumb) imgThumb.src = url;
+  }
+
+  handleBulkPkgImageUpload(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.setBulkPkgPresetImage(e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // ==========================================================================
+  // BULK ORDER SESSION 1: CUSTOMER INQUIRIES & MASTER LEDGER
   // ==========================================================================
   renderBulkOrdersSession() {
     const tbody = document.getElementById("adminBulkOrdersTableBody");
@@ -1026,6 +1357,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
         (o.clientCompany && o.clientCompany.toLowerCase().includes(searchTerm)) ||
         (o.contactPerson && o.contactPerson.toLowerCase().includes(searchTerm)) ||
         (o.phone && o.phone.toLowerCase().includes(searchTerm)) ||
+        (o.email && o.email.toLowerCase().includes(searchTerm)) ||
         (o.gstin && o.gstin.toLowerCase().includes(searchTerm));
 
       const matchType = typeFilter === "ALL" || o.orderType === typeFilter;
@@ -1036,7 +1368,12 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
 
     const countBadge = document.getElementById("bulkOrdersCountBadge");
     if (countBadge) {
-      countBadge.textContent = `${filtered.length} Active B2B Order${filtered.length === 1 ? "" : "s"}`;
+      countBadge.textContent = `${filtered.length} B2B Order${filtered.length === 1 ? "" : "s"} / Inquiries`;
+    }
+
+    const inquiriesCountBadge = document.getElementById("adminBulkInquiriesCountBadge");
+    if (inquiriesCountBadge) {
+      inquiriesCountBadge.textContent = `${allOrders.length}`;
     }
 
     if (filtered.length === 0) {
@@ -1054,12 +1391,16 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     }
 
     tbody.innerHTML = filtered.map(order => {
+      const isNewInquiry = order.orderStatus === "New Inquiry";
+      const isQuoteSent = order.orderStatus === "Quote Sent";
       const isUnderProd = order.orderStatus === "Under Production";
       const isReady = order.orderStatus === "Ready to Ship";
       const isDispatched = order.orderStatus === "Dispatched";
       const isDelivered = order.orderStatus === "Delivered";
 
-      const priorityBadge = order.priority === "Urgent"
+      const priorityBadge = order.orderStatus === "New Inquiry"
+        ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid #FDE68A;">✨ New Inquiry</span>`
+        : order.priority === "Urgent"
         ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);">🔥 Urgent</span>`
         : order.priority === "High Priority"
         ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);">⚡ High</span>`
@@ -1096,7 +1437,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               <strong style="font-size: 0.885rem; color: var(--color-primary); line-height: 1.3;">${order.clientCompany}</strong>
               <span style="font-size: 0.785rem; color: var(--text-main); font-weight: 600;">👤 ${order.contactPerson}</span>
               <span style="font-size: 0.735rem; color: #64748B;">📞 ${order.phone}</span>
-              ${order.gstin ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
+              ${order.email ? `<span style="font-size: 0.715rem; color: var(--text-muted);">✉️ ${order.email}</span>` : ""}
+              ${order.gstin && order.gstin !== 'URP-CUSTOMER-INQUIRY' ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
             </div>
           </td>
           <td>
@@ -1108,7 +1450,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
               <strong style="font-size: 0.885rem; color: var(--color-gold);">${order.totalPieces} Pieces / Sets</strong>
-              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${order.itemsDescription}">
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${order.itemsDescription}">
                 ${order.itemsDescription}
               </p>
             </div>
@@ -1126,6 +1468,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
               <select class="bulk-status-dropdown form-control" data-id="${order.bulkOrderId}" style="font-size: 0.775rem; padding: 0.35rem 0.55rem; border-radius: var(--radius-sm); font-weight: 700; width: 100%; min-width: 140px; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                <option value="New Inquiry" ${isNewInquiry ? "selected" : ""}>✨ New Inquiry</option>
+                <option value="Quote Sent" ${isQuoteSent ? "selected" : ""}>💬 Quote Sent</option>
                 <option value="Under Production" ${isUnderProd ? "selected" : ""}>⏳ Under Production</option>
                 <option value="Ready to Ship" ${isReady ? "selected" : ""}>📦 Ready to Ship</option>
                 <option value="Dispatched" ${isDispatched ? "selected" : ""}>🚚 Dispatched</option>
@@ -3121,11 +3465,7 @@ Warm regards,
 
   closeCouponModal() {
     const modal = document.getElementById("adminCouponModal");
-    if (!modal) return;
-
-    const form = document.getElementById("adminCouponForm");
-    if (form) form.reset();
-    modal.style.display = "none";
+    if (modal) modal.style.display = "none";
   }
 
   handleSaveCoupon(e) {
@@ -3227,6 +3567,640 @@ Warm regards,
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 3500);
     }
+  }
+
+  // ==========================================================================
+  // FESTIVE SPECIAL 2026 CAMPAIGN MANAGEMENT METHODS
+  // ==========================================================================
+  updateFestiveBadges() {
+    if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+    const campaign = window.store.getFestiveCampaign();
+    const isLive = Boolean(campaign.enabled);
+
+    // Sidebar badge
+    const sbBadge = document.getElementById("sidebarFestiveBadge");
+    if (sbBadge) {
+      sbBadge.textContent = isLive ? "LIVE" : "OFF";
+      sbBadge.style.background = isLive
+        ? "linear-gradient(135deg, #10B981, #059669)"
+        : "linear-gradient(135deg, #EF4444, #B91C1C)";
+    }
+
+    // Mobile sidebar badge
+    const mbBadge = document.getElementById("mobileSidebarFestiveBadge");
+    if (mbBadge) {
+      mbBadge.textContent = isLive ? "LIVE" : "OFF";
+      mbBadge.style.background = isLive
+        ? "linear-gradient(135deg, #10B981, #059669)"
+        : "linear-gradient(135deg, #EF4444, #B91C1C)";
+    }
+
+    // Dashboard shortcut subtitle
+    const dashSub = document.getElementById("dashFestiveStatusSub");
+    if (dashSub) {
+      dashSub.textContent = isLive ? "🟢 Active & Visible on Site" : "🔴 Hidden from Storefront";
+      dashSub.style.color = isLive ? "var(--color-success)" : "#EF4444";
+    }
+
+    // Master switch & Status pill inside tab
+    const masterToggle = document.getElementById("festiveMasterToggle");
+    if (masterToggle) {
+      masterToggle.checked = isLive;
+    }
+
+    const stateLabel = document.getElementById("festiveToggleStateLabel");
+    if (stateLabel) {
+      stateLabel.textContent = isLive ? "SESSION ON" : "SESSION OFF";
+      stateLabel.style.color = isLive ? "var(--color-success)" : "#EF4444";
+    }
+
+    const statusPill = document.getElementById("festiveStatusPill");
+    if (statusPill) {
+      if (isLive) {
+        statusPill.className = "festive-status-pill live";
+        statusPill.innerHTML = '<span class="admin-pulse-dot"></span> 🟢 LIVE ON STOREFRONT';
+        statusPill.style.background = "rgba(16, 185, 129, 0.15)";
+        statusPill.style.color = "#10B981";
+        statusPill.style.border = "1px solid rgba(16, 185, 129, 0.4)";
+      } else {
+        statusPill.className = "festive-status-pill disabled";
+        statusPill.innerHTML = '🔴 DISABLED &amp; HIDDEN FROM STOREFRONT';
+        statusPill.style.background = "rgba(239, 68, 68, 0.15)";
+        statusPill.style.color = "#EF4444";
+        statusPill.style.border = "1px solid rgba(239, 68, 68, 0.4)";
+      }
+    }
+  }
+
+  handleMasterFestiveToggle(checked) {
+    if (!window.store) return;
+    window.store.toggleFestiveCampaign(checked);
+    this.updateFestiveBadges();
+    if (checked) {
+      this.showToast("🎉 Festive Special 2026 session is now LIVE in real-time on the storefront!", "success");
+    } else {
+      this.showToast("🛑 Festive Special 2026 session is now HIDDEN in real-time from the website.", "warning");
+    }
+  }
+
+  renderFestivePanel() {
+    if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+    const campaign = window.store.getFestiveCampaign();
+
+    this.updateFestiveBadges();
+
+    // Populate Meta inputs
+    const titleInput = document.getElementById("festiveTitleInput");
+    if (titleInput) titleInput.value = campaign.title || "LIMITED TIME FESTIVE SPECIAL 2026";
+
+    const badgeInput = document.getElementById("festiveBadgeInput");
+    if (badgeInput) badgeInput.value = campaign.badge || "🎉 LIMITED TIME FESTIVE SPECIAL 2026";
+
+    const headlineInput = document.getElementById("festiveHeadlineInput");
+    if (headlineInput) headlineInput.value = campaign.headline || "Grand Festive & Wedding Handloom Offers";
+
+    const subtitleInput = document.getElementById("festiveSubtitleInput");
+    if (subtitleInput) subtitleInput.value = campaign.subtitle || "";
+
+    const tickerInput = document.getElementById("festiveTickerTextInput");
+    if (tickerInput) tickerInput.value = campaign.topBannerText || "";
+
+    const tickerEnabled = document.getElementById("festiveTickerEnabledInput");
+    if (tickerEnabled) tickerEnabled.checked = (campaign.topBannerEnabled !== false);
+
+    const countdownInput = document.getElementById("festiveCountdownEndInput");
+    if (countdownInput && campaign.countdownEnd) {
+      try {
+        const d = new Date(campaign.countdownEnd);
+        if (!isNaN(d.getTime())) {
+          countdownInput.value = d.toISOString().slice(0, 16);
+        }
+      } catch (e) {}
+    }
+
+    // Render Offers Grid
+    this.renderFestiveOffersGrid(campaign.offers || []);
+
+    // Render Deals Grid
+    this.renderFestiveDealsGrid(campaign.deals || []);
+
+    // Populate Perks
+    if (Array.isArray(campaign.perks)) {
+      campaign.perks.forEach((p, idx) => {
+        const iconEl = document.getElementById(`perkIcon${idx}`);
+        const titleEl = document.getElementById(`perkTitle${idx}`);
+        const descEl = document.getElementById(`perkDesc${idx}`);
+        if (iconEl && p.icon) iconEl.value = p.icon;
+        if (titleEl && p.title) titleEl.value = p.title;
+        if (descEl && p.desc) descEl.value = p.desc;
+      });
+    }
+  }
+
+  renderFestiveOffersGrid(offers) {
+    const grid = document.getElementById("adminFestiveOffersGrid");
+    const countBadge = document.getElementById("festiveOffersCount");
+    if (countBadge) countBadge.textContent = offers.length;
+    if (!grid) return;
+
+    if (offers.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: var(--bg-surface-alt); border-radius: var(--radius-sm); border: 1.5px dashed var(--border-color);">
+          <p style="color: var(--text-muted); margin-bottom: 0.75rem;">No festive discount vouchers added yet.</p>
+          <button type="button" class="btn btn-gold btn-sm" onclick="window.admin.openAddOfferModal()">+ Add Your First Voucher</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = offers.map(o => {
+      const isAct = o.isActive !== false;
+      return `
+        <div class="admin-festive-offer-card" style="background: var(--bg-surface-alt); border: 1.5px ${isAct ? 'solid var(--color-gold)' : 'dashed var(--border-color)'}; border-radius: var(--radius-sm); padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; opacity: ${isAct ? '1' : '0.65'};">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span style="background: rgba(212, 175, 55, 0.2); color: var(--color-gold); font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: var(--radius-full); text-transform: uppercase;">
+                ${this.escapeHtml(o.badge || "Festive Offer")}
+              </span>
+              <span style="font-size: 0.72rem; font-weight: 700; color: ${isAct ? 'var(--color-success)' : '#EF4444'};">
+                ${isAct ? "● Active" : "○ Paused"}
+              </span>
+            </div>
+
+            <h4 style="margin: 0 0 0.35rem 0; font-family: var(--font-serif-display); font-size: 1.05rem; color: var(--color-primary);">
+              ${this.escapeHtml(o.title || "Festive Discount")}
+            </h4>
+
+            <p style="font-size: 0.785rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.85rem 0;">
+              ${this.escapeHtml(o.description || "")}
+            </p>
+
+            <div style="background: var(--bg-surface); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+              <span style="font-family: monospace; font-weight: 800; letter-spacing: 0.08em; font-size: 0.95rem; color: var(--color-gold);">
+                ${this.escapeHtml(o.code || "")}
+              </span>
+              <span style="font-weight: 800; font-size: 0.75rem; color: var(--color-success);">
+                ${this.escapeHtml(o.discount || "")}
+              </span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.4rem; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 0.65rem;">
+            <button type="button" class="btn btn-outline btn-xs" onclick="window.admin.toggleFestiveOffer('${o.id}')" title="Toggle active status">
+              ${isAct ? "Pause" : "Activate"}
+            </button>
+            <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.admin.openEditOfferModal('${o.id}')">
+              ✏️ Edit
+            </button>
+            <button type="button" class="btn btn-outline btn-xs" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.4);" onclick="window.admin.deleteFestiveOffer('${o.id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  renderFestiveDealsGrid(deals) {
+    const grid = document.getElementById("adminFestiveDealsGrid");
+    const countBadge = document.getElementById("festiveDealsCount");
+    if (countBadge) countBadge.textContent = deals.length;
+    if (!grid) return;
+
+    if (deals.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: var(--bg-surface-alt); border-radius: var(--radius-sm); border: 1.5px dashed var(--border-color);">
+          <p style="color: var(--text-muted); margin-bottom: 0.75rem;">No featured festival collection deals added yet.</p>
+          <button type="button" class="btn btn-gold btn-sm" onclick="window.admin.openAddDealModal()">+ Add Your First Deal</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = deals.map(d => {
+      const isAct = d.isActive !== false;
+      const img = d.image || "assets/images/family_matching_combo.jpg";
+      const orig = Number(d.originalPrice || 0);
+      const fest = Number(d.festivePrice || 0);
+      return `
+        <div class="admin-festive-deal-card" style="background: var(--bg-surface-alt); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; opacity: ${isAct ? '1' : '0.65'};">
+          <div>
+            <div style="position: relative; height: 160px; overflow: hidden; background: #000;">
+              <img src="${img}" alt="${this.escapeHtml(d.title || "")}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/family_matching_combo.jpg'" />
+              <span style="position: absolute; top: 8px; left: 8px; background: rgba(122, 12, 46, 0.9); color: #FFF; font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.5rem; border-radius: var(--radius-xs); border: 1px solid var(--color-gold);">
+                ${this.escapeHtml(d.badge || "Festive Special")}
+              </span>
+              <span style="position: absolute; top: 8px; right: 8px; background: ${isAct ? '#10B981' : '#EF4444'}; color: #FFF; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: var(--radius-xs);">
+                ${isAct ? "LIVE" : "PAUSED"}
+              </span>
+            </div>
+
+            <div style="padding: 0.85rem;">
+              <span style="font-size: 0.72rem; color: var(--color-gold); font-weight: 700; text-transform: uppercase;">
+                ${this.escapeHtml(d.department || "Family Combos")} • SKU: ${this.escapeHtml(d.productId || "")}
+              </span>
+              <h4 style="margin: 0.25rem 0 0.4rem 0; font-family: var(--font-serif-display); font-size: 0.95rem; color: var(--color-primary); line-height: 1.3;">
+                ${this.escapeHtml(d.title || "Festive Item")}
+              </h4>
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.65rem 0; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                ${this.escapeHtml(d.description || "")}
+              </p>
+              <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                <strong style="font-size: 1.05rem; color: var(--color-primary); font-weight: 800;">₹${fest.toLocaleString("en-IN")}</strong>
+                ${orig > fest ? `<span style="font-size: 0.8rem; text-decoration: line-through; color: var(--text-muted);">₹${orig.toLocaleString("en-IN")}</span>` : ""}
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.4rem; justify-content: flex-end; padding: 0.65rem 0.85rem; border-top: 1px solid var(--border-color); background: var(--bg-surface);">
+            <button type="button" class="btn btn-outline btn-xs" onclick="window.admin.toggleFestiveDeal('${d.id}')">
+              ${isAct ? "Pause" : "Activate"}
+            </button>
+            <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.admin.openEditDealModal('${d.id}')">
+              ✏️ Edit
+            </button>
+            <button type="button" class="btn btn-outline btn-xs" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.4);" onclick="window.admin.deleteFestiveDeal('${d.id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  handleSaveFestiveMeta(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!window.store) return;
+
+    const title = document.getElementById("festiveTitleInput")?.value.trim() || "LIMITED TIME FESTIVE SPECIAL 2026";
+    const badge = document.getElementById("festiveBadgeInput")?.value.trim() || "🎉 LIMITED TIME FESTIVE SPECIAL 2026";
+    const headline = document.getElementById("festiveHeadlineInput")?.value.trim() || "Grand Festive & Wedding Handloom Offers";
+    const subtitle = document.getElementById("festiveSubtitleInput")?.value.trim() || "";
+    const topBannerText = document.getElementById("festiveTickerTextInput")?.value.trim() || "";
+    const topBannerEnabled = Boolean(document.getElementById("festiveTickerEnabledInput")?.checked);
+
+    window.store.saveFestiveCampaign({
+      title,
+      badge,
+      headline,
+      subtitle,
+      topBannerText,
+      topBannerEnabled
+    });
+
+    this.showToast("✅ Campaign headlines & announcement banner saved successfully!", "success");
+  }
+
+  handleSaveCountdown() {
+    if (!window.store) return;
+    const input = document.getElementById("festiveCountdownEndInput");
+    if (!input || !input.value) {
+      this.showToast("Please choose a valid date and time for the countdown.", "warning");
+      return;
+    }
+    const iso = new Date(input.value).toISOString();
+    window.store.saveFestiveCampaign({ countdownEnd: iso });
+    this.showToast("⏳ Festive countdown target date saved!", "success");
+  }
+
+  initFestiveCountdownPreview() {
+    const update = () => {
+      if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+      const campaign = window.store.getFestiveCampaign();
+      const end = campaign.countdownEnd ? new Date(campaign.countdownEnd).getTime() : 0;
+      const now = Date.now();
+      const diff = Math.max(0, end - now);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const dEl = document.getElementById("adminTimerDays");
+      const hEl = document.getElementById("adminTimerHours");
+      const mEl = document.getElementById("adminTimerMins");
+      const sEl = document.getElementById("adminTimerSecs");
+
+      if (dEl) dEl.textContent = String(days).padStart(2, "0");
+      if (hEl) hEl.textContent = String(hours).padStart(2, "0");
+      if (mEl) mEl.textContent = String(mins).padStart(2, "0");
+      if (sEl) sEl.textContent = String(secs).padStart(2, "0");
+    };
+
+    update();
+    setInterval(update, 1000);
+  }
+
+  // ==========================================
+  // FESTIVE VOUCHERS MODAL & CRUD
+  // ==========================================
+  openAddOfferModal() {
+    const modal = document.getElementById("festiveOfferModal");
+    const title = document.getElementById("festiveOfferModalTitle");
+    if (!modal) return;
+    if (title) title.textContent = "🏷️ Add Festive Voucher";
+
+    document.getElementById("formOfferId").value = "";
+    document.getElementById("formOfferCode").value = "FESTIVE" + Math.floor(10 + Math.random() * 90);
+    document.getElementById("formOfferBadge").value = "Family Bundle Special";
+    document.getElementById("formOfferTitle").value = "Flat 20% Off Festive Ensembles";
+    document.getElementById("formOfferDiscount").value = "20% OFF";
+    document.getElementById("formOfferActive").checked = true;
+    document.getElementById("formOfferDesc").value = "Valid on all 4-piece and 2-piece synchronized color-matched festive handlooms.";
+
+    modal.style.display = "flex";
+  }
+
+  openEditOfferModal(id) {
+    if (!window.store) return;
+    const campaign = window.store.getFestiveCampaign();
+    const offer = (campaign.offers || []).find(o => o.id === id);
+    if (!offer) return;
+
+    const modal = document.getElementById("festiveOfferModal");
+    const title = document.getElementById("festiveOfferModalTitle");
+    if (!modal) return;
+    if (title) title.textContent = "🏷️ Edit Festive Voucher: " + offer.code;
+
+    document.getElementById("formOfferId").value = offer.id;
+    document.getElementById("formOfferCode").value = offer.code || "";
+    document.getElementById("formOfferBadge").value = offer.badge || "";
+    document.getElementById("formOfferTitle").value = offer.title || "";
+    document.getElementById("formOfferDiscount").value = offer.discount || "";
+    document.getElementById("formOfferActive").checked = (offer.isActive !== false);
+    document.getElementById("formOfferDesc").value = offer.description || "";
+
+    modal.style.display = "flex";
+  }
+
+  closeFestiveOfferModal() {
+    const modal = document.getElementById("festiveOfferModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  handleSaveFestiveOffer(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!window.store) return;
+
+    const id = document.getElementById("formOfferId")?.value;
+    const code = document.getElementById("formOfferCode")?.value.trim().toUpperCase();
+    const badge = document.getElementById("formOfferBadge")?.value.trim() || "Festive Special";
+    const title = document.getElementById("formOfferTitle")?.value.trim() || "Festive Discount";
+    const discount = document.getElementById("formOfferDiscount")?.value.trim() || "Special Offer";
+    const isActive = Boolean(document.getElementById("formOfferActive")?.checked);
+    const description = document.getElementById("formOfferDesc")?.value.trim() || "";
+
+    if (!code) {
+      this.showToast("Please provide a voucher code.", "warning");
+      return;
+    }
+
+    if (id) {
+      window.store.updateFestiveOffer(id, { code, badge, title, discount, isActive, description });
+      this.showToast(`✅ Voucher ${code} updated successfully!`, "success");
+    } else {
+      window.store.addFestiveOffer({ code, badge, title, discount, isActive, description });
+      this.showToast(`🎉 New Voucher ${code} added to festive session!`, "success");
+    }
+
+    this.closeFestiveOfferModal();
+    this.renderFestivePanel();
+  }
+
+  toggleFestiveOffer(id) {
+    if (!window.store) return;
+    const campaign = window.store.getFestiveCampaign();
+    const offer = (campaign.offers || []).find(o => o.id === id);
+    if (!offer) return;
+    window.store.updateFestiveOffer(id, { isActive: !offer.isActive });
+    this.renderFestivePanel();
+  }
+
+  deleteFestiveOffer(id) {
+    if (!confirm("Are you sure you want to delete this festive voucher from the campaign?")) return;
+    window.store.deleteFestiveOffer(id);
+    this.showToast("Voucher removed from festive session.", "info");
+    this.renderFestivePanel();
+  }
+
+  // ==========================================
+  // FESTIVE COLLECTION DEALS MODAL & CRUD
+  // ==========================================
+  populateDealProductDropdown() {
+    const select = document.getElementById("formDealProductSelect");
+    if (!select || !window.store) return;
+
+    const catalog = window.store.getCatalog ? window.store.getCatalog() : [];
+    select.innerHTML = '<option value="">-- Or enter custom festive item below --</option>';
+    catalog.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = `[${p.id}] ${p.title} (${p.department} - ₹${Number(p.priceINR || 0).toLocaleString("en-IN")})`;
+      select.appendChild(opt);
+    });
+  }
+
+  handleDealProductSelect(sku) {
+    if (!sku || !window.store) return;
+    const catalog = window.store.getCatalog ? window.store.getCatalog() : [];
+    const p = catalog.find(item => item.id === sku);
+    if (!p) return;
+
+    const skuInput = document.getElementById("formDealSku");
+    const titleInput = document.getElementById("formDealTitle");
+    const deptSelect = document.getElementById("formDealDept");
+    const origInput = document.getElementById("formDealOrigPrice");
+    const festInput = document.getElementById("formDealFestivePrice");
+    const imageInput = document.getElementById("formDealImage");
+    const descInput = document.getElementById("formDealDesc");
+
+    if (skuInput) skuInput.value = p.id;
+    if (titleInput) titleInput.value = p.title;
+    if (deptSelect && p.department) {
+      for (let i = 0; i < deptSelect.options.length; i++) {
+        if (deptSelect.options[i].value === p.department || p.department.includes(deptSelect.options[i].value)) {
+          deptSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+    const price = Number(p.priceINR || 0);
+    const origPrice = Number(p.originalPriceINR || (price * 1.25));
+    if (origInput) origInput.value = Math.round(origPrice);
+    if (festInput) festInput.value = Math.round(price);
+    if (imageInput) imageInput.value = p.mainImage || (Array.isArray(p.images) ? p.images[0] : "");
+    if (descInput) descInput.value = p.description || "";
+
+    this.calculateDealDiscount();
+  }
+
+  calculateDealDiscount() {
+    const orig = Number(document.getElementById("formDealOrigPrice")?.value || 0);
+    const fest = Number(document.getElementById("formDealFestivePrice")?.value || 0);
+    const badgeInput = document.getElementById("formDealBadge");
+    if (!badgeInput) return;
+
+    if (orig > fest && orig > 0) {
+      const savings = orig - fest;
+      const pct = Math.round((savings / orig) * 100);
+      badgeInput.value = `🔥 Save ₹${savings.toLocaleString("en-IN")} (${pct}% OFF)`;
+    } else {
+      badgeInput.value = "✨ Festive Exclusive";
+    }
+  }
+
+  openAddDealModal() {
+    this.populateDealProductDropdown();
+    const modal = document.getElementById("festiveDealModal");
+    const title = document.getElementById("festiveDealModalTitle");
+    if (!modal) return;
+    if (title) title.textContent = "🧵 Add Festival Collection Deal";
+
+    document.getElementById("formDealId").value = "";
+    document.getElementById("formDealSku").value = "ST-FEST-" + Math.floor(100 + Math.random() * 900);
+    document.getElementById("formDealTitle").value = "";
+    document.getElementById("formDealOrigPrice").value = "50000";
+    document.getElementById("formDealFestivePrice").value = "42000";
+    document.getElementById("formDealBadge").value = "🔥 Save ₹8,000 (16% OFF)";
+    document.getElementById("formDealImage").value = "assets/images/family_matching_combo.jpg";
+    document.getElementById("formDealDesc").value = "";
+    document.getElementById("formDealActive").checked = true;
+
+    modal.style.display = "flex";
+  }
+
+  openEditDealModal(id) {
+    this.populateDealProductDropdown();
+    if (!window.store) return;
+    const campaign = window.store.getFestiveCampaign();
+    const deal = (campaign.deals || []).find(d => d.id === id);
+    if (!deal) return;
+
+    const modal = document.getElementById("festiveDealModal");
+    const title = document.getElementById("festiveDealModalTitle");
+    if (!modal) return;
+    if (title) title.textContent = "🧵 Edit Festival Deal: " + deal.title;
+
+    document.getElementById("formDealId").value = deal.id;
+    document.getElementById("formDealSku").value = deal.productId || "";
+    document.getElementById("formDealTitle").value = deal.title || "";
+    document.getElementById("formDealOrigPrice").value = deal.originalPrice || "";
+    document.getElementById("formDealFestivePrice").value = deal.festivePrice || "";
+    document.getElementById("formDealBadge").value = deal.badge || "";
+    document.getElementById("formDealImage").value = deal.image || "";
+    document.getElementById("formDealDesc").value = deal.description || "";
+    document.getElementById("formDealActive").checked = (deal.isActive !== false);
+
+    const deptSelect = document.getElementById("formDealDept");
+    if (deptSelect && deal.department) {
+      for (let i = 0; i < deptSelect.options.length; i++) {
+        if (deptSelect.options[i].value === deal.department) {
+          deptSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    modal.style.display = "flex";
+  }
+
+  closeFestiveDealModal() {
+    const modal = document.getElementById("festiveDealModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  handleSaveFestiveDeal(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!window.store) return;
+
+    const id = document.getElementById("formDealId")?.value;
+    const productId = document.getElementById("formDealSku")?.value.trim() || "ST-FEST";
+    const title = document.getElementById("formDealTitle")?.value.trim();
+    const department = document.getElementById("formDealDept")?.value || "Family Combos";
+    const originalPrice = Number(document.getElementById("formDealOrigPrice")?.value || 0);
+    const festivePrice = Number(document.getElementById("formDealFestivePrice")?.value || 0);
+    const badge = document.getElementById("formDealBadge")?.value.trim() || "Festive Deal";
+    const image = document.getElementById("formDealImage")?.value.trim() || "assets/images/family_matching_combo.jpg";
+    const description = document.getElementById("formDealDesc")?.value.trim() || "";
+    const isActive = Boolean(document.getElementById("formDealActive")?.checked);
+
+    if (!title) {
+      this.showToast("Please provide a deal title.", "warning");
+      return;
+    }
+
+    if (id) {
+      window.store.updateFestiveDeal(id, {
+        productId,
+        title,
+        department,
+        originalPrice,
+        festivePrice,
+        badge,
+        image,
+        description,
+        isActive
+      });
+      this.showToast(`✅ Festival deal "${title}" updated!`, "success");
+    } else {
+      window.store.addFestiveDeal({
+        productId,
+        title,
+        department,
+        originalPrice,
+        festivePrice,
+        badge,
+        image,
+        description,
+        isActive
+      });
+      this.showToast(`🎉 New Festival Deal "${title}" added to collection!`, "success");
+    }
+
+    this.closeFestiveDealModal();
+    this.renderFestivePanel();
+  }
+
+  toggleFestiveDeal(id) {
+    if (!window.store) return;
+    const campaign = window.store.getFestiveCampaign();
+    const deal = (campaign.deals || []).find(d => d.id === id);
+    if (!deal) return;
+    window.store.updateFestiveDeal(id, { isActive: !deal.isActive });
+    this.renderFestivePanel();
+  }
+
+  deleteFestiveDeal(id) {
+    if (!confirm("Are you sure you want to remove this deal from the festive campaign?")) return;
+    window.store.deleteFestiveDeal(id);
+    this.showToast("Festival deal removed.", "info");
+    this.renderFestivePanel();
+  }
+
+  // ==========================================
+  // FESTIVE PERKS BAR & RESETS
+  // ==========================================
+  handleSavePerks(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!window.store) return;
+
+    const perks = [];
+    for (let i = 0; i < 4; i++) {
+      const icon = document.getElementById(`perkIcon${i}`)?.value.trim() || "✨";
+      const title = document.getElementById(`perkTitle${i}`)?.value.trim() || "Trust Badge";
+      const desc = document.getElementById(`perkDesc${i}`)?.value.trim() || "";
+      perks.push({ icon, title, desc });
+    }
+
+    window.store.saveFestiveCampaign({ perks });
+    this.showToast("🎁 Festive perks strip saved successfully!", "success");
+  }
+
+  handleResetFestiveDefaults() {
+    if (!confirm("Restore Festive Special 2026 campaign to default festive vouchers and deals?")) return;
+    window.store.resetFestiveCampaign();
+    this.renderFestivePanel();
+    this.showToast("🔄 Festive Special 2026 restored to default template!", "success");
   }
 }
 

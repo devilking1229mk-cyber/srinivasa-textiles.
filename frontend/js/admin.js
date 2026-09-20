@@ -1130,7 +1130,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               ${statusBadge}
             </div>
 
-            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
               ${pkg.description}
             </p>
 
@@ -1450,7 +1450,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
               <strong style="font-size: 0.885rem; color: var(--color-gold);">${order.totalPieces} Pieces / Sets</strong>
-              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${order.itemsDescription}">
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${order.itemsDescription}">
                 ${order.itemsDescription}
               </p>
             </div>
@@ -3802,7 +3802,7 @@ Warm regards,
               <h4 style="margin: 0.25rem 0 0.4rem 0; font-family: var(--font-serif-display); font-size: 0.95rem; color: var(--color-primary); line-height: 1.3;">
                 ${this.escapeHtml(d.title || "Festive Item")}
               </h4>
-              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.65rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+              <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.65rem 0; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                 ${this.escapeHtml(d.description || "")}
               </p>
               <div style="display: flex; align-items: baseline; gap: 0.5rem;">

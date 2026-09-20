@@ -100,13 +100,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // Start Opening Logo Animation
   initOpeningLogoAnimation();
 
-  // Header Scroll Shadow Effect
+  // Header Scroll Shadow Effect (Harmonized with storefront.js)
   const header = document.getElementById("mainHeader");
+  let appHeaderTicking = false;
   window.addEventListener("scroll", () => {
-    if (header) {
-      header.classList.toggle("scrolled", window.scrollY > 40);
+    if (!appHeaderTicking) {
+      requestAnimationFrame(() => {
+        if (header) {
+          const y = window.scrollY;
+          if (y > 85) header.classList.add("scrolled");
+          else if (y < 25) header.classList.remove("scrolled");
+        }
+        appHeaderTicking = false;
+      });
+      appHeaderTicking = true;
     }
-  });
+  }, { passive: true });
 
   // Top Banner Quotes Rotation
   const quoteTextEl = document.getElementById("topQuoteText");
