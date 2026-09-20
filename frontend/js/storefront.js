@@ -24,6 +24,9 @@ class StorefrontController {
     this.renderFestiveVouchers();
     this.initFestiveCampaignSync();
     this.renderFestiveCampaign();
+    this.initBulkOrdersSync();
+    this.renderBulkOrdersSection();
+    this.setupBulkInquiryModal();
     this.updateCartUI();
     this.updateWishlistCount();
     this.setupWishlistDrawer();
@@ -31,6 +34,7 @@ class StorefrontController {
     this.setupFeedbackModal();
     this.setupOwnerAuthModal();
     this.setupNotifyModal();
+    this.setupDepartmentNavScroll();
   }
 
   // Theme Management (Light & Dark Mode)
@@ -52,8 +56,8 @@ class StorefrontController {
   updateThemeButtonUI(theme) {
     const btn = document.getElementById("themeToggleBtn");
     if (btn) {
-      btn.innerHTML = theme === "dark" 
-        ? '<span class="theme-icon">☀️</span><span class="theme-label"> Dark</span>' 
+      btn.innerHTML = theme === "dark"
+        ? '<span class="theme-icon">☀️</span><span class="theme-label"> Dark</span>'
         : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
     }
   }
@@ -95,6 +99,12 @@ class StorefrontController {
 
     // Hash change routing
     window.addEventListener("hashchange", () => this.handleRouteFromHash());
+
+    // Bulk Orders Desktop Nav Button
+    const bulkNavBtn = document.getElementById("headerBulkOrdersBtn");
+    if (bulkNavBtn) {
+      bulkNavBtn.addEventListener("click", () => this.scrollToBulkSection());
+    }
 
     // Global Brand Logo Home Link (Always resets to Home page)
     const brandLogo = document.getElementById("globalBrandLogo");
@@ -176,7 +186,8 @@ class StorefrontController {
           searchBarModal.classList.add("active");
           if (searchInput) {
             searchInput.value = "";
-            document.getElementById("searchLiveResults").innerHTML = "";
+            const liveRes = document.getElementById("searchLiveResults");
+            if (liveRes) liveRes.innerHTML = "";
             setTimeout(() => searchInput.focus(), 50);
           }
         }
@@ -458,6 +469,17 @@ class StorefrontController {
     const validPages = ["home", "explore", "women", "men", "girls", "boys", "infants", "family", "family-combos"];
     if (hash === "family-combos") {
       this.navigateToPage("family", false);
+    } else if (hash === "bulkordersstoresection" || hash === "bulk-orders") {
+      if (window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop")) {
+        this.navigateToPage("explore", false);
+        setTimeout(() => {
+          const sec = document.getElementById("bulkOrdersStoreSection");
+          if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+      } else {
+        window.location.href = "shop.html#bulkOrdersStoreSection";
+        return;
+      }
     } else if (validPages.includes(hash)) {
       this.navigateToPage(hash, false);
     } else {
@@ -498,11 +520,22 @@ class StorefrontController {
 
     document.querySelectorAll(".dept-link").forEach(link => {
       const p = link.getAttribute("data-page");
-      link.classList.toggle("active", p === pageKey);
+      const isActive = p === pageKey;
+      link.classList.toggle("active", isActive);
+      if (isActive) {
+        setTimeout(() => {
+          const scrollWrapper = document.getElementById("deptNavScrollWrapper");
+          if (scrollWrapper) {
+            link.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+          }
+        }, 60);
+      }
     });
 
     this.renderCurrentPage();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (updateHash) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   renderCurrentPage() {
@@ -540,6 +573,7 @@ class StorefrontController {
     }
 
     this.renderFestiveCampaign();
+    this.renderBulkOrdersSection();
   }
 
   getDepartmentMeta(pageKey) {
@@ -789,6 +823,125 @@ class StorefrontController {
         window.store.setCurrency(e.target.value);
       });
     }
+  }
+
+  // ==========================================================================
+  // DEPARTMENT NAVIGATION BAR: CORNER ARROWS & BUTTERY-SMOOTH SCROLLING
+  // ==========================================================================
+  setupDepartmentNavScroll() {
+    const header = document.getElementById("mainHeader");
+    const navBar = document.querySelector(".department-nav-bar");
+    const scrollWrapper = document.getElementById("deptNavScrollWrapper");
+    const leftBtn = document.getElementById("deptScrollLeftBtn");
+    const rightBtn = document.getElementById("deptScrollRightBtn");
+
+    if (!navBar || !scrollWrapper) return;
+
+    // Corner Arrows: Dynamic state (disabled/enabled) and smooth step scrolling
+    const updateArrowStates = () => {
+      const maxScroll = scrollWrapper.scrollWidth - scrollWrapper.clientWidth;
+      if (maxScroll <= 4) {
+        if (leftBtn) {
+          leftBtn.disabled = true;
+          leftBtn.classList.add("disabled");
+        }
+        if (rightBtn) {
+          rightBtn.disabled = true;
+          rightBtn.classList.add("disabled");
+        }
+        return;
+      }
+
+      if (leftBtn) {
+        const atStart = scrollWrapper.scrollLeft <= 4;
+        leftBtn.disabled = atStart;
+        leftBtn.classList.toggle("disabled", atStart);
+      }
+      if (rightBtn) {
+        const atEnd = scrollWrapper.scrollLeft >= maxScroll - 4;
+        rightBtn.disabled = atEnd;
+        rightBtn.classList.toggle("disabled", atEnd);
+      }
+    };
+
+    if (leftBtn) {
+      leftBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const scrollDistance = Math.max(200, Math.floor(scrollWrapper.clientWidth * 0.55));
+        scrollWrapper.scrollBy({ left: -scrollDistance, behavior: "smooth" });
+        setTimeout(updateArrowStates, 320);
+      });
+    }
+
+    if (rightBtn) {
+      rightBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const scrollDistance = Math.max(200, Math.floor(scrollWrapper.clientWidth * 0.55));
+        scrollWrapper.scrollBy({ left: scrollDistance, behavior: "smooth" });
+        setTimeout(updateArrowStates, 320);
+      });
+    }
+
+    // Passive scroll listener for updateArrowStates without blocking main thread
+    scrollWrapper.addEventListener("scroll", updateArrowStates, { passive: true });
+    window.addEventListener("resize", updateArrowStates, { passive: true });
+
+    // Initial arrow state checks
+    setTimeout(updateArrowStates, 60);
+    setTimeout(updateArrowStates, 350);
+
+    // Support Shift + Mouse Wheel for horizontal scrolling without blocking normal vertical page scroll
+    scrollWrapper.addEventListener("wheel", (e) => {
+      if (e.shiftKey) {
+        e.preventDefault();
+        scrollWrapper.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+
+    // Drag-to-scroll support for desktop
+    let isDown = false;
+    let startX = 0;
+    let initialScroll = 0;
+
+    scrollWrapper.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      isDown = true;
+      startX = e.pageX - scrollWrapper.offsetLeft;
+      initialScroll = scrollWrapper.scrollLeft;
+      scrollWrapper.style.cursor = "grabbing";
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (isDown) {
+        isDown = false;
+        if (scrollWrapper) scrollWrapper.style.cursor = "";
+      }
+    });
+
+    scrollWrapper.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - scrollWrapper.offsetLeft;
+      const walk = (x - startX) * 1.3;
+      scrollWrapper.scrollLeft = initialScroll - walk;
+    });
+
+    // Zero-lag passive header shadow on scroll (Zero layout shift, 100% fluid vertical scrolling)
+    let isTicking = false;
+    const handleScroll = () => {
+      if (!isTicking) {
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          if (header) header.classList.toggle("scrolled", y > 40);
+          if (navBar) navBar.classList.toggle("scrolled", y > 40);
+          isTicking = false;
+        });
+        isTicking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
   }
 
   // ==========================================
@@ -1603,9 +1756,9 @@ class StorefrontController {
             </div>
             <div>
               ${isCurrentApplied
-                ? `<span style="font-size: 0.7rem; color: #059669; font-weight: 800;">Applied ✓</span>`
-                : `<button type="button" class="btn btn-gold btn-xs" style="font-size: 0.68rem; padding: 0.15rem 0.5rem; font-weight: 700;" onclick="window.storefront && window.storefront.quickApplyCoupon('${c.code}')">Apply</button>`
-              }
+            ? `<span style="font-size: 0.7rem; color: #059669; font-weight: 800;">Applied ✓</span>`
+            : `<button type="button" class="btn btn-gold btn-xs" style="font-size: 0.68rem; padding: 0.15rem 0.5rem; font-weight: 700;" onclick="window.storefront && window.storefront.quickApplyCoupon('${c.code}')">Apply</button>`
+          }
             </div>
           </div>
         `;
@@ -2847,6 +3000,348 @@ class StorefrontController {
     setTimeout(() => {
       toast.remove();
     }, 4000);
+  }
+
+  // ==========================================================================
+  // STOREFRONT BULK ORDERS & WHOLESALE SESSION
+  // ==========================================================================
+  initBulkOrdersSync() {
+    // 1. BroadcastChannel across tabs/windows
+    if (typeof BroadcastChannel !== "undefined") {
+      try {
+        const bc = new BroadcastChannel("st_bulk_sync");
+        bc.onmessage = (event) => {
+          if (event.data && (event.data.type === "BULK_SETTINGS_UPDATED" || event.data.type === "BULK_PACKAGES_UPDATED")) {
+            this.renderBulkOrdersSection();
+          }
+        };
+      } catch (e) {
+        console.warn("[Storefront] Bulk BroadcastChannel notice:", e);
+      }
+    }
+
+    // 2. Storage event listener (when admin toggles master switch or adds packages in another tab)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "st_bulk_settings_v1" || e.key === "st_bulk_packages_v1") {
+        this.renderBulkOrdersSection();
+      }
+    });
+
+    // 3. Same-window custom events from store
+    window.addEventListener("bulkSettingsUpdated", () => this.renderBulkOrdersSection());
+    window.addEventListener("bulkPackagesUpdated", () => this.renderBulkOrdersSection());
+  }
+
+  scrollToBulkSection() {
+    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+    if (!isShopPage) {
+      window.location.href = "shop.html#bulkOrdersStoreSection";
+      return;
+    }
+
+    if (this.currentPage && this.currentPage !== "explore") {
+      this.navigateToPage("explore", false);
+    }
+    setTimeout(() => {
+      const section = document.getElementById("bulkOrdersStoreSection");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 150);
+  }
+
+  renderBulkOrdersSection() {
+    if (!window.store || typeof window.store.getBulkSettings !== "function") return;
+
+    const settings = window.store.getBulkSettings();
+    const isLive = Boolean(settings && settings.enabled !== false);
+
+    const section = document.getElementById("bulkOrdersStoreSection");
+    const headerBtn = document.getElementById("headerBulkOrdersBtn");
+    const mobileBtn = document.getElementById("mobileNavBulkBtn");
+
+    // Toggle header button visibility
+    if (headerBtn) {
+      headerBtn.style.display = isLive ? "inline-flex" : "none";
+    }
+
+    // Toggle mobile drawer button visibility
+    if (mobileBtn) {
+      mobileBtn.style.display = isLive ? "flex" : "none";
+    }
+
+    // If section element doesn't exist on this page (e.g. shop.html), return
+    if (!section) return;
+
+    // CASE 1: OFF -> COMPLETELY HIDDEN IN REAL TIME WITH ZERO FOOTPRINT
+    if (!isLive) {
+      section.style.display = "none";
+      const grid = document.getElementById("bulkPackagesStoreGrid");
+      if (grid) grid.innerHTML = "";
+      return;
+    }
+
+    // CASE 2: ON -> RENDER BULK ORDERS SESSION ON WEBSITE
+    if (this.currentPage && this.currentPage !== "explore") {
+      section.style.display = "none";
+      return;
+    }
+    section.style.display = "block";
+
+    // Update section headlines/badges if customized
+    const badgeEl = document.getElementById("bulkSectionBadge");
+    const headlineEl = document.getElementById("bulkSectionHeadline");
+    const subtitleEl = document.getElementById("bulkSectionSubtitle");
+
+    if (badgeEl && settings.badge) badgeEl.textContent = settings.badge;
+    if (headlineEl && settings.title) headlineEl.textContent = settings.title;
+    if (subtitleEl && settings.subtitle) subtitleEl.textContent = settings.subtitle;
+
+    // Render active packages
+    const grid = document.getElementById("bulkPackagesStoreGrid");
+    if (!grid) return;
+
+    const allPackages = window.store.getBulkPackages() || [];
+    const activePackages = allPackages.filter(p => p.isActive !== false);
+
+    if (activePackages.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: 12px;">
+          <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">✨</span>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--text-heading);">Exclusive Weaving Batches in Preparation</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 460px; margin: 0 auto 1rem;">
+            New bulk packages for the upcoming wedding season are being curated by our master weavers.
+          </p>
+          <button type="button" class="btn btn-gold btn-sm" onclick="window.storefront.openBulkInquiryModal('custom')">
+            Request Custom Troupe Quote ➔
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = activePackages.map(pkg => {
+      const wholesaleFormatted = Number(pkg.wholesalePrice || 0).toLocaleString("en-IN");
+      const retailFormatted = Number(pkg.retailMrp || (pkg.wholesalePrice * 2)).toLocaleString("en-IN");
+      const discount = pkg.discountPercent || Math.round(((pkg.retailMrp - pkg.wholesalePrice) / pkg.retailMrp) * 100) || 50;
+
+      return `
+        <div class="bulk-store-card" id="bulk-card-${pkg.id}">
+          <div class="bulk-card-media">
+            <img src="${pkg.image || 'assets/images/family_matching_combo.jpg'}" alt="${pkg.title}" loading="lazy" onerror="this.src='assets/images/hero_banner.jpg'" />
+            <span class="bulk-card-badge">${pkg.badge || '✨ Verified Lot'}</span>
+            <span class="bulk-card-discount-tag">${discount}% WHOLESALE SAVINGS</span>
+          </div>
+
+          <div class="bulk-card-content">
+            <span class="bulk-card-category">${pkg.category || 'Wholesale Lot'}</span>
+            <h3 class="bulk-card-title">${pkg.title}</h3>
+            <p class="bulk-card-desc">${pkg.description || ''}</p>
+
+            <div class="bulk-card-specs">
+              <div><strong>🧵 Weave:</strong> ${pkg.fabric || '100% Pure Kanchipuram Silk'}</div>
+              <div><strong>📦 Set:</strong> ${pkg.inclusions || 'Standard assortment'}</div>
+              <div><strong>⏱️ Lead Time:</strong> ${pkg.timeline || '10-15 Days'}</div>
+            </div>
+
+            <div class="bulk-card-pricing">
+              <span class="bulk-wholesale-rate">₹${wholesaleFormatted}</span>
+              <span class="bulk-retail-mrp">₹${retailFormatted}</span>
+              <span class="bulk-moq-pill">MOQ: ${pkg.moq || 15} ${pkg.unitLabel || 'Pieces'}</span>
+            </div>
+
+            <button type="button" class="btn btn-gold btn-sm" onclick="window.storefront.openBulkInquiryModal('${pkg.id}')" style="width: 100%; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
+              <span>📋</span> Enquire for This Lot ➔
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  setupBulkInquiryModal() {
+    const modal = document.getElementById("bulkInquiryModal");
+    if (!modal) return;
+
+    const closeBtn = document.getElementById("closeBulkInquiryModalBtn");
+    const cancelBtn = document.getElementById("cancelBulkInquiryBtn");
+    const closeSuccessBtn = document.getElementById("bulkInquiryCloseSuccessBtn");
+    const form = document.getElementById("customerBulkInquiryForm");
+
+    const closeModal = () => this.closeBulkInquiryModal();
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+    if (closeSuccessBtn) closeSuccessBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("active")) {
+        closeModal();
+      }
+    });
+
+    if (form) {
+      form.addEventListener("submit", (e) => this.handleCustomerBulkInquirySubmit(e));
+    }
+  }
+
+  openBulkInquiryModal(packageId = "custom") {
+    const modal = document.getElementById("bulkInquiryModal");
+    if (!modal) return;
+
+    const form = document.getElementById("customerBulkInquiryForm");
+    const successBox = document.getElementById("bulkInquirySuccessContainer");
+    const pkgBanner = document.getElementById("bulkInquirySelectedPkgBanner");
+    const pkgTitleEl = document.getElementById("bulkInquirySelectedPkgTitle");
+    const pkgPriceEl = document.getElementById("bulkInquirySelectedPkgPrice");
+    const pkgIdInput = document.getElementById("bulkInquiryPackageId");
+    const piecesInput = document.getElementById("bulkCustPieces");
+    const typeSelect = document.getElementById("bulkCustOrderType");
+
+    if (form) {
+      form.reset();
+      form.style.display = "flex";
+    }
+    if (successBox) successBox.style.display = "none";
+
+    const deadlineInput = document.getElementById("bulkCustDeadline");
+    if (deadlineInput) {
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + 15);
+      deadlineInput.value = targetDate.toISOString().split("T")[0];
+    }
+
+    if (packageId && packageId !== "custom" && window.store) {
+      const pkg = window.store.getBulkPackageById(packageId);
+      if (pkg) {
+        if (pkgIdInput) pkgIdInput.value = pkg.id;
+        if (pkgBanner) pkgBanner.style.display = "block";
+        if (pkgTitleEl) pkgTitleEl.textContent = pkg.title;
+        if (pkgPriceEl) {
+          pkgPriceEl.textContent = `Wholesale: ₹${Number(pkg.wholesalePrice).toLocaleString("en-IN")} / unit (Showroom MRP ₹${Number(pkg.retailMrp).toLocaleString("en-IN")}) • MOQ: ${pkg.moq} ${pkg.unitLabel || 'Pcs'}`;
+        }
+        if (piecesInput) piecesInput.value = pkg.moq || 15;
+        if (typeSelect) {
+          if (pkg.category && pkg.category.toLowerCase().includes("wedding")) {
+            typeSelect.value = "Wedding Bulk";
+          } else if (pkg.category && pkg.category.toLowerCase().includes("boutique")) {
+            typeSelect.value = "Boutique Reseller";
+          } else if (pkg.category && pkg.category.toLowerCase().includes("corporate")) {
+            typeSelect.value = "Corporate Gifting";
+          } else {
+            typeSelect.value = "Wholesale";
+          }
+        }
+      }
+    } else {
+      if (pkgIdInput) pkgIdInput.value = "";
+      if (pkgBanner) pkgBanner.style.display = "none";
+      if (piecesInput) piecesInput.value = 15;
+      if (typeSelect) typeSelect.value = "Customer Bulk Inquiry";
+    }
+
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  closeBulkInquiryModal() {
+    const modal = document.getElementById("bulkInquiryModal");
+    if (modal) {
+      modal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  }
+
+  handleCustomerBulkInquirySubmit(e) {
+    e.preventDefault();
+    if (!window.store || typeof window.store.addBulkOrder !== "function") return;
+
+    const form = document.getElementById("customerBulkInquiryForm");
+    const name = document.getElementById("bulkCustName")?.value.trim() || "Valued Patron";
+    const phone = document.getElementById("bulkCustPhone")?.value.trim() || "";
+    const email = document.getElementById("bulkCustEmail")?.value.trim() || "";
+    const company = document.getElementById("bulkCustCompany")?.value.trim() || name;
+    const orderType = document.getElementById("bulkCustOrderType")?.value || "Customer Bulk Inquiry";
+    const pieces = parseInt(document.getElementById("bulkCustPieces")?.value, 10) || 15;
+    const deadline = document.getElementById("bulkCustDeadline")?.value || "";
+    const city = document.getElementById("bulkCustCity")?.value.trim() || "";
+    const gstin = document.getElementById("bulkCustGstin")?.value.trim() || "Unregistered / Individual";
+    const notes = document.getElementById("bulkCustNotes")?.value.trim() || "";
+    const packageId = document.getElementById("bulkInquiryPackageId")?.value || "";
+
+    let pkgTitle = "Custom Handloom Bulk Requirement";
+    let unitRate = 3500;
+    if (packageId) {
+      const pkg = window.store.getBulkPackageById(packageId);
+      if (pkg) {
+        pkgTitle = pkg.title;
+        unitRate = pkg.wholesalePrice || 3500;
+      }
+    }
+
+    const subtotal = pieces * unitRate;
+    const gst = Math.round(subtotal * 0.05);
+    const totalAmount = subtotal + gst;
+
+    const itemsDesc = `${pieces}x [${pkgTitle}] • Destination: ${city} • Details: ${notes || 'Standard specifications requested'}`;
+
+    const newOrderData = {
+      clientCompany: company,
+      contactPerson: name,
+      phone: phone,
+      email: email,
+      gstin: gstin,
+      billingAddress: `${city}, India`,
+      shippingAddress: `${city}, India`,
+      orderType: orderType,
+      itemsDescription: itemsDesc,
+      totalPieces: pieces,
+      subtotalINR: subtotal,
+      gstINR: gst,
+      totalAmountINR: totalAmount,
+      advancePaidINR: 0,
+      balanceDueINR: totalAmount,
+      paymentStatus: "Unpaid",
+      orderStatus: "New Inquiry",
+      deliveryDeadline: deadline,
+      priority: pieces >= 50 ? "High" : "Standard",
+      productionUnit: "Loom Shed Unit 1",
+      notes: `Online Customer Inquiry from Storefront • Selected Package: ${packageId || 'Custom Quote'} • ${notes}`
+    };
+
+    const savedOrder = window.store.addBulkOrder(newOrderData);
+
+    if (form) form.style.display = "none";
+    const successBox = document.getElementById("bulkInquirySuccessContainer");
+    const confirmIdEl = document.getElementById("bulkInquiryConfirmId");
+    const waChatBtn = document.getElementById("bulkInquiryWhatsAppChatBtn");
+
+    if (confirmIdEl && savedOrder) {
+      confirmIdEl.textContent = `Reference #${savedOrder.bulkOrderId}`;
+    }
+
+    if (waChatBtn && savedOrder) {
+      const waText = encodeURIComponent(
+        `Hello Srinivasa Textiles Master Weavers,\n` +
+        `I have just submitted a Bulk Inquiry #${savedOrder.bulkOrderId}.\n` +
+        `Name: ${name}\n` +
+        `Company/Occasion: ${company}\n` +
+        `Requirement: ${pkgTitle}\n` +
+        `Pieces: ${pieces} Units\n` +
+        `Destination: ${city}\n` +
+        `Needed By: ${deadline}\n` +
+        `Please share the formal quote and fabric swatches.`
+      );
+      waChatBtn.href = `https://wa.me/916381265149?text=${waText}`;
+    }
+
+    if (successBox) successBox.style.display = "block";
+
+    this.showToast(`🎉 Bulk Inquiry #${savedOrder.bulkOrderId} submitted successfully!`, "success");
   }
 }
 

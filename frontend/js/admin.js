@@ -442,7 +442,9 @@ class AdminController {
       this.renderInventoryKPIs();
       this.renderInventoryTable();
     } else if (normTab === "bulk") {
+      this.renderBulkOrdersMasterSwitch();
       this.renderBulkOrdersSession();
+      this.renderBulkPackagesSection();
       this.renderBulkOrderKPIs();
     } else if (normTab === "feedbacks" || normTab === "feedback") {
       this.renderFeedbacksTable();
@@ -1019,7 +1021,325 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
   }
 
   // ==========================================================================
-  // BULK ORDER SESSION & B2B OPERATIONS
+  // BULK ORDER 2 SESSIONS & MASTER SWITCH CONTROLS
+  // ==========================================================================
+  switchBulkSubTab(subTab) {
+    const btnInquiries = document.getElementById("btnSubtabBulkInquiries");
+    const btnPackages = document.getElementById("btnSubtabBulkPackages");
+    const paneInquiries = document.getElementById("bulkSubSession-inquiries");
+    const panePackages = document.getElementById("bulkSubSession-packages");
+
+    if (subTab === "packages") {
+      if (btnInquiries) btnInquiries.classList.remove("active");
+      if (btnPackages) btnPackages.classList.add("active");
+      if (paneInquiries) paneInquiries.classList.remove("active");
+      if (panePackages) panePackages.classList.add("active");
+      this.renderBulkPackagesSection();
+    } else {
+      if (btnInquiries) btnInquiries.classList.add("active");
+      if (btnPackages) btnPackages.classList.remove("active");
+      if (paneInquiries) paneInquiries.classList.add("active");
+      if (panePackages) panePackages.classList.remove("active");
+      this.renderBulkOrdersSession();
+    }
+  }
+
+  handleMasterBulkToggle(checked) {
+    if (!window.store) return;
+    window.store.setBulkEnabled(checked);
+    this.renderBulkOrdersMasterSwitch();
+    const msg = checked
+      ? "Wholesale & Bulk Orders session is now ON (Visible on live website)!"
+      : "Wholesale & Bulk Orders session is now OFF (Removed from live website).";
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(msg, checked ? "success" : "warning");
+    } else {
+      alert(msg);
+    }
+  }
+
+  renderBulkOrdersMasterSwitch() {
+    if (!window.store) return;
+    const settings = window.store.getBulkSettings();
+    const toggle = document.getElementById("bulkMasterToggle");
+    const label = document.getElementById("bulkToggleStateLabel");
+    if (toggle) {
+      toggle.checked = Boolean(settings && settings.enabled);
+    }
+    if (label) {
+      if (settings && settings.enabled) {
+        label.textContent = "SESSION ON (VISIBLE ON WEBSITE)";
+        label.style.color = "var(--color-success, #10B981)";
+      } else {
+        label.textContent = "SESSION OFF (REMOVED FROM WEBSITE)";
+        label.style.color = "#EF4444";
+      }
+    }
+  }
+
+  // ==========================================================================
+  // SESSION 2: WEBSITE BULK PACKAGES (CATALOG & ADD NEW)
+  // ==========================================================================
+  renderBulkPackagesSection() {
+    if (!window.store) return;
+    const packages = window.store.getBulkPackages() || [];
+    const container = document.getElementById("adminBulkPackagesList");
+    const activeCount = packages.filter(p => p.isActive).length;
+
+    const countBadge = document.getElementById("adminBulkPackagesCountBadge");
+    if (countBadge) {
+      countBadge.textContent = `${activeCount} Active`;
+    }
+
+    const summaryBadge = document.getElementById("bulkPackagesActiveSummaryBadge");
+    if (summaryBadge) {
+      summaryBadge.textContent = `${activeCount} of ${packages.length} Packages Active`;
+    }
+
+    if (!container) return;
+
+    if (packages.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2.5rem; color: var(--text-muted); background: var(--bg-surface-alt); border-radius: 8px;">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>
+          <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Packages Created Yet</h4>
+          <p style="font-size: 0.825rem; margin: 0;">Use the form above to add your first wholesale package for the website.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = packages.map(pkg => {
+      const wholesalePrice = Number(pkg.wholesalePrice || 0).toLocaleString("en-IN");
+      const retailMrp = Number(pkg.retailMrp || 0).toLocaleString("en-IN");
+      const statusBadge = pkg.isActive
+        ? `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; font-size: 0.72rem;">🟢 Live on Website</span>`
+        : `<span class="status-badge" style="background: rgba(156, 163, 175, 0.15); color: #9CA3AF; border: 1px solid #9CA3AF; font-size: 0.72rem;">⚪ Paused (Hidden)</span>`;
+
+      return `
+        <div class="admin-bulk-pkg-card" data-pkg-id="${pkg.id}">
+          <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--border-color); background: var(--bg-surface-alt); flex-shrink: 0;">
+            <img src="${pkg.image || 'assets/images/family_matching_combo.jpg'}" alt="${pkg.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/family_matching_combo.jpg'" />
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <strong style="color: var(--text-heading); font-size: 1.05rem;">${pkg.title}</strong>
+              <span class="status-badge" style="background: rgba(212, 175, 55, 0.15); color: var(--color-gold); font-size: 0.7rem;">${pkg.category}</span>
+              ${pkg.badge ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-size: 0.7rem;">${pkg.badge}</span>` : ""}
+              ${statusBadge}
+            </div>
+
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+              ${pkg.description}
+            </p>
+
+            <div style="display: flex; gap: 1.25rem; font-size: 0.825rem; flex-wrap: wrap; margin-top: 0.25rem;">
+              <span><strong>MOQ:</strong> <span style="color: var(--color-gold);">${pkg.moq} ${pkg.unitLabel || 'Pcs'}</span></span>
+              <span><strong>Wholesale:</strong> <span style="color: var(--text-heading); font-weight: 800;">₹${wholesalePrice}</span> <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.75rem;">₹${retailMrp}</span></span>
+              <span style="color: #10B981; font-weight: 700;">${pkg.discountPercent || 50}% OFF Wholesale</span>
+              <span style="color: var(--text-muted);">⏳ ${pkg.timeline || '10-14 Days'}</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; min-width: 140px;">
+            <button type="button" class="btn ${pkg.isActive ? 'btn-outline' : 'btn-outline-gold'} btn-xs" onclick="window.admin && window.admin.handleToggleBulkPackage('${pkg.id}')">
+              ${pkg.isActive ? '⏸️ Pause on Website' : '▶️ Publish on Website'}
+            </button>
+            <div style="display: flex; gap: 0.35rem;">
+              <button type="button" class="btn btn-outline btn-xs" style="flex: 1;" onclick="window.admin && window.admin.handleEditBulkPackage('${pkg.id}')">
+                ✏️ Edit
+              </button>
+              <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: #FECDD3;" onclick="window.admin && window.admin.handleDeleteBulkPackage('${pkg.id}')">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  handleSaveBulkPackage(e) {
+    if (e) e.preventDefault();
+    if (!window.store) return;
+
+    const editId = document.getElementById("bulkPkgEditId")?.value?.trim();
+    const title = document.getElementById("bulkPkgTitle")?.value?.trim();
+    const category = document.getElementById("bulkPkgCategory")?.value;
+    const badge = document.getElementById("bulkPkgBadge")?.value?.trim();
+    const moq = parseInt(document.getElementById("bulkPkgMOQ")?.value, 10) || 15;
+    const unitLabel = document.getElementById("bulkPkgUnitLabel")?.value || "Pieces";
+    const wholesalePrice = parseFloat(document.getElementById("bulkPkgWholesalePrice")?.value) || 3500;
+    const retailMrp = parseFloat(document.getElementById("bulkPkgRetailMrp")?.value) || (wholesalePrice * 2);
+    const timeline = document.getElementById("bulkPkgTimeline")?.value?.trim() || "10-14 Working Days";
+    const fabric = document.getElementById("bulkPkgFabric")?.value?.trim();
+    const desc = document.getElementById("bulkPkgDesc")?.value?.trim();
+    const inclusions = document.getElementById("bulkPkgInclusions")?.value?.trim();
+    const image = document.getElementById("bulkPkgImageURL")?.value?.trim() || "assets/images/family_matching_combo.jpg";
+    const isActive = document.getElementById("bulkPkgIsActive") ? document.getElementById("bulkPkgIsActive").checked : true;
+
+    if (!title || !wholesalePrice) {
+      alert("Please enter package title and wholesale price.");
+      return;
+    }
+
+    const discountPercent = retailMrp > wholesalePrice ? Math.round(((retailMrp - wholesalePrice) / retailMrp) * 100) : 50;
+
+    const pkgData = {
+      title,
+      category,
+      badge,
+      moq,
+      unitLabel,
+      wholesalePrice,
+      retailMrp,
+      discountPercent,
+      timeline,
+      fabric,
+      description: desc,
+      inclusions,
+      image,
+      isActive
+    };
+
+    if (editId) {
+      window.store.updateBulkPackage(editId, pkgData);
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast(`Updated bulk package "${title}" successfully!`, "success");
+      }
+    } else {
+      window.store.addBulkPackage(pkgData);
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast(`Published new bulk package "${title}" to website!`, "success");
+      }
+    }
+
+    this.resetBulkPackageForm();
+    this.renderBulkPackagesSection();
+  }
+
+  resetBulkPackageForm() {
+    const form = document.getElementById("adminAddBulkPackageForm");
+    if (form) form.reset();
+    const editIdInput = document.getElementById("bulkPkgEditId");
+    if (editIdInput) editIdInput.value = "";
+    const heading = document.getElementById("bulkPackageFormHeading");
+    if (heading) heading.innerHTML = `<span>➕</span> Add New Bulk Order Package for Website`;
+    const btn = document.getElementById("saveBulkPkgSubmitBtn");
+    if (btn) btn.innerHTML = `<span>🚀</span> Publish Bulk Package to Website`;
+    const imgThumb = document.getElementById("bulkPkgPreviewImg");
+    if (imgThumb) imgThumb.src = "assets/images/family_matching_combo.jpg";
+    const urlInput = document.getElementById("bulkPkgImageURL");
+    if (urlInput) urlInput.value = "assets/images/family_matching_combo.jpg";
+    this.recalcBulkSavings();
+  }
+
+  handleEditBulkPackage(id) {
+    if (!window.store) return;
+    const pkg = window.store.getBulkPackageById(id);
+    if (!pkg) return;
+
+    const editId = document.getElementById("bulkPkgEditId");
+    if (editId) editId.value = pkg.id;
+    const title = document.getElementById("bulkPkgTitle");
+    if (title) title.value = pkg.title || "";
+    const cat = document.getElementById("bulkPkgCategory");
+    if (cat) cat.value = pkg.category || "Wedding Troupe";
+    const badge = document.getElementById("bulkPkgBadge");
+    if (badge) badge.value = pkg.badge || "";
+    const moq = document.getElementById("bulkPkgMOQ");
+    if (moq) moq.value = pkg.moq || 15;
+    const unit = document.getElementById("bulkPkgUnitLabel");
+    if (unit) unit.value = pkg.unitLabel || "Sets";
+    const wsPrice = document.getElementById("bulkPkgWholesalePrice");
+    if (wsPrice) wsPrice.value = pkg.wholesalePrice || 3500;
+    const mrp = document.getElementById("bulkPkgRetailMrp");
+    if (mrp) mrp.value = pkg.retailMrp || 7000;
+    const tl = document.getElementById("bulkPkgTimeline");
+    if (tl) tl.value = pkg.timeline || "10-14 Working Days";
+    const fab = document.getElementById("bulkPkgFabric");
+    if (fab) fab.value = pkg.fabric || "";
+    const desc = document.getElementById("bulkPkgDesc");
+    if (desc) desc.value = pkg.description || "";
+    const inc = document.getElementById("bulkPkgInclusions");
+    if (inc) inc.value = pkg.inclusions || "";
+    const url = document.getElementById("bulkPkgImageURL");
+    if (url) url.value = pkg.image || "";
+    const imgThumb = document.getElementById("bulkPkgPreviewImg");
+    if (imgThumb) imgThumb.src = pkg.image || "assets/images/family_matching_combo.jpg";
+    const activeCheck = document.getElementById("bulkPkgIsActive");
+    if (activeCheck) activeCheck.checked = pkg.isActive !== false;
+
+    const heading = document.getElementById("bulkPackageFormHeading");
+    if (heading) heading.innerHTML = `<span>✏️</span> Edit Bulk Package: ${pkg.title}`;
+    const btn = document.getElementById("saveBulkPkgSubmitBtn");
+    if (btn) btn.innerHTML = `<span>💾</span> Update Bulk Package`;
+
+    this.recalcBulkSavings();
+    document.getElementById("adminAddBulkPackageForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  handleToggleBulkPackage(id) {
+    if (!window.store) return;
+    const newState = window.store.toggleBulkPackageStatus(id);
+    this.renderBulkPackagesSection();
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(newState ? "Bulk package is now Live on website." : "Bulk package has been Paused from website.", "info");
+    }
+  }
+
+  handleDeleteBulkPackage(id) {
+    if (!window.store) return;
+    const pkg = window.store.getBulkPackageById(id);
+    if (!pkg) return;
+    if (confirm(`Are you sure you want to remove the bulk package "${pkg.title}" from the website?`)) {
+      window.store.deleteBulkPackage(id);
+      this.renderBulkPackagesSection();
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast("Bulk package removed from website.", "warning");
+      }
+    }
+  }
+
+  recalcBulkSavings() {
+    const wholesale = parseFloat(document.getElementById("bulkPkgWholesalePrice")?.value) || 0;
+    const retail = parseFloat(document.getElementById("bulkPkgRetailMrp")?.value) || 0;
+    const badge = document.getElementById("bulkPkgSavingsBadge");
+    if (!badge) return;
+
+    if (retail > wholesale && retail > 0) {
+      const pct = Math.round(((retail - wholesale) / retail) * 100);
+      const savingsPerUnit = retail - wholesale;
+      badge.textContent = `${pct}% OFF (Save ₹${savingsPerUnit.toLocaleString("en-IN")}/unit)`;
+      badge.style.color = "#10B981";
+      badge.style.borderColor = "#10B981";
+    } else {
+      badge.textContent = "Wholesale Pricing Tier";
+      badge.style.color = "var(--color-gold)";
+      badge.style.borderColor = "var(--color-gold)";
+    }
+  }
+
+  setBulkPkgPresetImage(url) {
+    const urlInput = document.getElementById("bulkPkgImageURL");
+    const imgThumb = document.getElementById("bulkPkgPreviewImg");
+    if (urlInput) urlInput.value = url;
+    if (imgThumb) imgThumb.src = url;
+  }
+
+  handleBulkPkgImageUpload(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.setBulkPkgPresetImage(e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // ==========================================================================
+  // BULK ORDER SESSION 1: CUSTOMER INQUIRIES & MASTER LEDGER
   // ==========================================================================
   renderBulkOrdersSession() {
     const tbody = document.getElementById("adminBulkOrdersTableBody");
@@ -1037,6 +1357,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
         (o.clientCompany && o.clientCompany.toLowerCase().includes(searchTerm)) ||
         (o.contactPerson && o.contactPerson.toLowerCase().includes(searchTerm)) ||
         (o.phone && o.phone.toLowerCase().includes(searchTerm)) ||
+        (o.email && o.email.toLowerCase().includes(searchTerm)) ||
         (o.gstin && o.gstin.toLowerCase().includes(searchTerm));
 
       const matchType = typeFilter === "ALL" || o.orderType === typeFilter;
@@ -1047,7 +1368,12 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
 
     const countBadge = document.getElementById("bulkOrdersCountBadge");
     if (countBadge) {
-      countBadge.textContent = `${filtered.length} Active B2B Order${filtered.length === 1 ? "" : "s"}`;
+      countBadge.textContent = `${filtered.length} B2B Order${filtered.length === 1 ? "" : "s"} / Inquiries`;
+    }
+
+    const inquiriesCountBadge = document.getElementById("adminBulkInquiriesCountBadge");
+    if (inquiriesCountBadge) {
+      inquiriesCountBadge.textContent = `${allOrders.length}`;
     }
 
     if (filtered.length === 0) {
@@ -1065,12 +1391,16 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     }
 
     tbody.innerHTML = filtered.map(order => {
+      const isNewInquiry = order.orderStatus === "New Inquiry";
+      const isQuoteSent = order.orderStatus === "Quote Sent";
       const isUnderProd = order.orderStatus === "Under Production";
       const isReady = order.orderStatus === "Ready to Ship";
       const isDispatched = order.orderStatus === "Dispatched";
       const isDelivered = order.orderStatus === "Delivered";
 
-      const priorityBadge = order.priority === "Urgent"
+      const priorityBadge = order.orderStatus === "New Inquiry"
+        ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid #FDE68A;">✨ New Inquiry</span>`
+        : order.priority === "Urgent"
         ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);">🔥 Urgent</span>`
         : order.priority === "High Priority"
         ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);">⚡ High</span>`
@@ -1107,7 +1437,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               <strong style="font-size: 0.885rem; color: var(--color-primary); line-height: 1.3;">${order.clientCompany}</strong>
               <span style="font-size: 0.785rem; color: var(--text-main); font-weight: 600;">👤 ${order.contactPerson}</span>
               <span style="font-size: 0.735rem; color: #64748B;">📞 ${order.phone}</span>
-              ${order.gstin ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
+              ${order.email ? `<span style="font-size: 0.715rem; color: var(--text-muted);">✉️ ${order.email}</span>` : ""}
+              ${order.gstin && order.gstin !== 'URP-CUSTOMER-INQUIRY' ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
             </div>
           </td>
           <td>
@@ -1137,6 +1468,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
               <select class="bulk-status-dropdown form-control" data-id="${order.bulkOrderId}" style="font-size: 0.775rem; padding: 0.35rem 0.55rem; border-radius: var(--radius-sm); font-weight: 700; width: 100%; min-width: 140px; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                <option value="New Inquiry" ${isNewInquiry ? "selected" : ""}>✨ New Inquiry</option>
+                <option value="Quote Sent" ${isQuoteSent ? "selected" : ""}>💬 Quote Sent</option>
                 <option value="Under Production" ${isUnderProd ? "selected" : ""}>⏳ Under Production</option>
                 <option value="Ready to Ship" ${isReady ? "selected" : ""}>📦 Ready to Ship</option>
                 <option value="Dispatched" ${isDispatched ? "selected" : ""}>🚚 Dispatched</option>

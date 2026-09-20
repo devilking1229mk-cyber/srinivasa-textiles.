@@ -840,3 +840,87 @@ const INITIAL_BULK_ORDERS = [
   }
 ];
 
+// Default Storefront Bulk Orders Session Settings (Controlled by Admin Master Switch)
+const DEFAULT_BULK_SETTINGS = {
+  enabled: true,
+  title: "Wholesale & Direct Pitloom Bulk Orders",
+  badge: "🏬 B2B DIRECT WEAVERS WHOLESALE",
+  headline: "Handloom Bulk Orders & Wedding Troupe Ensembles",
+  subtitle: "Direct from our Kanchipuram master weaving pit-looms. Specially curated bulk lots, certified pure silks, wholesale pricing, and dedicated relationship draper for wedding planners, dance troupes, boutiques, and corporate institutions.",
+  whatsappNumber: "916381265149",
+  minOrderNotice: "Minimum Order Quantity applies. Custom colorway dyeing available for lots over 25 pieces."
+};
+
+// Default Bulk Packages / Offerings published on the website
+const DEFAULT_BULK_PACKAGES = [
+  {
+    id: "BLK-PKG-01",
+    title: "Grand Muhurtham Wedding Bridal Trousseau Lot",
+    category: "Wedding Troupe",
+    badge: "👑 Bridal Troupe Favorite",
+    moq: 15,
+    unitLabel: "Sets",
+    wholesalePrice: 8500,
+    retailMrp: 17000,
+    discountPercent: 50,
+    timeline: "12-15 Working Days",
+    fabric: "100% Pure Kanchipuram Mulberry Silk with Korvai Interlocking Weave & Tested Silver-Gold Zari",
+    description: "Authentic Kanchipuram bridal silk sarees with heavy contrast zari pallu and rich borders. Synchronized ritual dye lots suitable for bridal entourage, family elders, and reception celebrations.",
+    inclusions: "15 Pure Silk Sarees + Matching Unstitched Silk Blouse Pieces + Silk Mark Tags + Luxury Rigid Gift Boxes",
+    image: "assets/images/family_matching_combo.jpg",
+    isActive: true
+  },
+  {
+    id: "BLK-PKG-02",
+    title: "Kanchipuram Pure Silk Sarees Boutique Reseller Pack",
+    category: "Boutique Reseller",
+    badge: "🔥 Reseller Bestseller",
+    moq: 25,
+    unitLabel: "Pieces",
+    wholesalePrice: 4800,
+    retailMrp: 10500,
+    discountPercent: 54,
+    timeline: "7-10 Working Days",
+    fabric: "Pure Mulberry Soft Silk with Certified SMOI Silk Mark & Tested Zari Borders",
+    description: "Curated assortment of contemporary temple motifs and traditional korvai designs for retail boutiques and ethnic showrooms across India and worldwide export.",
+    inclusions: "Assorted vibrant jewel colors (Crimson, Mustard, Peacock Blue, Emerald Green) + Individual Barcoded Pouches + Silk Mark Certification",
+    image: "assets/images/kanchipuram_crimson.webp",
+    isActive: true
+  },
+  {
+    id: "BLK-PKG-03",
+    title: "Royal Father & Son Handloom Dhoti & Angavastram Troupe Set",
+    category: "Corporate Gifting",
+    badge: "🏛️ Temple & Troupe Set",
+    moq: 20,
+    unitLabel: "Pairs",
+    wholesalePrice: 2400,
+    retailMrp: 5200,
+    discountPercent: 54,
+    timeline: "5-7 Working Days",
+    fabric: "Pure Mulberry Handloom Silk (8 Muzham double dhoti + 4 Muzham matching angavastram)",
+    description: "Traditional pure handloom white & cream silk dhotis woven with genuine temple gold zari borders. Ideal for music academies, wedding mandapam troupes, and traditional festivals.",
+    inclusions: "20 Sets of 8-Muzham Pure Silk Dhoti & Matching Angavastram Shawl + Protective Box Packaging",
+    image: "assets/images/men_dhoti_angavastram.webp",
+    isActive: true
+  },
+  {
+    id: "BLK-PKG-04",
+    title: "Girls Heritage Pattu Pavadai Handloom Boutique Lot",
+    category: "Boutique Reseller",
+    badge: "✨ Scratch-Free Guarantee",
+    moq: 30,
+    unitLabel: "Sets",
+    wholesalePrice: 1650,
+    retailMrp: 3600,
+    discountPercent: 54,
+    timeline: "7-10 Working Days",
+    fabric: "Pure Handloom Art Silk with Breathable 100% Organic Soft Cotton Inner Lining",
+    description: "Comfort-engineered traditional South Indian pattu pavadai lehenga choli sets for girls aged 1 to 14 years. Features soft cotton lining preventing zari itchiness during long ceremonies.",
+    inclusions: "30 Sets in assorted age sizes (2-4Y, 4-6Y, 6-8Y, 8-10Y, 10-14Y) with matching ready-to-wear contrast blouses",
+    image: "assets/images/girls_pattu_pavadai.webp",
+    isActive: true
+  }
+];
+
+

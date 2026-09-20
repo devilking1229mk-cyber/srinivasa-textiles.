@@ -771,7 +771,7 @@
         </section>
 
         <!-- ==================================================================
-             TAB 3: BULK ORDERS & B2B CSV OPERATIONS HUB
+             TAB 3: BULK ORDERS & B2B WHOLESALE OPERATIONS HUB (2 SESSIONS + MASTER SWITCH)
              ================================================================== -->
         <section id="adminTab-bulk" class="admin-tab-pane">
 
@@ -782,223 +782,486 @@
                 <span>Logistics &amp; Wholesale</span> <span>/</span> <span>Bulk Operations Hub</span>
               </div>
               <h1 class="admin-section-title">
-                <span>📑</span> Bulk Orders &amp; B2B CSV Operations Hub
+                <span>📑</span> Bulk Orders &amp; B2B Wholesale Command Center
               </h1>
               <p class="admin-section-subtitle">
-                Upload wholesale client order sheets, monitor active production runs, issue GST tax invoices, and synchronize bulk catalogs.
+                Review incoming customer bulk orders, manage live website wholesale packages, and toggle storefront B2B visibility in real-time.
               </p>
             </div>
             <div class="admin-card-header-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <button type="button" class="btn btn-outline btn-sm" id="downloadBulkOrderTemplateBtn">
-                <span>⬇️</span> Bulk Orders CSV Template
+                <span>⬇️</span> CSV Template
               </button>
               <button type="button" class="btn btn-outline-gold btn-sm" id="exportBulkOrdersBtn">
-                <span>📤</span> Export Bulk Orders CSV
+                <span>📤</span> Export CSV
               </button>
               <button type="button" class="btn btn-gold btn-sm" id="openAddBulkOrderModalBtn" style="font-weight: 700;">
-                <span>➕</span> Book Bulk Order
+                <span>➕</span> Manual B2B Order
               </button>
             </div>
           </div>
 
-          <!-- BULK ORDERS LIVE METRICS KPI BAR -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-            <div class="admin-stat-card" style="border-left: 4px solid var(--color-primary);">
-              <div class="admin-stat-icon">🏢</div>
-              <div class="admin-stat-info">
-                <span class="admin-stat-label">Total Bulk Orders</span>
-                <h3 class="admin-stat-value" id="bulkKpiOrdersCount">4 Active</h3>
-                <span class="admin-stat-sub">Wholesale &amp; Wedding Troupe</span>
-              </div>
-            </div>
-
-            <div class="admin-stat-card" style="border-left: 4px solid var(--color-gold);">
-              <div class="admin-stat-icon">📦</div>
-              <div class="admin-stat-info">
-                <span class="admin-stat-label">Total Bulk Volume</span>
-                <h3 class="admin-stat-value" id="bulkKpiPiecesCount">360 Pcs</h3>
-                <span class="admin-stat-sub">Units / Sets in Commitment</span>
-              </div>
-            </div>
-
-            <div class="admin-stat-card" style="border-left: 4px solid #10B981;">
-              <div class="admin-stat-icon">💰</div>
-              <div class="admin-stat-info">
-                <span class="admin-stat-label">Wholesale Order Value</span>
-                <h3 class="admin-stat-value" id="bulkKpiTotalValue">₹67,22,625</h3>
-                <span class="admin-stat-sub" id="bulkKpiAdvanceSub">₹36,26,625 Advance Collected</span>
-              </div>
-            </div>
-
-            <div class="admin-stat-card" style="border-left: 4px solid #F59E0B;">
-              <div class="admin-stat-icon">⏳</div>
-              <div class="admin-stat-info">
-                <span class="admin-stat-label">Pending Balance Due</span>
-                <h3 class="admin-stat-value" id="bulkKpiPendingBalance">₹30,96,000</h3>
-                <span class="admin-stat-sub" id="bulkKpiProductionSub">2 Under Active Weaving</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- CARD 1: UPLOAD BULK ORDERS IN OWNER & CSV SYNC CENTER -->
-          <div class="admin-card" style="margin-bottom: 1.5rem; border: 1.5px solid rgba(212, 175, 55, 0.4); background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(212, 175, 55, 0.03) 100%);">
-            <div class="admin-card-header" style="flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.25rem;">
-              <div>
-                <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold); margin: 0 0 0.25rem 0;">
-                  <span>⚡</span> Bulk Orders Upload &amp; Batch Sync Center
-                </h3>
-                <span style="font-size: 0.825rem; color: var(--text-muted);">
-                  Upload wholesale spreadsheets (CSV) to automatically synchronize B2B client contracts, advance collections, and production deadlines.
-                </span>
-              </div>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <button type="button" class="btn btn-outline btn-sm" id="resetSampleBulkOrdersBtn" title="Restore sample verified B2B orders for demonstration">
-                  <span>🔄</span> Reload Sample Orders
-                </button>
-                <button type="button" class="btn btn-outline btn-sm" id="toggleCatalogSyncSectionBtn">
-                  <span>📦</span> Master Catalog SKU Sync ▾
-                </button>
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch;">
-              <!-- CSV UPLOAD BOX -->
-              <div style="background: var(--bg-surface-alt); border: 2px dashed rgba(212, 175, 55, 0.5); border-radius: var(--radius-md); padding: 1.5rem; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.2s ease;">
-                <div style="font-size: 2.25rem; margin-bottom: 0.5rem;">📂</div>
-                <h4 style="margin: 0 0 0.35rem 0; color: var(--color-primary); font-size: 1.05rem;">Upload Bulk Orders CSV</h4>
-                <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px; line-height: 1.4; margin: 0 0 1rem 0;">
-                  Select your CSV file containing bulk client orders, quantities, GSTINs, and delivery schedules.
+          <!-- ==================================================================
+               MASTER STOREFRONT BULK ORDERS ON / OFF CONTROL BANNER
+               ================================================================== -->
+          <div class="admin-card" style="margin-bottom: 1.5rem; border: 2px solid rgba(212, 175, 55, 0.6); background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(122, 12, 46, 0.08) 100%);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem;">
+              <div style="flex: 1; min-width: 280px;">
+                <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.35rem;">
+                  <span style="font-size: 1.35rem;">🏬</span>
+                  <h3 style="margin: 0; color: var(--color-gold); font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em;">
+                    STOREFRONT BULK ORDERS SESSION MASTER SWITCH
+                  </h3>
+                </div>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.55;">
+                  Toggle this master switch to show or completely remove the <strong>"Wholesale &amp; Bulk Orders"</strong> session on the customer storefront (<code>index.html</code> &amp; <code>shop.html</code>). When turned <strong>OFF</strong>, the bulk orders section and inquiry triggers are removed in real-time.
                 </p>
-                <input type="file" id="importBulkOrdersCsvInput" accept=".csv" class="form-control" style="font-size: 0.85rem; max-width: 280px; margin-bottom: 0.5rem;" />
-                <span style="font-size: 0.725rem; color: #10B981; font-weight: 600;">✓ Automated Schema Validation &amp; Instant Table Sync</span>
               </div>
 
-              <!-- CSV TEMPLATE & INSTRUCTIONS BOX -->
-              <div style="background: var(--bg-surface-alt); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <span style="font-size: 1.25rem;">📋</span>
-                    <h4 style="margin: 0; color: var(--color-primary); font-size: 1rem;">Official CSV Column Format</h4>
-                  </div>
-                  <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 0.75rem;">
-                    The template includes standardized fields: <code>Bulk_Order_ID</code>, <code>Client_Company</code>, <code>Contact_Person</code>, <code>Phone_WhatsApp</code>, <code>GSTIN</code>, <code>Order_Type</code>, <code>Total_Pieces</code>, <code>Total_Amount_INR</code>, <code>Advance_Paid_INR</code>, <code>Delivery_Deadline</code>.
-                  </p>
-                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <span class="status-badge" style="background: #EFF6FF; color: #1D4ED8; font-size: 0.7rem;">Wholesale</span>
-                    <span class="status-badge" style="background: #FEF3C7; color: #B45309; font-size: 0.7rem;">Wedding Troupe</span>
-                    <span class="status-badge" style="background: #F3E8FF; color: #6D28D9; font-size: 0.7rem;">Corporate Gifting</span>
-                    <span class="status-badge" style="background: #ECFDF5; color: #047857; font-size: 0.7rem;">Boutique Reseller</span>
-                  </div>
+              <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+                <div class="festive-switch-wrapper" style="display: flex; align-items: center; gap: 0.85rem;">
+                  <label class="festive-toggle-switch" title="Toggle Bulk Orders Session On/Off">
+                    <input type="checkbox" id="bulkMasterToggle" checked onchange="window.admin && window.admin.handleMasterBulkToggle(this.checked)">
+                    <span class="festive-toggle-slider"></span>
+                  </label>
+                  <span id="bulkToggleStateLabel" style="font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; color: var(--color-success);">SESSION ON (VISIBLE ON WEBSITE)</span>
                 </div>
-                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                  <button type="button" class="btn btn-outline-gold btn-sm" id="downloadBulkOrderTemplateBtn2" style="flex: 1; min-width: 140px;">
-                    ⬇️ Download CSV Template
-                  </button>
-                  <button type="button" class="btn btn-gold btn-sm" id="openAddBulkOrderModalBtn2" style="flex: 1; min-width: 140px;">
-                    ➕ Quick Manual Entry
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            <!-- COLLAPSIBLE MASTER CATALOG SKU CSV SYNC (PRESERVED) -->
-            <div id="productCatalogSyncContainer" style="display: none; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--border-color);">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-                <h4 style="margin: 0; color: var(--color-primary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                  <span>📦</span> Master Family Product Catalog CSV Sync (SKU Sync)
-                </h4>
-                <div style="display: flex; gap: 0.5rem;">
-                  <button type="button" class="btn btn-outline btn-xs" id="downloadTemplateBtn">⬇️ Catalog Template</button>
-                  <button type="button" class="btn btn-gold btn-xs" id="exportCsvBtn">📤 Export Catalog CSV</button>
-                </div>
+                <a href="shop.html#bulkOrdersStoreSection" target="_blank" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
+                  <span>👁️</span> View on Website
+                </a>
               </div>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-                Manage multi-category family SKUs with Department, Age Groups, Sizing, and GST HSN Codes in bulk.
-              </p>
-              <input type="file" id="importCsvInput" accept=".csv" class="form-control" style="font-size: 0.825rem; max-width: 320px;" />
             </div>
           </div>
 
-          <!-- CARD 2: BULK ORDER SESSION (MASTER LEDGER & TABLE) -->
-          <div class="admin-card bulk-session-card" style="padding: 0; overflow: hidden; border: 1.5px solid var(--border-color); border-radius: 12px; margin-bottom: 2rem;">
-            <!-- CARD HEADER WITH TITLE & BADGE -->
-            <div style="padding: 1.25rem 1.5rem; background: var(--bg-surface); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-              <div style="display: flex; align-items: center; gap: 0.85rem;">
-                <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(122, 12, 46, 0.35)); border: 1.5px solid var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
-                  🏢
+          <!-- ==================================================================
+               THE 2 SESSIONS SUB-NAVIGATION TABS
+               ================================================================== -->
+          <div class="bulk-subtabs-nav" id="bulkSubTabsNav">
+            <button type="button" class="bulk-subtab-btn active" id="btnSubtabBulkInquiries" onclick="window.admin && window.admin.switchBulkSubTab('inquiries')">
+              <span>📋</span> Session 1: Customer Bulk Orders &amp; Inquiries
+              <span class="badge-count" id="adminBulkInquiriesCountBadge" style="margin-left: 0.35rem; background: var(--color-gold); color: #2D0310;">4</span>
+            </button>
+            <button type="button" class="bulk-subtab-btn" id="btnSubtabBulkPackages" onclick="window.admin && window.admin.switchBulkSubTab('packages')">
+              <span>✨</span> Session 2: Website Bulk Packages (Add New Entry)
+              <span class="badge-count" id="adminBulkPackagesCountBadge" style="margin-left: 0.35rem; background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">4 Active</span>
+            </button>
+          </div>
+
+          <!-- ==================================================================
+               SESSION 1: CUSTOMER BULK ORDERS & INQUIRIES
+               ================================================================== -->
+          <div id="bulkSubSession-inquiries" class="bulk-subtab-pane active">
+
+            <!-- BULK ORDERS LIVE METRICS KPI BAR -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+              <div class="admin-stat-card" style="border-left: 4px solid var(--color-primary);">
+                <div class="admin-stat-icon">🏢</div>
+                <div class="admin-stat-info">
+                  <span class="admin-stat-label">Total Bulk Orders</span>
+                  <h3 class="admin-stat-value" id="bulkKpiOrdersCount">4 Active</h3>
+                  <span class="admin-stat-sub">Wholesale &amp; Wedding Troupe</span>
                 </div>
+              </div>
+
+              <div class="admin-stat-card" style="border-left: 4px solid var(--color-gold);">
+                <div class="admin-stat-icon">📦</div>
+                <div class="admin-stat-info">
+                  <span class="admin-stat-label">Total Bulk Volume</span>
+                  <h3 class="admin-stat-value" id="bulkKpiPiecesCount">360 Pcs</h3>
+                  <span class="admin-stat-sub">Units / Sets in Commitment</span>
+                </div>
+              </div>
+
+              <div class="admin-stat-card" style="border-left: 4px solid #10B981;">
+                <div class="admin-stat-icon">💰</div>
+                <div class="admin-stat-info">
+                  <span class="admin-stat-label">Wholesale Order Value</span>
+                  <h3 class="admin-stat-value" id="bulkKpiTotalValue">₹67,22,625</h3>
+                  <span class="admin-stat-sub" id="bulkKpiAdvanceSub">₹36,26,625 Advance Collected</span>
+                </div>
+              </div>
+
+              <div class="admin-stat-card" style="border-left: 4px solid #F59E0B;">
+                <div class="admin-stat-icon">⏳</div>
+                <div class="admin-stat-info">
+                  <span class="admin-stat-label">Pending Balance Due</span>
+                  <h3 class="admin-stat-value" id="bulkKpiPendingBalance">₹30,96,000</h3>
+                  <span class="admin-stat-sub" id="bulkKpiProductionSub">2 Under Active Weaving</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 1: UPLOAD BULK ORDERS IN OWNER & CSV SYNC CENTER -->
+            <div class="admin-card" style="margin-bottom: 1.5rem; border: 1.5px solid rgba(212, 175, 55, 0.4); background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(212, 175, 55, 0.03) 100%);">
+              <div class="admin-card-header" style="flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.25rem;">
                 <div>
-                  <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-                    <h3 style="margin: 0; color: var(--text-heading); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.02em;">
-                      BULK ORDER SESSION
-                    </h3>
-                    <span id="bulkOrdersCountBadge" class="status-badge" style="background: rgba(212, 175, 55, 0.15); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.35); font-size: 0.72rem; padding: 0.2rem 0.65rem;">
-                      4 Active B2B Orders
-                    </span>
-                  </div>
-                  <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.15rem;">
-                    Master ledger for wholesale clients, wedding troupes, and institutional commercial contracts.
+                  <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold); margin: 0 0 0.25rem 0;">
+                    <span>⚡</span> Bulk Orders Upload &amp; Batch Sync Center
+                  </h3>
+                  <span style="font-size: 0.825rem; color: var(--text-muted);">
+                    Upload wholesale spreadsheets (CSV) to automatically synchronize B2B client contracts, advance collections, and production deadlines.
                   </span>
                 </div>
-              </div>
-
-              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                <button type="button" class="btn btn-gold btn-sm" onclick="document.getElementById('openAddBulkOrderModalBtn')?.click()" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
-                  <span>➕</span> Book New Bulk Order
-                </button>
-              </div>
-            </div>
-
-            <!-- DEDICATED FULL-WIDTH SEARCH & FILTER TOOLBAR -->
-            <div style="padding: 0.85rem 1.5rem; background: var(--bg-surface-alt); border-bottom: 1.5px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; flex: 1; min-width: 300px;">
-                <div style="position: relative; flex: 2; min-width: 240px;">
-                  <input type="text" id="bulkOrderSearchInput" placeholder="🔍 Search Company, Client, Phone, GSTIN, Order ID..." style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-outline btn-sm" id="resetSampleBulkOrdersBtn" title="Restore sample verified B2B orders for demonstration">
+                    <span>🔄</span> Reload Sample Orders
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" id="toggleCatalogSyncSectionBtn">
+                    <span>📦</span> Master Catalog SKU Sync ▾
+                  </button>
                 </div>
-                
-                <select id="bulkOrderTypeFilter" class="form-control" style="flex: 1; min-width: 150px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
-                  <option value="ALL">All Order Types</option>
-                  <option value="Wholesale">Wholesale</option>
-                  <option value="Wedding Bulk">Wedding Bulk</option>
-                  <option value="Boutique Reseller">Boutique Reseller</option>
-                  <option value="Corporate Gifting">Corporate Gifting</option>
-                </select>
-
-                <select id="bulkOrderStatusFilter" class="form-control" style="flex: 1; min-width: 150px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
-                  <option value="ALL">All Production Statuses</option>
-                  <option value="Under Production">⏳ Under Production</option>
-                  <option value="Ready to Ship">📦 Ready to Ship</option>
-                  <option value="Dispatched">🚚 Dispatched</option>
-                  <option value="Delivered">✅ Delivered</option>
-                </select>
               </div>
 
-              <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <button type="button" id="resetBulkOrderFilterBtn" class="btn btn-outline btn-sm" style="font-size: 0.775rem; padding: 0.45rem 0.75rem; white-space: nowrap;">
-                  Clear Filters
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch;">
+                <!-- CSV UPLOAD BOX -->
+                <div style="background: var(--bg-surface-alt); border: 2px dashed rgba(212, 175, 55, 0.5); border-radius: var(--radius-md); padding: 1.5rem; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.2s ease;">
+                  <div style="font-size: 2.25rem; margin-bottom: 0.5rem;">📂</div>
+                  <h4 style="margin: 0 0 0.35rem 0; color: var(--color-primary); font-size: 1.05rem;">Upload Bulk Orders CSV</h4>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px; line-height: 1.4; margin: 0 0 1rem 0;">
+                    Select your CSV file containing bulk client orders, quantities, GSTINs, and delivery schedules.
+                  </p>
+                  <input type="file" id="importBulkOrdersCsvInput" accept=".csv" class="form-control" style="font-size: 0.85rem; max-width: 280px; margin-bottom: 0.5rem;" />
+                  <span style="font-size: 0.725rem; color: #10B981; font-weight: 600;">✓ Automated Schema Validation &amp; Instant Table Sync</span>
+                </div>
+
+                <!-- CSV TEMPLATE & INSTRUCTIONS BOX -->
+                <div style="background: var(--bg-surface-alt); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                      <span style="font-size: 1.25rem;">📋</span>
+                      <h4 style="margin: 0; color: var(--color-primary); font-size: 1rem;">Official CSV Column Format</h4>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 0.75rem;">
+                      The template includes standardized fields: <code>Bulk_Order_ID</code>, <code>Client_Company</code>, <code>Contact_Person</code>, <code>Phone_WhatsApp</code>, <code>GSTIN</code>, <code>Order_Type</code>, <code>Total_Pieces</code>, <code>Total_Amount_INR</code>, <code>Advance_Paid_INR</code>, <code>Delivery_Deadline</code>.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                      <span class="status-badge" style="background: #EFF6FF; color: #1D4ED8; font-size: 0.7rem;">Wholesale</span>
+                      <span class="status-badge" style="background: #FEF3C7; color: #B45309; font-size: 0.7rem;">Wedding Troupe</span>
+                      <span class="status-badge" style="background: #F3E8FF; color: #6D28D9; font-size: 0.7rem;">Corporate Gifting</span>
+                      <span class="status-badge" style="background: #ECFDF5; color: #047857; font-size: 0.7rem;">Boutique Reseller</span>
+                    </div>
+                  </div>
+                  <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-outline-gold btn-sm" id="downloadBulkOrderTemplateBtn2" style="flex: 1; min-width: 140px;">
+                      ⬇️ Download CSV Template
+                    </button>
+                    <button type="button" class="btn btn-gold btn-sm" id="openAddBulkOrderModalBtn2" style="flex: 1; min-width: 140px;">
+                      ➕ Quick Manual Entry
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COLLAPSIBLE MASTER CATALOG SKU CSV SYNC (PRESERVED) -->
+              <div id="productCatalogSyncContainer" style="display: none; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--border-color);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                  <h4 style="margin: 0; color: var(--color-primary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📦</span> Master Family Product Catalog CSV Sync (SKU Sync)
+                  </h4>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" class="btn btn-outline btn-xs" id="downloadTemplateBtn">⬇️ Catalog Template</button>
+                    <button type="button" class="btn btn-gold btn-xs" id="exportCsvBtn">📤 Export Catalog CSV</button>
+                  </div>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                  Manage multi-category family SKUs with Department, Age Groups, Sizing, and GST HSN Codes in bulk.
+                </p>
+                <input type="file" id="importCsvInput" accept=".csv" class="form-control" style="font-size: 0.825rem; max-width: 320px;" />
+              </div>
+            </div>
+
+            <!-- CARD 2: BULK ORDER SESSION (MASTER LEDGER & TABLE) -->
+            <div class="admin-card bulk-session-card" style="padding: 0; overflow: hidden; border: 1.5px solid var(--border-color); border-radius: 12px; margin-bottom: 2rem;">
+              <!-- CARD HEADER WITH TITLE & BADGE -->
+              <div style="padding: 1.25rem 1.5rem; background: var(--bg-surface); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                  <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(122, 12, 46, 0.35)); border: 1.5px solid var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                    🏢
+                  </div>
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                      <h3 style="margin: 0; color: var(--text-heading); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.02em;">
+                        CUSTOMER BULK ORDERS &amp; INQUIRIES LEDGER
+                      </h3>
+                      <span id="bulkOrdersCountBadge" class="status-badge" style="background: rgba(212, 175, 55, 0.15); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.35); font-size: 0.72rem; padding: 0.2rem 0.65rem;">
+                        4 Active B2B Orders
+                      </span>
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.15rem;">
+                      Real-time ledger for customer online inquiries, wholesale partners, and wedding troupe contracts.
+                    </span>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-gold btn-sm" onclick="document.getElementById('openAddBulkOrderModalBtn')?.click()" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
+                    <span>➕</span> Book New Bulk Order
+                  </button>
+                </div>
+              </div>
+
+              <!-- DEDICATED FULL-WIDTH SEARCH & FILTER TOOLBAR -->
+              <div style="padding: 0.85rem 1.5rem; background: var(--bg-surface-alt); border-bottom: 1.5px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; flex: 1; min-width: 300px;">
+                  <div style="position: relative; flex: 2; min-width: 240px;">
+                    <input type="text" id="bulkOrderSearchInput" placeholder="🔍 Search Customer, Company, Phone, GSTIN, Order ID..." style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
+                  </div>
+                  
+                  <select id="bulkOrderTypeFilter" class="form-control" style="flex: 1; min-width: 150px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                    <option value="ALL">All Order Types</option>
+                    <option value="Customer Bulk Inquiry">Customer Online Inquiry</option>
+                    <option value="Wholesale">Wholesale</option>
+                    <option value="Wedding Bulk">Wedding Bulk</option>
+                    <option value="Boutique Reseller">Boutique Reseller</option>
+                    <option value="Corporate Gifting">Corporate Gifting</option>
+                  </select>
+
+                  <select id="bulkOrderStatusFilter" class="form-control" style="flex: 1; min-width: 150px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
+                    <option value="ALL">All Statuses</option>
+                    <option value="New Inquiry">✨ New Inquiry</option>
+                    <option value="Quote Sent">💬 Quote Sent</option>
+                    <option value="Under Production">⏳ Under Production</option>
+                    <option value="Ready to Ship">📦 Ready to Ship</option>
+                    <option value="Dispatched">🚚 Dispatched</option>
+                    <option value="Delivered">✅ Delivered</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <button type="button" id="resetBulkOrderFilterBtn" class="btn btn-outline btn-sm" style="font-size: 0.775rem; padding: 0.45rem 0.75rem; white-space: nowrap;">
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+
+              <!-- TABLE WRAPPER WITH PROPER COLUMN WIDTHS & VERTICAL ALIGNMENT -->
+              <div class="admin-table-wrapper" style="border: none; border-radius: 0; overflow-x: auto;">
+                <table class="admin-table bulk-order-table" id="adminBulkOrdersTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 16%; min-width: 175px;">Order ID &amp; Schedule</th>
+                      <th style="width: 21%; min-width: 220px;">Customer &amp; Organization</th>
+                      <th style="width: 13%; min-width: 140px;">Order Type</th>
+                      <th style="width: 18%; min-width: 200px;">Volume &amp; Items</th>
+                      <th style="width: 14%; min-width: 160px;">Financials (INR)</th>
+                      <th style="width: 13%; min-width: 150px;">Order Status</th>
+                      <th style="width: 15%; min-width: 175px; text-align: right;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminBulkOrdersTableBody">
+                    <!-- Dynamically rendered via renderBulkOrdersSession() -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================================================================
+               SESSION 2: WEBSITE BULK PACKAGES & ADD NEW ENTRY FORM
+               (Like Add New Product SKU form)
+               ================================================================== -->
+          <div id="bulkSubSession-packages" class="bulk-subtab-pane">
+
+            <!-- FORM: ADD / EDIT WEBSITE BULK PACKAGE -->
+            <div class="admin-card" style="margin-bottom: 2rem;">
+              <div class="admin-card-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                  <h3 id="bulkPackageFormHeading" style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold); margin: 0 0 0.25rem 0;">
+                    <span>➕</span> Add New Bulk Order Package for Website
+                  </h3>
+                  <span style="font-size: 0.825rem; color: var(--text-muted);">
+                    Publish wholesale packages, trousseau combo lots, and boutique sets to be showcased directly on the live storefront.
+                  </span>
+                </div>
+                <button type="button" class="btn btn-outline btn-xs" id="resetBulkPkgFormBtn" onclick="window.admin && window.admin.resetBulkPackageForm()">
+                  Clear Form
                 </button>
               </div>
+
+              <form id="adminAddBulkPackageForm" onsubmit="window.admin && window.admin.handleSaveBulkPackage(event)">
+                <input type="hidden" id="bulkPkgEditId" value="" />
+
+                <!-- SECTION 1: MEDIA UPLOAD & PREVIEW -->
+                <div class="form-section-card">
+                  <div class="form-section-header">
+                    <div class="form-section-num">1</div>
+                    <h3 class="form-section-title">Bulk Package Image &amp; Media</h3>
+                  </div>
+                  <div class="media-uploader-box" id="bulkPkgDropzone" style="cursor: pointer;">
+                    <div class="media-uploader-icon">📸</div>
+                    <strong style="display: block; color: var(--color-primary); font-size: 1.05rem; margin-bottom: 0.35rem;">
+                      Click or Drag &amp; Drop Bulk Lot Photos
+                    </strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.65rem;">
+                      High-resolution images will be instantly showcased on the live website bulk showcase.
+                    </span>
+                    <button type="button" class="btn btn-outline-gold btn-sm" onclick="document.getElementById('bulkPkgMediaFile').click();">
+                      📁 Choose Photo from Device
+                    </button>
+                    <input type="file" id="bulkPkgMediaFile" accept="image/*" style="display: none;" onchange="window.admin && window.admin.handleBulkPkgImageUpload(this)" />
+                  </div>
+
+                  <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem; flex-wrap: wrap;">
+                    <div style="width: 80px; height: 80px; border-radius: 8px; border: 1.5px solid var(--border-color); overflow: hidden; background: var(--bg-surface-alt); display: flex; align-items: center; justify-content: center;" id="bulkPkgPreviewThumb">
+                      <img src="assets/images/family_matching_combo.jpg" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;" id="bulkPkgPreviewImg" />
+                    </div>
+
+                    <div style="flex: 1; min-width: 250px;">
+                      <label for="bulkPkgImageURL" style="font-size: 0.775rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">
+                        Image URL or Quick Heritage Presets
+                      </label>
+                      <input type="text" id="bulkPkgImageURL" class="form-control" placeholder="assets/images/... or https://..." value="assets/images/family_matching_combo.jpg" style="font-size: 0.85rem;" oninput="document.getElementById('bulkPkgPreviewImg').src = this.value;" />
+                    </div>
+
+                    <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                      <button type="button" class="btn btn-outline btn-xs" onclick="window.admin && window.admin.setBulkPkgPresetImage('assets/images/family_matching_combo.jpg')">Bridal Combo</button>
+                      <button type="button" class="btn btn-outline btn-xs" onclick="window.admin && window.admin.setBulkPkgPresetImage('assets/images/kanchipuram_crimson.webp')">Crimson Silk</button>
+                      <button type="button" class="btn btn-outline btn-xs" onclick="window.admin && window.admin.setBulkPkgPresetImage('assets/images/men_dhoti_angavastram.webp')">Men's Dhoti</button>
+                      <button type="button" class="btn btn-outline btn-xs" onclick="window.admin && window.admin.setBulkPkgPresetImage('assets/images/girls_pattu_pavadai.webp')">Girls Pavadai</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 2: PACKAGE IDENTIFICATION & TAXONOMY -->
+                <div class="form-section-card">
+                  <div class="form-section-header">
+                    <div class="form-section-num">2</div>
+                    <h3 class="form-section-title">Bulk Package Name &amp; Category</h3>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group" style="grid-column: span 2;">
+                      <label for="bulkPkgTitle">Package Title / Offering Name *</label>
+                      <input type="text" id="bulkPkgTitle" class="form-control" placeholder="e.g. Grand Muhurtham Wedding Bridal Trousseau Lot" required />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="bulkPkgCategory">Bulk Category *</label>
+                      <select id="bulkPkgCategory" class="form-control" required>
+                        <option value="Wedding Troupe">👑 Wedding Troupe Special</option>
+                        <option value="Boutique Reseller">🛍️ Boutique Reseller Pack</option>
+                        <option value="Wholesale Lot">📦 Master Wholesale Lot</option>
+                        <option value="Corporate Gifting">🎁 Corporate &amp; Institutional Gifting</option>
+                        <option value="Custom Pitloom Weave">🏛️ Custom Temple / Academy Weave</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="bulkPkgBadge">Package Badge Motif</label>
+                      <input type="text" id="bulkPkgBadge" class="form-control" placeholder="e.g. 👑 Bridal Troupe Favorite or 🔥 Best Seller" value="👑 Bridal Troupe Favorite" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 3: PRICING & MINIMUM QUANTITY (MOQ) -->
+                <div class="form-section-card">
+                  <div class="form-section-header">
+                    <div class="form-section-num">3</div>
+                    <h3 class="form-section-title">Wholesale Pricing &amp; Minimum Order Quantity (MOQ)</h3>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label for="bulkPkgMOQ">Minimum Order Quantity (MOQ) *</label>
+                      <input type="number" id="bulkPkgMOQ" class="form-control" min="5" max="1000" value="15" required oninput="window.admin && window.admin.recalcBulkSavings()" />
+                      <small style="color: var(--text-muted); font-size: 0.72rem;">Minimum pieces required to qualify for wholesale rate.</small>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="bulkPkgUnitLabel">Unit Label *</label>
+                      <select id="bulkPkgUnitLabel" class="form-control">
+                        <option value="Sets">Sets</option>
+                        <option value="Pieces">Pieces</option>
+                        <option value="Pairs">Pairs</option>
+                        <option value="Lots">Lots</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="bulkPkgWholesalePrice">Wholesale Price per Unit (₹) *</label>
+                      <input type="number" id="bulkPkgWholesalePrice" class="form-control" min="100" step="50" value="8500" required oninput="window.admin && window.admin.recalcBulkSavings()" />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="bulkPkgRetailMrp">Showroom Retail MRP per Unit (₹) *</label>
+                      <input type="number" id="bulkPkgRetailMrp" class="form-control" min="100" step="50" value="17000" required oninput="window.admin && window.admin.recalcBulkSavings()" />
+                    </div>
+
+                    <div class="form-group">
+                      <label>Live Wholesale Savings Discount</label>
+                      <div id="bulkPkgSavingsBadge" style="padding: 0.6rem 0.85rem; border-radius: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #10B981; font-weight: 800; font-size: 0.88rem;">
+                        50% OFF Wholesale Savings
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="bulkPkgTimeline">Production &amp; Dispatch Timeline *</label>
+                      <input type="text" id="bulkPkgTimeline" class="form-control" value="12-15 Working Days" placeholder="e.g. 10-14 Working Days" required />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 4: FABRIC SPECIFICATIONS & INCLUSIONS -->
+                <div class="form-section-card">
+                  <div class="form-section-header">
+                    <div class="form-section-num">4</div>
+                    <h3 class="form-section-title">Fabric Composition &amp; Package Inclusions</h3>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="bulkPkgFabric">Fabric &amp; Weave Specification *</label>
+                    <input type="text" id="bulkPkgFabric" class="form-control" value="100% Pure Kanchipuram Mulberry Silk with Korvai Interlocking Weave &amp; Tested Silver-Gold Zari" required />
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="bulkPkgDesc">Package Description *</label>
+                    <textarea id="bulkPkgDesc" class="form-control" rows="3" required>Authentic Kanchipuram bridal silk sarees with heavy contrast zari pallu and rich borders. Synchronized ritual dye lots suitable for bridal entourage, family elders, and reception celebrations.</textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="bulkPkgInclusions">Package Inclusions &amp; Color Assortment *</label>
+                    <input type="text" id="bulkPkgInclusions" class="form-control" value="15 Pure Silk Sarees + Matching Unstitched Silk Blouse Pieces + Silk Mark Tags + Luxury Rigid Gift Boxes" required />
+                  </div>
+                </div>
+
+                <!-- SECTION 5: PUBLISH ACTIONS -->
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.25rem; background: var(--bg-surface-alt); border-radius: var(--radius-md); flex-wrap: wrap; gap: 1rem;">
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 700; color: var(--text-main);">
+                    <input type="checkbox" id="bulkPkgIsActive" checked style="width: 18px; height: 18px; accent-color: #10B981;" />
+                    <span>Publish &amp; Show on Live Website Immediately</span>
+                  </label>
+
+                  <div style="display: flex; gap: 0.75rem;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="window.admin && window.admin.resetBulkPackageForm()">
+                      Cancel
+                    </button>
+                    <button type="submit" class="btn btn-gold btn-md" id="saveBulkPkgSubmitBtn" style="font-weight: 800; min-width: 220px;">
+                      <span>🚀</span> Publish Bulk Package to Website
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
 
-            <!-- TABLE WRAPPER WITH PROPER COLUMN WIDTHS & VERTICAL ALIGNMENT -->
-            <div class="admin-table-wrapper" style="border: none; border-radius: 0; overflow-x: auto;">
-              <table class="admin-table bulk-order-table" id="adminBulkOrdersTable">
-                <thead>
-                  <tr>
-                    <th style="width: 16%; min-width: 175px;">Order ID &amp; Schedule</th>
-                    <th style="width: 21%; min-width: 220px;">Client &amp; Organization</th>
-                    <th style="width: 13%; min-width: 140px;">Order Type &amp; Unit</th>
-                    <th style="width: 18%; min-width: 200px;">Volume &amp; Items</th>
-                    <th style="width: 14%; min-width: 160px;">Financials (INR)</th>
-                    <th style="width: 13%; min-width: 150px;">Production Status</th>
-                    <th style="width: 15%; min-width: 175px; text-align: right;">B2B Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="adminBulkOrdersTableBody">
-                  <!-- Dynamically rendered via renderBulkOrdersSession() -->
-                </tbody>
-              </table>
+            <!-- LIVE PUBLISHED PACKAGES LIST CARD -->
+            <div class="admin-card" style="padding: 0; overflow: hidden; border: 1.5px solid var(--border-color); border-radius: 12px; margin-bottom: 2rem;">
+              <div style="padding: 1.25rem 1.5rem; background: var(--bg-surface); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <h3 style="margin: 0; color: var(--text-heading); font-size: 1.15rem; font-weight: 800;">
+                    CURRENT BULK PACKAGES PUBLISHED ON WEBSITE
+                  </h3>
+                  <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.2rem;">
+                    Active packages will be rendered on the website whenever the master switch is ON.
+                  </span>
+                </div>
+                <span class="status-badge" id="bulkPackagesActiveSummaryBadge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981;">
+                  4 Packages Active
+                </span>
+              </div>
+
+              <div id="adminBulkPackagesList" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Dynamically rendered via renderBulkPackagesSection() -->
+              </div>
             </div>
+
           </div>
 
         </section>

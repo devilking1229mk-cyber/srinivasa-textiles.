@@ -15,6 +15,8 @@ const STORE_KEYS = {
   ORDER_SHEET: "st_order_sheet_config_v2",
   FEEDBACK: "st_feedbacks_data_v2",
   BULK_ORDERS: "st_bulk_orders_data_v2",
+  BULK_PACKAGES: "st_bulk_packages_data_v2",
+  BULK_SETTINGS: "st_bulk_settings_data_v2",
   COUPONS: "st_coupons_data_v2",
   DELETED_COUPONS: "st_deleted_coupons_data_v2",
   FESTIVE_CAMPAIGN: "st_festive_campaign_v1"
@@ -332,6 +334,12 @@ class TextileStore {
     this.catalog = this.load(STORE_KEYS.CATALOG, INITIAL_CATALOG);
     this.orders = this.load(STORE_KEYS.ORDERS, INITIAL_ORDERS);
     this.bulkOrders = this.load(STORE_KEYS.BULK_ORDERS, (typeof INITIAL_BULK_ORDERS !== "undefined" ? INITIAL_BULK_ORDERS : []));
+    this.bulkPackages = this.load(STORE_KEYS.BULK_PACKAGES, (typeof DEFAULT_BULK_PACKAGES !== "undefined" ? DEFAULT_BULK_PACKAGES : []));
+    if (!Array.isArray(this.bulkPackages) || this.bulkPackages.length === 0) {
+      this.bulkPackages = (typeof DEFAULT_BULK_PACKAGES !== "undefined" ? JSON.parse(JSON.stringify(DEFAULT_BULK_PACKAGES)) : []);
+      this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    }
+    this.bulkSettings = this.load(STORE_KEYS.BULK_SETTINGS, (typeof DEFAULT_BULK_SETTINGS !== "undefined" ? DEFAULT_BULK_SETTINGS : { enabled: true }));
     this.cart = this.load(STORE_KEYS.CART, []);
     // Wishlist: Starts strictly at 0 items by default (empty array)
     const storedWishlist = this.load(STORE_KEYS.WISHLIST, []);
@@ -1761,6 +1769,101 @@ class TextileStore {
       readyToShip,
       dispatched
     };
+  }
+
+  // ==========================================
+  // BULK STOREFRONT SETTINGS & ON/OFF ENGINE
+  // ==========================================
+  getBulkSettings() {
+    if (!this.bulkSettings) {
+      this.bulkSettings = this.load(STORE_KEYS.BULK_SETTINGS, (typeof DEFAULT_BULK_SETTINGS !== "undefined" ? DEFAULT_BULK_SETTINGS : { enabled: true }));
+    }
+    return this.bulkSettings;
+  }
+
+  saveBulkSettings(newSettings) {
+    this.bulkSettings = { ...this.getBulkSettings(), ...newSettings };
+    this.save(STORE_KEYS.BULK_SETTINGS, this.bulkSettings);
+    window.dispatchEvent(new CustomEvent("bulkSettingsUpdated", { detail: this.bulkSettings }));
+    return this.bulkSettings;
+  }
+
+  setBulkEnabled(enabled) {
+    return this.saveBulkSettings({ enabled: Boolean(enabled) });
+  }
+
+  // ==========================================
+  // WEBSITE BULK PACKAGES & OFFERINGS (CATALOG)
+  // ==========================================
+  getBulkPackages() {
+    return this.bulkPackages || [];
+  }
+
+  getBulkPackageById(id) {
+    return (this.bulkPackages || []).find(p => p.id === id);
+  }
+
+  addBulkPackage(data) {
+    if (!data) return null;
+    const id = data.id || `BLK-PKG-${Date.now().toString().slice(-4)}`;
+    const wholesalePrice = parseFloat(data.wholesalePrice) || 3500;
+    const retailMrp = parseFloat(data.retailMrp) || (wholesalePrice ? Math.round(wholesalePrice * 2) : 7000);
+    const discountPercent = data.discountPercent || (retailMrp && wholesalePrice ? Math.round(((retailMrp - wholesalePrice) / retailMrp) * 100) : 50);
+
+    const newPkg = {
+      id,
+      title: data.title || "Custom Handloom Bulk Lot",
+      category: data.category || "Wholesale Lot",
+      badge: data.badge || "✨ Verified Bulk Lot",
+      moq: parseInt(data.moq, 10) || 15,
+      unitLabel: data.unitLabel || "Pieces",
+      wholesalePrice,
+      retailMrp,
+      discountPercent,
+      timeline: data.timeline || "10-14 Working Days",
+      fabric: data.fabric || "Pure Handloom Silk with Certified Silk Mark",
+      description: data.description || "Direct pitloom woven authentic handloom collection for bulk buyers and wedding troupes.",
+      inclusions: data.inclusions || "Matching unstitched blouses + Silk Mark authenticity tags + Insured shipping",
+      image: data.image || "assets/images/family_matching_combo.jpg",
+      isActive: data.isActive !== false,
+      createdAt: new Date().toISOString()
+    };
+
+    if (!Array.isArray(this.bulkPackages)) this.bulkPackages = [];
+    this.bulkPackages.unshift(newPkg);
+    this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    window.dispatchEvent(new CustomEvent("bulkPackagesUpdated", { detail: newPkg }));
+    return newPkg;
+  }
+
+  updateBulkPackage(id, updatedData) {
+    const idx = (this.bulkPackages || []).findIndex(p => p.id === id);
+    if (idx === -1) return false;
+    this.bulkPackages[idx] = { ...this.bulkPackages[idx], ...updatedData };
+    this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    window.dispatchEvent(new CustomEvent("bulkPackagesUpdated", { detail: this.bulkPackages[idx] }));
+    return true;
+  }
+
+  deleteBulkPackage(id) {
+    if (!this.bulkPackages) return false;
+    const initialLen = this.bulkPackages.length;
+    this.bulkPackages = this.bulkPackages.filter(p => p.id !== id);
+    if (this.bulkPackages.length !== initialLen) {
+      this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+      window.dispatchEvent(new CustomEvent("bulkPackagesUpdated"));
+      return true;
+    }
+    return false;
+  }
+
+  toggleBulkPackageStatus(id) {
+    const pkg = this.getBulkPackageById(id);
+    if (!pkg) return false;
+    pkg.isActive = !pkg.isActive;
+    this.save(STORE_KEYS.BULK_PACKAGES, this.bulkPackages);
+    window.dispatchEvent(new CustomEvent("bulkPackagesUpdated", { detail: pkg }));
+    return pkg.isActive;
   }
 
   exportBulkOrdersToCSV() {
