@@ -202,7 +202,7 @@
         </div>
 
         <a href="index.html" class="admin-nav-btn admin-nav-btn-store" title="View Customer Storefront" target="_blank">
-          <span>🛍️</span> Public Store
+          <span data-icon="cart" data-icon-size="16"></span> Public Store
         </a>
 
         <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Toggle Light / Dark Theme">
@@ -210,7 +210,7 @@
         </button>
 
         <button id="exitAdminBtn" class="exit-admin-btn">
-          <span>🔒 Logout &amp; Lock Store</span>
+          <span data-icon="lock" data-icon-size="16" style="margin-right: 0.35rem;"></span> Logout &amp; Lock Store
         </button>
       </div>
     </header>
@@ -233,7 +233,7 @@
             <ul class="admin-sidebar-menu">
               <li class="admin-menu-item active" data-tab="overview" onclick="window.admin && window.admin.switchTab('overview')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">📊</span>
+                  <span class="menu-icon" data-icon="dashboard"></span>
                   <span>Dashboard Overview</span>
                 </div>
                 <span class="admin-menu-badge">Live</span>
@@ -247,21 +247,21 @@
             <ul class="admin-sidebar-menu">
               <li class="admin-menu-item" data-tab="uploader" onclick="window.admin && window.admin.switchTab('uploader')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">📸</span>
+                  <span class="menu-icon" data-icon="camera"></span>
                   <span>Add New Product SKU</span>
                 </div>
                 <span class="admin-menu-badge">+New</span>
               </li>
               <li class="admin-menu-item" data-tab="inventory" onclick="window.admin && window.admin.switchTab('inventory')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">📦</span>
+                  <span class="menu-icon" data-icon="box"></span>
                   <span>Real-Time Stock Control</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarStockBadge">12 SKUs</span>
               </li>
               <li class="admin-menu-item" data-tab="bulk" onclick="window.admin && window.admin.switchTab('bulk')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">📑</span>
+                  <span class="menu-icon" data-icon="receipt"></span>
                   <span>Bulk Orders &amp; CSV Sync</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarBulkBadge" style="background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">4 B2B</span>
@@ -275,21 +275,21 @@
             <ul class="admin-sidebar-menu">
               <li class="admin-menu-item" data-tab="orders" onclick="window.admin && window.admin.switchTab('orders')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">🧾</span>
+                  <span class="menu-icon" data-icon="receipt"></span>
                   <span>Orders &amp; GST Invoicing</span>
                 </div>
                 <span class="admin-menu-badge" style="background: var(--color-gold); color: #2D0310;">2 Orders</span>
               </li>
               <li class="admin-menu-item" data-tab="coupons" onclick="window.admin && window.admin.switchTab('coupons')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">🏷️</span>
+                  <span class="menu-icon" data-icon="tag"></span>
                   <span>Coupons &amp; Offers</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarCouponsBadge" style="background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">6 Offers</span>
               </li>
               <li class="admin-menu-item" data-tab="subscribers" onclick="window.admin && window.admin.switchTab('subscribers')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">🔔</span>
+                  <span class="menu-icon" data-icon="bell"></span>
                   <span>Restock Waitlist Alerts</span>
                 </div>
                 <span class="admin-menu-badge">1</span>
@@ -299,12 +299,12 @@
 
           <!-- GROUP 4: PATRON & REVIEWS -->
           <div>
-            <div class="admin-nav-group-title">Patron &amp; Quality</div>
+            <div class="admin-nav-group-title">Customer &amp; Quality</div>
             <ul class="admin-sidebar-menu">
               <li class="admin-menu-item" data-tab="feedbacks" onclick="window.admin && window.admin.switchTab('feedbacks')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">🌟</span>
-                  <span>Patron Reviews &amp; Feedback</span>
+                  <span class="menu-icon" data-icon="feedback"></span>
+                  <span>Customer Reviews &amp; Feedback</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarFeedbackBadge"
                   style="background: var(--color-gold); color: #2D0310;">4 Reviews</span>
@@ -318,7 +318,7 @@
             <ul class="admin-sidebar-menu">
               <li class="admin-menu-item" data-tab="festive" onclick="window.admin && window.admin.switchTab('festive')">
                 <div class="admin-menu-item-left">
-                  <span class="menu-icon">🎉</span>
+                  <span class="menu-icon" data-icon="party"></span>
                   <span>Festive Special 2026</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarFestiveBadge"
@@ -435,7 +435,7 @@
                 🌟</div>
               <div class="kpi-info">
                 <h3 id="kpiAvgRating">5.0 ★</h3>
-                <p>Patron Feedback (<span id="kpiTotalFeedbacks">3</span>)</p>
+                <p>Customer Feedback (<span id="kpiTotalFeedbacks">3</span>)</p>
                 <span class="kpi-trend positive">★ 100% 5-Star Reviews</span>
               </div>
             </div>
@@ -503,7 +503,7 @@
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('feedbacks')">
                     <div class="admin-shortcut-icon">🌟</div>
                     <div class="admin-shortcut-info">
-                      <h4>Patron Reviews</h4>
+                      <h4>Customer Reviews</h4>
                       <span>Fabric softness &amp; ratings</span>
                     </div>
                   </div>
@@ -1007,7 +1007,7 @@
                   <div style="position: relative; flex: 2; min-width: 240px;">
                     <input type="text" id="bulkOrderSearchInput" placeholder="🔍 Search Customer, Company, Phone, GSTIN, Order ID..." style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
                   </div>
-                  
+
                   <select id="bulkOrderTypeFilter" class="form-control" style="flex: 1; min-width: 150px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
                     <option value="ALL">All Order Types</option>
                     <option value="Customer Bulk Inquiry">Customer Online Inquiry</option>
@@ -1527,7 +1527,7 @@
                 <span class="kpi-icon">⚡</span>
               </div>
               <div class="kpi-value" id="kpiMaxCouponDiscount">20% OFF</div>
-              <div class="kpi-subtext">Highest active patron privilege</div>
+              <div class="kpi-subtext">Highest active customer privilege</div>
             </div>
           </div>
 
@@ -1538,7 +1538,7 @@
                 <div style="position: relative; flex: 2; min-width: 220px;">
                   <input type="text" id="couponSearchInput" placeholder="🔍 Search Coupon Code, Title, Discount..." style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
                 </div>
-                
+
                 <select id="couponStatusFilter" class="form-control" style="flex: 1; min-width: 140px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
                   <option value="ALL">All Statuses</option>
                   <option value="ACTIVE">🟢 Active Only</option>
@@ -1637,13 +1637,13 @@
           <div class="admin-section-header">
             <div>
               <div class="admin-breadcrumb">
-                <span>Patron Voice</span> <span>/</span> <span>Customer Reviews</span>
+                <span>Customer Feedback</span> <span>/</span> <span>Customer Reviews</span>
               </div>
               <h1 class="admin-section-title">
-                <span>🌟</span> Patron Feedback, Quality Reviews &amp; Fabric Scores
+                <span>🌟</span> Customer Feedback, Quality Reviews &amp; Fabric Scores
               </h1>
               <p class="admin-section-subtitle">
-                Confidential patron submissions &amp; fabric reviews. Exclusively visible to Store Owner.
+                Confidential customer submissions &amp; fabric reviews. Exclusively visible to Store Owner.
               </p>
             </div>
             <div class="admin-card-header-actions">
@@ -1660,7 +1660,7 @@
           <!-- FEEDBACK METRICS SUMMARY -->
           <div class="feedback-stats-grid">
             <div class="feedback-stat-card">
-              <span class="stat-label">Average Patron Rating</span>
+              <span class="stat-label">Average Customer Rating</span>
               <h3 class="stat-val" id="fbAvgRatingVal">5.0 ★</h3>
               <span class="stat-sub">★★★★★ (100% Top Tier)</span>
             </div>
@@ -1685,7 +1685,7 @@
           <div class="feedback-filter-bar">
             <div style="flex: 2; min-width: 240px;">
               <input type="text" id="feedbackSearchInput" class="form-control"
-                placeholder="🔍 Search patron name, city, review comments..." style="font-size: 0.85rem;" />
+                placeholder="🔍 Search customer name, city, review comments..." style="font-size: 0.85rem;" />
             </div>
             <div style="flex: 1.5; min-width: 220px;">
               <select id="feedbackDeptFilter" class="form-control" style="font-size: 0.85rem;">
@@ -1708,7 +1708,7 @@
                 <thead>
                   <tr>
                     <th>Review ID &amp; Date</th>
-                    <th>Patron &amp; Location</th>
+                    <th>Customer &amp; Location</th>
                     <th>Department / Fabric</th>
                     <th>Star Rating</th>
                     <th>Softness Score</th>
@@ -1762,7 +1762,7 @@
                   </span>
                 </div>
                 <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
-                  Toggle this master switch to show or completely remove the <strong>"LIMITED TIME FESTIVE SPECIAL 2026"</strong> session across the website (both <code>index.html</code> and <code>shop.html</code>) in real-time. Changes sync across all open browser windows instantly without requiring page reload.
+                  Toggle this master switch to show or completely remove the <strong>"LIMITED TIME FESTIVE SPECIAL 2026"</strong> session on the shop page (<code>shop.html</code>) in real-time. Changes sync across all open browser windows instantly without requiring page reload.
                 </p>
               </div>
 
@@ -1775,7 +1775,7 @@
                   <span id="festiveToggleStateLabel" style="font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; color: var(--color-success);">SESSION ON</span>
                 </div>
 
-                <a href="index.html#festiveCampaignContainer" target="_blank" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
+                <a href="shop.html#festiveOffersSection" target="_blank" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
                   <span>👁️</span> View Live Site
                 </a>
               </div>
@@ -1915,7 +1915,7 @@
           <!-- CARD 5: FESTIVE PATRON PERKS BAR -->
           <div class="admin-card">
             <div class="admin-card-header">
-              <h3><span>🎁</span> Festive Patron Perks Strip</h3>
+              <h3><span>🎁</span> Festive Perks Strip</h3>
               <span style="font-size: 0.8rem; color: var(--text-muted);">4 Trust Badges displayed in the festive session</span>
             </div>
             <form id="festivePerksForm" onsubmit="window.admin && window.admin.handleSavePerks(event)">
@@ -2040,11 +2040,11 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <div class="mobile-nav-section-title">🌟 PATRON &amp; QUALITY</div>
+      <div class="mobile-nav-section-title">🌟 CUSTOMER &amp; QUALITY</div>
       <ul class="mobile-dept-list">
         <li>
           <button class="mobile-dept-btn" data-tab="feedbacks" onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('feedbacks');">
-            <span>🌟 Patron Reviews &amp; Feedback</span>
+            <span>🌟 Customer Reviews &amp; Feedback</span>
             <span class="admin-menu-badge" id="mobileSidebarFeedbackBadge" style="margin-left: auto; background: var(--color-gold); color: #2D0310;">4 Reviews</span>
           </button>
         </li>
@@ -2487,6 +2487,7 @@
   <script src="js/supabase-client.js"></script>
 
   <!-- Scripts -->
+  <script src="js/icons.js"></script>
   <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>

@@ -292,7 +292,7 @@ const DEFAULT_COUPONS = [
 
 const DEFAULT_SETTINGS = {
   storeName: "Srinivasa Textiles",
-  tagline: "Master Weavers & Pure Silk Family Emporium Since 1978",
+  tagline: "Master Weavers & Pure Silk Family Store Since 1978",
   phone: "6381265149",
   whatsapp: "6381265149",
   email: "care@srinivasatextiles.com",

@@ -1769,7 +1769,7 @@ Warm regards,
           <div class="header">
             <div>
               <h1 class="brand-title">SRINIVASA TEXTILES</h1>
-              <div class="brand-sub">Master Weavers & Pure Silk Family Handloom Emporium Since 1978</div>
+              <div class="brand-sub">Master Weavers & Pure Silk Family Handloom Store Since 1978</div>
               <div style="font-size: 11px; color: #475569; margin-top: 4px;">
                 108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501<br>
                 <strong>GSTIN:</strong> 33AABCS9876C1ZT | <strong>Phone:</strong> +91 6381265149 | <strong>Email:</strong> wholesale@srinivasatextiles.com
@@ -2198,13 +2198,13 @@ Warm regards,
         <style>
           * { box-sizing: border-box; }
           body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; color: #111; font-size: 12px; line-height: 1.4; background: #fff; }
-          
+
           .master-header { border-bottom: 2.5px solid #7A0C2E; padding-bottom: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; }
           .brand-title { font-size: 24px; font-weight: 900; color: #7A0C2E; letter-spacing: 0.04em; }
           .brand-sub { font-size: 11px; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
           .meta-box { text-align: right; font-size: 11px; color: #444; }
           .report-badge { display: inline-block; background: #7A0C2E; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
-          
+
           .summary-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
           .kpi-stat-card { border: 1.5px solid #E2E8F0; background: #FAF9F6; border-radius: 6px; padding: 10px 12px; }
           .kpi-stat-card.highlight { background: #FDF2F4; border-color: #7A0C2E; }
@@ -2214,7 +2214,7 @@ Warm regards,
           .kpi-stat-card.highlight .kpi-stat-val { color: #7A0C2E; }
 
           .section-heading { font-size: 14px; font-weight: 800; color: #7A0C2E; border-bottom: 1.5px solid #CBD5E1; padding-bottom: 5px; margin: 18px 0 10px 0; text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
-          
+
           table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11.5px; }
           th { background: #7A0C2E; color: #fff; padding: 8px 9px; text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; }
           td { border-bottom: 1px solid #E2E8F0; padding: 8px 9px; vertical-align: top; }
@@ -2247,7 +2247,7 @@ Warm regards,
         <div class="master-header">
           <div>
             <div class="brand-title">SRINIVASA TEXTILES</div>
-            <div class="brand-sub">Master Weavers & Pure Silk Family Emporium • Since 1978</div>
+            <div class="brand-sub">Master Weavers & Pure Silk Family Store • Since 1978</div>
             <div style="font-size: 11px; color: #475569; margin-top: 4px;">
               108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 6381265149
             </div>
@@ -2379,7 +2379,7 @@ Warm regards,
             <div class="inv-head-grid">
               <div>
                 <div class="brand-title">SRINIVASA TEXTILES</div>
-                <div class="brand-sub">Master Weavers & Pure Silk Family Emporium Since 1978</div>
+                <div class="brand-sub">Master Weavers & Pure Silk Family Store Since 1978</div>
                 <div style="font-size: 10.5px; color: #475569; margin-top: 2px;">
                   108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501 | GSTIN: 33AABCS9876C1ZT
                 </div>
@@ -2528,7 +2528,7 @@ Warm regards,
           table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px; }
           th { background: #000; color: #fff; padding: 6px 8px; text-align: left; }
           td { border-bottom: 1px solid #ddd; padding: 6px 8px; }
-          
+
           .label-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
           .shipping-label-card { border: 2px solid #000; padding: 15px; border-radius: 4px; background: #fff; page-break-inside: avoid; margin-bottom: 15px; }
           .label-top { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 8px; }
@@ -2760,7 +2760,7 @@ Warm regards,
         <div class="invoice-header">
           <div class="invoice-brand">
             <h2>SRINIVASA TEXTILES</h2>
-            <p>Master Weavers &amp; Pure Silk Family Emporium Since 1978</p>
+            <p>Master Weavers &amp; Pure Silk Family Store Since 1978</p>
             <p>108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India</p>
             <p><strong>GSTIN:</strong> ${window.store.settings.gstin} | <strong>State Code:</strong> 33</p>
           </div>
@@ -3124,8 +3124,8 @@ Warm regards,
         <tr>
           <td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
             <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌟</div>
-            <strong style="color: var(--text-heading); display: block; margin-bottom: 0.25rem;">No Patron Feedbacks Match Current Filters</strong>
-            <span>Clear filters or search criteria to view all submitted patron reviews.</span>
+            <strong style="color: var(--text-heading); display: block; margin-bottom: 0.25rem;">No Customer Feedbacks Match Current Filters</strong>
+            <span>Clear filters or search criteria to view all submitted customer reviews.</span>
           </td>
         </tr>
       `;
@@ -3188,7 +3188,7 @@ Warm regards,
   }
 
   deleteFeedback(fbId) {
-    if (confirm(`Remove patron feedback ${fbId}?`)) {
+    if (confirm(`Remove customer feedback ${fbId}?`)) {
       window.store.deleteFeedback(fbId);
       if (window.storefront) {
         window.storefront.showToast(`Feedback ${fbId} deleted from Owner Console.`, "warning");
@@ -3204,7 +3204,7 @@ Warm regards,
     const textToCopy = `Patron: ${fb.author} (${fb.location})\nRating: ${fb.rating}/5.0\nDepartment: ${fb.dept || fb.title}\nSoftness: ${fb.softnessScore}\nReview: "${fb.comment}"`;
     navigator.clipboard.writeText(textToCopy).then(() => {
       if (window.storefront) {
-        window.storefront.showToast("Copied patron feedback details to clipboard!", "success");
+        window.storefront.showToast("Copied customer feedback details to clipboard!", "success");
       } else {
         alert("Copied feedback details to clipboard!");
       }
@@ -3224,7 +3224,7 @@ Warm regards,
     link.click();
     document.body.removeChild(link);
     if (window.storefront) {
-      window.storefront.showToast("Exported confidential Patron Feedbacks CSV for Store Owner!", "success");
+      window.storefront.showToast("Exported confidential Customer Feedbacks CSV for Store Owner!", "success");
     }
   }
 

@@ -1200,9 +1200,9 @@ textarea {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1.6fr 1fr 1fr;
   align-items: start;
-  gap: 32px;
+  gap: 36px;
   margin-bottom: 3rem;
 }
 
@@ -2477,4 +2477,60 @@ textarea {
 
 [data-theme="dark"] .bulk-custom-cta-box {
   background: linear-gradient(135deg, #1A1320, #0F0A14);
+}
+
+/* ==========================================================================
+   SVG VECTOR ICONS STYLING (JS FORMAT ENGINE)
+   ========================================================================== */
+.svg-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.svg-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.svg-icon.sm { width: 14px; height: 14px; }
+.svg-icon.md { width: 18px; height: 18px; }
+.svg-icon.lg { width: 22px; height: 22px; }
+.svg-icon.xl { width: 28px; height: 28px; }
+
+.feedback-btn-icon.svg-icon-inlined,
+.footer-link-icon.svg-icon-inlined,
+.drawer-icon-img.svg-icon-inlined {
+  width: 18px;
+  height: 18px;
+  color: var(--color-gold);
+}
+
+.st-icon-search.svg-icon-inlined,
+.st-icon-favourite.svg-icon-inlined,
+.card-action-icon.svg-icon-inlined {
+  width: 17px;
+  height: 17px;
+}
+
+.dept-nav-img-icon.svg-icon-inlined,
+.drawer-dept-icon.svg-icon-inlined,
+.footer-dept-icon.svg-icon-inlined,
+.gateway-title-icon.svg-icon-inlined {
+  width: 20px;
+  height: 20px;
+  color: var(--color-gold);
+  margin-right: 0.35rem;
+}
+
+.btn-video-icon.svg-icon-inlined {
+  width: 20px;
+  height: 20px;
+  color: inherit;
 }

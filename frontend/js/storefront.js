@@ -580,42 +580,42 @@ class StorefrontController {
     switch (pageKey) {
       case "women":
         return {
-          title: '<img src="icons/ladies.jpeg" alt="Ladies" class="dept-banner-icon" /> Ladies\' Silk Sarees & Ethnic Collection',
+          title: `${window.Icons ? window.Icons.get('ladies', { className: 'dept-banner-icon' }) : ''} Ladies' Silk Sarees & Ethnic Collection`,
           desc: "Authentic Pure Kanchipuram Silk, Banarasi Katan, French Flax Linen, Chanderi Tissue, and Kalamkari Tussar Sarees.",
           breadcrumb: "Ladies' Collection",
           filterDept: "Women's Collection"
         };
       case "men":
         return {
-          title: '<img src="icons/mens.jpeg" alt="Men" class="dept-banner-icon" /> Men\'s Pure Silk & Traditional Dhotis',
+          title: `${window.Icons ? window.Icons.get('mens', { className: 'dept-banner-icon' }) : ''} Men's Pure Silk & Traditional Dhotis`,
           desc: "Pure Mulberry Silk Wedding Shirts, 8-Muzham Gold Zari Dhotis (Veshti), and Ceremonial Angavastram Shawls.",
           breadcrumb: "Men's Collection",
           filterDept: "Men's Collection"
         };
       case "girls":
         return {
-          title: '<img src="icons/kids.jpeg" alt="Kids" class="dept-banner-icon" /> Girls\' Ethnic Wear (2 - 14 Years)',
+          title: `${window.Icons ? window.Icons.get('kids', { className: 'dept-banner-icon' }) : ''} Girls' Ethnic Wear (2 - 14 Years)`,
           desc: "Traditional Pure Silk Pattu Pavadai & Lehenga Sets backed by our Scratch-Free Soft Cotton Inner-Lining Guarantee.",
           breadcrumb: "Kids Wear (Girls)",
           filterDept: "Kids Wear (Girls)"
         };
       case "boys":
         return {
-          title: '<img src="icons/kids.jpeg" alt="Kids" class="dept-banner-icon" /> Boys\' Festive Kurta & Dhoti Sets (2 - 14 Years)',
+          title: `${window.Icons ? window.Icons.get('kids', { className: 'dept-banner-icon' }) : ''} Boys' Festive Kurta & Dhoti Sets (2 - 14 Years)`,
           desc: "Silk Jacquard Kurtas with Pre-Pleated Ready-to-Wear Elastic Dhotis and Soft Cotton Undersides.",
           breadcrumb: "Kids Wear (Boys)",
           filterDept: "Kids Wear (Boys)"
         };
       case "infants":
         return {
-          title: '<img src="icons/bourn%20babies.jpeg" alt="Born Babies" class="dept-banner-icon" /> Born Babies & Infants (0 - 2 Years)',
+          title: `${window.Icons ? window.Icons.get('baby', { className: 'dept-banner-icon' }) : ''} Born Babies & Infants (0 - 2 Years)`,
           desc: "100% GOTS Certified Pure Organic Muslin Cotton Jhablas, Swaddle Blankets, and Hypoallergenic Baby Silk Rompers.",
           breadcrumb: "Born Babies & Infants",
           filterDept: "Infants & Toddlers"
         };
       case "family":
         return {
-          title: "👨‍👩‍👧‍👦 Family Matching Combos & Coordinated Sets",
+          title: `${window.Icons ? window.Icons.get('family', { className: 'dept-banner-icon' }) : '👨‍👩‍👧‍👦'} Family Matching Combos & Coordinated Sets`,
           desc: "Harmonious color-coordinated silk attire for Father, Mother, Son & Daughter woven in matched ceremonial dye batches.",
           breadcrumb: "Family Combos & Sets",
           filterDept: "Family Combos & Sets"
@@ -758,7 +758,7 @@ class StorefrontController {
       <div class="product-card" data-id="${product.id}">
         <div class="product-image-box open-pdp">
           <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
-          
+
           <div class="card-badges-top">
             ${product.badges && product.badges[0] ? `<span class="badge-silk-mark">${product.badges[0]}</span>` : ""}
             ${isLowStock ? `<span class="badge-scarcity">🔥 Only ${product.stock} Left!</span>` : ""}
@@ -767,10 +767,10 @@ class StorefrontController {
 
           <div class="card-actions-quick">
             <button class="quick-action-btn wishlist-toggle-btn ${isWishlisted ? "wishlisted" : ""}" title="Save to Wishlist">
-              <img src="icons/favourite.jpeg" alt="Wishlist" class="card-action-icon" />
+              ${window.Icons ? (isWishlisted ? window.Icons.get('favouriteFilled', { className: 'card-action-icon' }) : window.Icons.get('favourite', { className: 'card-action-icon' })) : '♥'}
             </button>
             <button class="quick-action-btn open-pdp" title="Quick View">
-              <img src="icons/search.jpeg" alt="Quick View" class="card-action-icon" />
+              ${window.Icons ? window.Icons.get('search', { className: 'card-action-icon' }) : '🔍'}
             </button>
           </div>
         </div>
@@ -1042,7 +1042,7 @@ class StorefrontController {
             location: patronLocation,
             dept: deptTitle,
             rating: rating,
-            title: "Patron Voice & Review",
+            title: "Customer Feedback & Review",
             comment: comment,
             softnessScore: "10/10 (Feather Soft)",
             colorAccuracy: "100% True Dye",
@@ -1057,7 +1057,7 @@ class StorefrontController {
             author: patronName,
             location: patronLocation,
             rating: rating,
-            title: "Patron Voice & Review",
+            title: "Customer Feedback & Review",
             comment: comment,
             softnessScore: "10/10",
             colorAccuracy: "100% True Dye",
@@ -1193,7 +1193,7 @@ class StorefrontController {
       <div class="pdp-media-column">
         <div class="clean-img-viewer" id="cleanImgViewer" title="Click to open Fullscreen Lightbox">
           <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" class="clean-pdp-img" id="pdpMainImg" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
-          <div class="lightbox-trigger-badge"><img src="icons/search.jpeg" alt="Search" class="lightbox-badge-icon" /> Click for Fullscreen Lightbox</div>
+          <div class="lightbox-trigger-badge">${window.Icons ? window.Icons.get('search', { className: 'lightbox-badge-icon' }) : '🔍'} Click for Fullscreen Lightbox</div>
         </div>
 
         ${(product.gallery && product.gallery.length > 1) ? `
@@ -1533,7 +1533,7 @@ class StorefrontController {
             <span class="cart-item-meta">Dept: <strong>${item.department}</strong> • Size: <strong>${item.selectedSize}</strong></span>
             ${item.blouseLabel ? `<span class="cart-item-blouse">${item.blouseLabel}</span>` : ""}
             <span class="cart-item-price">${window.store.formatPrice(item.itemTotalINR)}</span>
-            
+
             <div class="cart-qty-row">
               <div class="qty-control">
                 <button class="qty-btn qty-minus" data-id="${item.cartItemId}">-</button>
@@ -1935,10 +1935,27 @@ class StorefrontController {
 
   renderFestiveCampaign(customCampaign) {
     if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+
+    // "LIMITED TIME FESTIVE SPECIAL 2026" session is strictly exclusive to shop.html
+    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+    if (!isShopPage) {
+      const containers = document.querySelectorAll("#festiveCampaignContainer, #festiveOffersSection, .festive-offers-section");
+      const ticker = document.getElementById("festiveTopTickerBar");
+      containers.forEach(c => {
+        c.style.display = "none";
+        c.innerHTML = "";
+      });
+      if (ticker) {
+        ticker.style.display = "none";
+        ticker.innerHTML = "";
+      }
+      return;
+    }
+
     const campaign = customCampaign || window.store.getFestiveCampaign();
     const isLive = Boolean(campaign && campaign.enabled);
 
-    const containers = document.querySelectorAll("#festiveCampaignContainer, #festiveOffersSection, .festive-offers-section");
+    const containers = document.querySelectorAll("#festiveOffersSection, .festive-offers-section");
     const ticker = document.getElementById("festiveTopTickerBar");
 
     // Clear any existing timer interval
@@ -2101,7 +2118,7 @@ class StorefrontController {
             </div>
           ` : ""}
 
-          <!-- Festive Patron Perks Strip -->
+          <!-- Festive Perks Strip -->
           ${perks.length > 0 ? `
             <div class="festive-perks-bar">
               ${perksHtml}
@@ -2280,7 +2297,7 @@ class StorefrontController {
       if (footer) footer.style.display = "none";
       body.innerHTML = `
         <div class="wishlist-empty-state">
-          <div class="wishlist-empty-icon"><img src="icons/favourite.jpeg" alt="Favourites" class="empty-state-fav-icon" /></div>
+          <div class="wishlist-empty-icon">${window.Icons ? window.Icons.get('favourite', { className: 'empty-state-fav-icon' }) : '♥'}</div>
           <h4>Your Favourites is Empty</h4>
           <p>Tap the heart icon on any pure Kanchipuram silk saree, kids pattu pavadai, or royal family set to save your favorite weaves here!</p>
           <button class="btn btn-gold btn-sm" id="wishlistExploreBtn" style="margin-top: 1.25rem;">
@@ -2326,7 +2343,7 @@ class StorefrontController {
               <span class="wishlist-item-price">${window.store.formatPrice(product.priceINR)}</span>
               ${product.mrpINR > product.priceINR ? `<span class="wishlist-item-mrp">${window.store.formatPrice(product.mrpINR)}</span>` : ""}
             </div>
-            
+
             <div class="wishlist-item-actions">
               <button class="btn btn-gold btn-sm wishlist-move-btn" data-id="${product.id}" ${isOutOfStock ? "disabled" : ""}>
                 ${isOutOfStock ? "Sold Out" : "🛍️ Move to Bag"}
@@ -2588,7 +2605,7 @@ class StorefrontController {
         }
 
         // Step 1: Create 'pending' row in Supabase DB
-        const name = document.getElementById("custName")?.value.trim() || "Valued Patron";
+        const name = document.getElementById("custName")?.value.trim() || "Valued Customer";
         const phone = document.getElementById("custPhone")?.value.trim() || "9840012345";
         const address = document.getElementById("custAddress")?.value.trim() || "Tamil Nadu, India";
         const email = document.getElementById("custEmail")?.value.trim() || "customer@srinivasatextiles.com";
@@ -2784,7 +2801,7 @@ class StorefrontController {
       <div class="invoice-header">
         <div class="invoice-brand">
           <h2>SRINIVASA TEXTILES</h2>
-          <p>Master Weavers &amp; Pure Silk Family Emporium Since 1978</p>
+          <p>Master Weavers &amp; Pure Silk Family Store Since 1978</p>
           <p>108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India</p>
           <p><strong>GSTIN:</strong> ${window.store.settings.gstin} | <strong>State Code:</strong> 33</p>
         </div>
@@ -2955,7 +2972,7 @@ class StorefrontController {
       : (typeof INITIAL_REVIEWS !== "undefined" ? INITIAL_REVIEWS : []);
 
     if (!reviews || reviews.length === 0) {
-      grid.innerHTML = `<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">No patron reviews recorded yet.</p>`;
+      grid.innerHTML = `<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">No customer reviews recorded yet.</p>`;
       return;
     }
 
@@ -3261,7 +3278,7 @@ class StorefrontController {
     if (!window.store || typeof window.store.addBulkOrder !== "function") return;
 
     const form = document.getElementById("customerBulkInquiryForm");
-    const name = document.getElementById("bulkCustName")?.value.trim() || "Valued Patron";
+    const name = document.getElementById("bulkCustName")?.value.trim() || "Valued Customer";
     const phone = document.getElementById("bulkCustPhone")?.value.trim() || "";
     const email = document.getElementById("bulkCustEmail")?.value.trim() || "";
     const company = document.getElementById("bulkCustCompany")?.value.trim() || name;

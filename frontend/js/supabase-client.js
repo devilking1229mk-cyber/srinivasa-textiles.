@@ -187,7 +187,7 @@ class SupabaseService {
         id: row.id || row.order_id,
         date: row.date || (row.created_at ? row.created_at.replace("T", " ").slice(0, 16) : new Date().toISOString().slice(0, 16)),
         customer: row.customer || {
-          name: row.customer_name || row.customer?.name || "Valued Patron",
+          name: row.customer_name || row.customer?.name || "Valued Customer",
           email: row.email || row.customer_email || row.customer?.email || "",
           phone: row.mobile_number || row.customer_phone || row.customer?.phone || "",
           address: row.shipping_address || row.customer?.address || ""
@@ -221,7 +221,7 @@ class SupabaseService {
    */
   async createPendingOrder(orderData) {
     const orderId = orderData.order_id || orderData.orderId || ("ST-ORD-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000));
-    const customerName = orderData.customer_name || orderData.customer?.name || "Valued Patron";
+    const customerName = orderData.customer_name || orderData.customer?.name || "Valued Customer";
     const mobileNumber = orderData.mobile_number || orderData.customer?.phone || "";
     const shippingAddress = orderData.shipping_address || orderData.customer?.address || "";
     const email = orderData.email || orderData.customer?.email || "";

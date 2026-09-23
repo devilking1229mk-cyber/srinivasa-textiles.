@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SRINIVASA TEXTILES - ULTRA-ATTRACTIVE LUXURY STOREFRONT & HOME PAGE
+   SRINIVASA TEXTILES - LUXURY STOREFRONT & HOME PAGE
    Rich Aesthetics, Glowing Gold Shimmer & Dedicated Gender Gateways
    ========================================================================== */
 
@@ -77,7 +77,7 @@
 }
 
 /* ==========================================================================
-   HERO BANNER - ULTRA ATTRACTIVE WITH GLOWING ACCENTS
+   HERO BANNER - HERO BANNER & SHOWCASE
    ========================================================================== */
 .hero-section {
   position: relative;
@@ -95,9 +95,9 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    90deg, 
-    rgba(14, 2, 7, 0.95) 0%, 
-    rgba(32, 4, 15, 0.82) 45%, 
+    90deg,
+    rgba(14, 2, 7, 0.95) 0%,
+    rgba(32, 4, 15, 0.82) 45%,
     rgba(15, 1, 6, 0.45) 100%
   );
 }
@@ -115,6 +115,7 @@
   gap: 0.5rem;
   background: rgba(212, 175, 55, 0.22);
   border: 1px solid var(--color-gold);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   padding: 0.4rem 1.1rem;
   border-radius: var(--radius-full);
@@ -141,9 +142,11 @@
   text-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
 }
 
-.hero-title span.gold-text {
+.hero-title span.gold-text,
+.gold-text {
   background: var(--color-gold-gradient);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
 }
@@ -199,7 +202,7 @@
 }
 
 /* ==========================================================================
-   ATTRACTIVE GENDER GATEWAY STORE PORTALS
+   GENDER GATEWAY STORE PORTALS
    ========================================================================== */
 .gender-gateways-grid {
   display: grid;
@@ -233,8 +236,6 @@
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-
-
 .gender-badge-pill {
   position: absolute;
   top: 1rem;
@@ -247,6 +248,7 @@
   border-radius: var(--radius-full);
   border: 1px solid var(--color-gold);
   z-index: 2;
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
 
@@ -332,8 +334,6 @@
   transition: transform 0.6s ease;
 }
 
-
-
 .combo-banner-content {
   padding: 3rem;
   display: flex;
@@ -416,6 +416,7 @@
   border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
   color: #fff;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -508,8 +509,6 @@
   transition: transform 0.6s ease;
 }
 
-
-
 .occasion-overlay {
   position: absolute;
   inset: 0;
@@ -582,8 +581,13 @@
   .hero-content { padding: 0; }
   .hero-title { font-size: 1.85rem; }
   .gender-gateways-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.5rem; }
-  .gateway-card { height: 160px; }
+  .gender-gateway-card,
+  .gateway-card { height: 160px !important; }
+  .gender-gateway-card h3,
+  .gender-gateway-overlay h3,
   .gateway-card h3 { font-size: 1rem; }
+  .gender-gateway-card p,
+  .gender-gateway-overlay p,
   .gateway-card p { font-size: 0.72rem; }
   .hero-stats-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 
@@ -706,8 +710,6 @@
   object-fit: cover;
   transition: transform 0.4s ease;
 }
-
-
 
 .card-badges-top {
   position: absolute;
@@ -885,6 +887,7 @@
   border-radius: var(--radius-md);
   padding: 0.85rem 1.25rem;
   color: #fff;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -1156,6 +1159,7 @@
   font-weight: 800;
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius-full);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
@@ -1344,6 +1348,4 @@
   text-transform: uppercase;
   margin-top: 0.25rem;
 }
-
-
 

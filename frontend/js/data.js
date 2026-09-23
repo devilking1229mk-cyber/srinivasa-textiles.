@@ -744,7 +744,7 @@ const INITIAL_SUBSCRIBERS = [
 const INITIAL_BULK_ORDERS = [
   {
     bulkOrderId: "ST-BLK-2026-001",
-    clientCompany: "Coimbatore Handloom Emporium Pvt Ltd",
+    clientCompany: "Coimbatore Handloom Store Pvt Ltd",
     contactPerson: "S. Vijayaraghavan",
     phone: "+91 94432 18902",
     email: "wholesale@coimbatoresilks.in",
@@ -922,5 +922,4 @@ const DEFAULT_BULK_PACKAGES = [
     isActive: true
   }
 ];
-
 

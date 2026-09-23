@@ -435,6 +435,12 @@
   height: 26px;
 }
 
+.admin-menu-item-left .menu-icon .svg-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-gold);
+}
+
 .admin-menu-item:hover {
   background: var(--bg-surface-alt);
   color: var(--color-primary);
@@ -2609,5 +2615,4 @@
     text-align: center;
   }
 }
-
 
