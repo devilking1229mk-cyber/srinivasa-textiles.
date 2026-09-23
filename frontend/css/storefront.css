@@ -1349,3 +1349,16 @@
   margin-top: 0.25rem;
 }
 
+@media (max-width: 768px) {
+  .section {
+    padding: 1.5rem 0 !important;
+  }
+  .explore-cta-section {
+    padding: 1.75rem 0 !important;
+  }
+  .festive-offers-section {
+    padding: 1.5rem 0 !important;
+  }
+}
+
+

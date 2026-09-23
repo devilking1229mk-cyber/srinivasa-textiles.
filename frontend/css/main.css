@@ -1821,6 +1821,11 @@ textarea {
     font-size: 0.8rem !important;
   }
 
+  /* General Section Spacing on Mobile - Tight & Balanced */
+  .section {
+    padding: 1.5rem 0 !important;
+  }
+
   /* Festive Coupon Vouchers - Swipeable Horizontal Carousel on Mobile */
   .festive-vouchers-grid {
     display: flex !important;
@@ -1829,9 +1834,9 @@ textarea {
     scroll-snap-type: x mandatory !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
-    gap: 0.85rem !important;
-    padding: 0.5rem 0.25rem 1rem 0.25rem !important;
-    margin-bottom: 2rem !important;
+    gap: 0.75rem !important;
+    padding: 0.25rem 0.25rem 0.65rem 0.25rem !important;
+    margin-bottom: 1.25rem !important;
   }
 
   .festive-vouchers-grid::-webkit-scrollbar {
@@ -1839,44 +1844,179 @@ textarea {
   }
 
   .festive-voucher-card {
-    flex: 0 0 280px !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
+    flex: 0 0 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
     scroll-snap-align: start !important;
-    padding: 1.15rem !important;
-    border-radius: 12px !important;
+    padding: 1rem !important;
+    border-radius: 10px !important;
   }
 
-  /* Bottom Explore CTA */
+  /* Festive Specials Session on Mobile (Only rendered on shop.html) */
+  .festive-offers-section {
+    padding: 1.5rem 0 !important;
+  }
+
+  .festive-countdown-banner {
+    padding: 0.85rem 1rem !important;
+    margin-bottom: 1.25rem !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 0.65rem !important;
+  }
+
+  .festive-countdown-header {
+    justify-content: center !important;
+    gap: 0.35rem !important;
+  }
+
+  .countdown-sparkle {
+    font-size: 1.25rem !important;
+  }
+
+  .countdown-title {
+    font-size: 0.85rem !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .sf-festive-timer {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+  }
+
+  .sf-festive-timer .timer-box {
+    min-width: 48px !important;
+    padding: 0.35rem 0.45rem !important;
+  }
+
+  .sf-festive-timer .timer-box .timer-num {
+    font-size: 1.25rem !important;
+  }
+
+  .festive-deals-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .festive-deal-media {
+    height: 180px !important;
+  }
+
+  .festive-deal-body {
+    padding: 1rem !important;
+  }
+
+  .festive-deal-title {
+    font-size: 1.05rem !important;
+  }
+
+  .festive-deal-desc {
+    margin-bottom: 0.65rem !important;
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .festive-price-row {
+    margin-bottom: 0.65rem !important;
+  }
+
+  .festive-perks-bar {
+    grid-template-columns: 1fr !important;
+    padding: 1rem !important;
+    gap: 0.75rem !important;
+    margin-top: 1rem !important;
+  }
+
+  .festive-perk-item {
+    gap: 0.65rem !important;
+  }
+
+  .festive-perk-icon {
+    font-size: 1.4rem !important;
+  }
+
+  /* Bulk Orders Session Spacing on Mobile */
+  .bulk-orders-store-section {
+    padding: 1.75rem 0 !important;
+  }
+
+  .bulk-trust-strip {
+    gap: 0.45rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .bulk-trust-pill {
+    font-size: 0.72rem !important;
+    padding: 0.35rem 0.65rem !important;
+  }
+
+  .bulk-packages-grid {
+    gap: 0.85rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .bulk-card-media {
+    height: 180px !important;
+  }
+
+  .bulk-card-content {
+    padding: 1rem !important;
+  }
+
+  .bulk-custom-cta-box {
+    padding: 1.5rem 1rem !important;
+  }
+
+  /* Bottom Explore CTA on Mobile - Compact Spacing */
+  .explore-cta-section {
+    padding: 1.75rem 0 !important;
+  }
+
   .explore-cta-card {
-    padding: 2rem 1rem !important;
+    padding: 1.25rem 0.75rem !important;
     text-align: center !important;
     border-radius: 12px !important;
   }
 
   .explore-cta-card h2 {
-    font-size: 1.5rem !important;
+    font-size: 1.35rem !important;
     line-height: 1.25 !important;
+    margin: 0.5rem 0 0.65rem !important;
+  }
+
+  .explore-cta-card p {
+    font-size: 0.85rem !important;
+    line-height: 1.5 !important;
+    margin: 0 auto 1.15rem auto !important;
   }
 
   .explore-cta-actions {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    gap: 0.65rem !important;
+    gap: 0.5rem !important;
+    margin-top: 0.65rem !important;
   }
 
   .explore-cta-actions .btn {
     width: 100% !important;
     min-width: unset !important;
-    padding: 0.75rem !important;
+    padding: 0.65rem 1rem !important;
   }
 
-  /* Footer on Mobile */
+  /* Compact Footer on Mobile - Removed Unwanted Empty Space */
+  .site-footer {
+    margin-top: 1.5rem !important;
+    padding: 2rem 0 1.25rem !important;
+  }
+
   .footer-grid {
     display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
+    gap: 1.25rem !important;
+    margin-bottom: 1.25rem !important;
     text-align: center !important;
   }
 
@@ -1885,14 +2025,64 @@ textarea {
     margin: 0 auto !important;
   }
 
+  .footer-brand p {
+    margin-bottom: 0.85rem !important;
+    font-size: 0.825rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .footer-certifications {
+    justify-content: center !important;
+    gap: 0.5rem !important;
+  }
+
+  .footer-col h4 {
+    margin-bottom: 0.65rem !important;
+    padding-bottom: 0.35rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  .footer-col h4::after {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
   .footer-links {
     text-align: center !important;
   }
 
+  .footer-links li {
+    margin-bottom: 0.45rem !important;
+  }
+
   .footer-bottom {
+    padding-top: 1rem !important;
     flex-direction: column !important;
-    gap: 0.75rem !important;
+    gap: 0.5rem !important;
     text-align: center !important;
+  }
+
+  /* Completely Remove 'Enter your email' / Newsletter session in Mobile UI */
+  .footer-newsletter,
+  .newsletter-form,
+  .email-subscribe-section,
+  .subscribe-session,
+  .footer-subscribe,
+  .footer-col:has(.newsletter-form),
+  .footer-col:has(input[type="email"]) {
+    display: none !important;
+  }
+
+  /* Floating WhatsApp on Mobile - Tightened Margin */
+  .whatsapp-widget-container {
+    bottom: 1rem !important;
+    right: 1rem !important;
+  }
+
+  .whatsapp-trigger-bubble {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.45rem !important;
   }
 }
 
@@ -1997,7 +2187,19 @@ textarea {
   box-shadow: 0 0 14px rgba(245, 158, 11, 0.4) !important;
 }
 
-/* 4. Festive Specials Section Tag */
+/* Strictly enforce Festive Special 2026 session is ONLY displayed on shop.html and NEVER on index.html */
+body.home-page #festiveOffersSection,
+body.home-page .festive-offers-section,
+body.home-page #festiveTopTickerBar,
+body.home-page .festive-top-ticker-bar,
+body:not(.shop-page) #festiveOffersSection,
+body:not(.shop-page) .festive-offers-section,
+body:not(.shop-page) #festiveTopTickerBar,
+body:not(.shop-page) .festive-top-ticker-bar {
+  display: none !important;
+}
+
+/* 4. Festive Specials Section Tag (Only active on shop.html) */
 [data-theme="dark"] .festive-offers-section .section-tag,
 .festive-offers-section .section-tag,
 .festive-section-tag {

@@ -1937,7 +1937,11 @@ class StorefrontController {
     if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
 
     // "LIMITED TIME FESTIVE SPECIAL 2026" session is strictly exclusive to shop.html
-    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+    const isShopPage = (window.location.pathname.includes("shop.html") || 
+                        window.location.href.includes("shop.html") || 
+                        window.location.pathname.endsWith("/shop") ||
+                        (document.body && document.body.classList.contains("shop-page"))) &&
+                       !(document.body && document.body.classList.contains("home-page"));
     if (!isShopPage) {
       const containers = document.querySelectorAll("#festiveCampaignContainer, #festiveOffersSection, .festive-offers-section");
       const ticker = document.getElementById("festiveTopTickerBar");
