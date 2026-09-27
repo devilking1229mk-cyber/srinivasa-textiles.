@@ -213,34 +213,53 @@ class StorefrontController {
   }
 
   updateThemeButtonUI(theme) {
-    const applyIcon = (attempt) => {
-      const btn = document.getElementById("themeToggleBtn");
-      if (!btn) return;
+    const btn = document.getElementById("themeToggleBtn");
+    if (!btn) return;
 
-      const isDark = theme === "dark";
+    const isDark = theme === "dark";
 
-      // If Icons not loaded yet and this is first attempt, retry after 200ms
-      if (!window.Icons && attempt === 0) {
-        setTimeout(() => applyIcon(1), 200);
-      }
+    // Hardcoded SVG icons — always render regardless of Icons.js load state
+    const moonSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      <path d="M19 4v3M20.5 5.5h-3" stroke-width="1.5"/>
+    </svg>`;
 
-      const iconSvg = window.Icons
-        ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 })
-        : (isDark ? "☀️" : "🌙");
+    const sunSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>`;
 
-      const iconSpan = btn.querySelector(".theme-icon");
-      const labelSpan = btn.querySelector(".theme-label");
+    const iconSvg = isDark ? sunSvg : moonSvg;
+    const labelText = isDark ? " Light" : " Dark";
 
-      if (iconSpan && labelSpan) {
-        iconSpan.innerHTML = iconSvg;
-        labelSpan.textContent = isDark ? " Light" : " Dark";
-      } else {
-        btn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${isDark ? " Light" : " Dark"}</span>`;
-      }
-      btn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
-      btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
-    };
-    applyIcon(0);
+    // Smooth icon-swap animation
+    btn.style.transition = "transform 0.18s cubic-bezier(0.34,1.56,0.64,1)";
+    btn.style.transform = "scale(0.88)";
+
+    let iconSpan = btn.querySelector(".theme-icon");
+    let labelSpan = btn.querySelector(".theme-label");
+
+    if (!iconSpan || !labelSpan) {
+      btn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${labelText}</span>`;
+    } else {
+      iconSpan.innerHTML = iconSvg;
+      labelSpan.textContent = labelText;
+    }
+
+    btn.setAttribute("title", isDark ? "Switch to Light Mode ☀️" : "Switch to Dark Mode 🌙");
+    btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
+
+    // Bounce back
+    setTimeout(() => {
+      btn.style.transform = "scale(1)";
+    }, 180);
   }
 
   bindEvents() {
