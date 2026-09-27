@@ -45,6 +45,55 @@
   display: flex;
 }
 
+/* Smooth Theme Transitions Engine for Admin Console */
+.admin-workspace,
+.admin-navbar,
+.admin-header,
+.admin-brand,
+.admin-brand *,
+.admin-session-pill,
+.admin-time-pill,
+.admin-nav-actions,
+.admin-nav-btn,
+.admin-container,
+.admin-sidebar,
+.admin-sidebar-nav,
+.admin-menu-item,
+.admin-menu-item *,
+.admin-nav-group-title,
+.admin-main,
+.admin-main-content,
+.admin-section,
+.admin-panel,
+.admin-welcome-hero,
+.admin-card,
+.admin-card *,
+.kpi-card,
+.kpi-card *,
+.stat-card,
+.admin-table,
+.admin-table *,
+.admin-table th,
+.admin-table td,
+.admin-table-wrapper,
+.admin-lock-card,
+.admin-lock-card *,
+.admin-lock-screen,
+.admin-modal,
+.admin-modal-content,
+.bulk-subtab-btn,
+.timer-box,
+.exit-admin-btn,
+.form-section-card,
+.form-control,
+.form-select,
+.form-input {
+  transition: background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 /* ==========================================================================
    1. ROYAL ADMIN TOP NAVBAR
    ========================================================================== */
@@ -2614,5 +2663,371 @@
     grid-template-columns: 1fr;
     text-align: center;
   }
+}
+
+/* ==========================================================================
+   FAMILY COMBOS ADMIN IMAGE BOX & CARD MODERNIZATION
+   ========================================================================== */
+.admin-poster-box-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.admin-combo-item-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.fam-combo-admin-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.fam-combo-admin-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2) !important;
+}
+
+.fam-combo-admin-card:hover img {
+  transform: scale(1.04);
+}
+
+@media (max-width: 768px) {
+  .admin-poster-box-layout,
+  .admin-combo-item-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ==========================================================================
+   HIGH-CONTRAST DARK THEME STYLING SYSTEM FOR ADMIN CONSOLE
+   Ensures crystal clear visibility across tables, cards, badges, inputs & modals
+   ========================================================================== */
+[data-theme="dark"] .admin-workspace {
+  background-color: var(--bg-body, #0E1015);
+  color: var(--text-main, #F3F4F6);
+}
+
+[data-theme="dark"] .admin-card {
+  background: #14161D;
+  border-color: #2E3342;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .admin-card-header {
+  border-bottom-color: #2E3342;
+}
+
+[data-theme="dark"] .admin-card-header h3 {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .admin-table-wrapper,
+[data-theme="dark"] .admin-table-wrap,
+[data-theme="dark"] .table-responsive,
+[data-theme="dark"] .data-table-container,
+[data-theme="dark"] .inventory-table-wrap,
+[data-theme="dark"] .orders-table-wrap {
+  background: #14161D !important;
+  border-color: #2E3342 !important;
+}
+
+[data-theme="dark"] .admin-table {
+  color: #F3F4F6;
+}
+
+[data-theme="dark"] .admin-table th {
+  background: #1A1D27 !important;
+  color: #FFFFFF !important;
+  border-bottom: 2px solid #2E3342 !important;
+}
+
+[data-theme="dark"] .admin-table td {
+  color: #F3F4F6 !important;
+  border-bottom: 1px solid #232733 !important;
+}
+
+[data-theme="dark"] .admin-table tr:hover {
+  background: #1E222D !important;
+}
+
+/* Status Badges in Dark Mode */
+[data-theme="dark"] .status-badge {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .status-badge.paid,
+[data-theme="dark"] .status-badge.status-in-stock,
+[data-theme="dark"] .status-badge[style*="#DCFCE7"],
+[data-theme="dark"] .status-badge[style*="#dcfce7"],
+[data-theme="dark"] .status-badge[style*="#ECFDF5"],
+[data-theme="dark"] .status-badge[style*="#ecfdf5"] {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #6EE7B7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+}
+
+[data-theme="dark"] .status-badge.lowstock,
+[data-theme="dark"] .status-badge.status-low-stock,
+[data-theme="dark"] .status-badge[style*="#FEF3C7"],
+[data-theme="dark"] .status-badge[style*="#fef3c7"],
+[data-theme="dark"] .status-badge[style*="#FDE68A"],
+[data-theme="dark"] .status-badge[style*="#fde68a"] {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #FCD34D !important;
+  border: 1px solid rgba(245, 158, 11, 0.45) !important;
+}
+
+[data-theme="dark"] .status-badge.out-of-stock,
+[data-theme="dark"] .status-badge.status-out-of-stock,
+[data-theme="dark"] .status-badge[style*="#FEE2E2"],
+[data-theme="dark"] .status-badge[style*="#fee2e2"] {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #FCA5A5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.45) !important;
+}
+
+[data-theme="dark"] .status-badge[style*="#EFF6FF"],
+[data-theme="dark"] .status-badge[style*="#eff6ff"] {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #93C5FD !important;
+  border: 1px solid rgba(59, 130, 246, 0.45) !important;
+}
+
+[data-theme="dark"] .status-badge[style*="#F3E8FF"],
+[data-theme="dark"] .status-badge[style*="#f3e8ff"] {
+  background: rgba(168, 85, 247, 0.2) !important;
+  color: #D8B4FE !important;
+  border: 1px solid rgba(168, 85, 247, 0.45) !important;
+}
+
+/* KPI Cards & Shortcuts in Dark Mode */
+[data-theme="dark"] .kpi-card {
+  background: #14161D;
+  border-color: #2E3342;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .kpi-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.25);
+  border-color: var(--color-gold);
+}
+
+[data-theme="dark"] .kpi-info h3 {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .kpi-info p {
+  color: #D1D5DB;
+}
+
+[data-theme="dark"] .admin-shortcut-card {
+  background: #181B24;
+  border-color: #2E3342;
+}
+
+[data-theme="dark"] .admin-shortcut-card:hover {
+  background: #202431;
+  border-color: var(--color-gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="dark"] .admin-shortcut-info h4 {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .admin-shortcut-info span {
+  color: #D1D5DB;
+}
+
+/* Form Sections & Inputs in Dark Mode */
+[data-theme="dark"] .form-section-card {
+  background: #181B24;
+  border-color: #2E3342;
+}
+
+[data-theme="dark"] .form-section-header {
+  border-bottom-color: #2E3342;
+}
+
+[data-theme="dark"] .form-section-title {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .form-group label {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .form-control {
+  background-color: #171922 !important;
+  color: #FFFFFF !important;
+  border-color: #3B4252 !important;
+}
+
+[data-theme="dark"] .form-control:focus {
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25) !important;
+  background-color: #1E232E !important;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: #9CA3AF !important;
+}
+
+[data-theme="dark"] .media-uploader-box {
+  background: #14161D;
+  border-color: #D4AF37;
+}
+
+[data-theme="dark"] .media-uploader-box:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: #F5D061;
+}
+
+[data-theme="dark"] .safety-badge-card {
+  background: #14161D;
+  border-color: #2E3342;
+  color: #F3F4F6;
+}
+
+[data-theme="dark"] .safety-badge-card:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--color-gold);
+}
+
+/* Filters & Toolbars */
+[data-theme="dark"] .admin-toolbar-bar,
+[data-theme="dark"] .feedback-filter-bar,
+[data-theme="dark"] .orders-filter-bar,
+[data-theme="dark"] .inventory-filter-bar {
+  background: #181B24;
+  border-color: #2E3342;
+}
+
+[data-theme="dark"] .feedback-stat-card {
+  background: #181B24;
+  border-color: #2E3342;
+}
+
+[data-theme="dark"] .feedback-stat-card .stat-label {
+  color: #D1D5DB;
+}
+
+[data-theme="dark"] .feedback-stat-card .stat-val {
+  color: #F5D061;
+}
+
+[data-theme="dark"] .feedback-stat-card .stat-sub {
+  color: #9CA3AF;
+}
+
+/* Stepper & Controls */
+[data-theme="dark"] .btn-stock-step {
+  background: #222631;
+  border-color: #374151;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .btn-stock-step:hover {
+  background: var(--color-gold);
+  color: #1A0208;
+  border-color: var(--color-gold);
+}
+
+[data-theme="dark"] .stock-inline-edit {
+  background: #171922;
+  border-color: #374151;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .stock-pill-btn {
+  background: #222631;
+  border-color: #374151;
+  color: #D1D5DB;
+}
+
+[data-theme="dark"] .stock-pill-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+[data-theme="dark"] .stock-pill-btn.pill-zero {
+  color: #F87171;
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="dark"] .stock-pill-btn.pill-plus {
+  color: #34D399;
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+[data-theme="dark"] .admin-bulk-pkg-card {
+  background: #14161D;
+  border-color: #2E3342;
+}
+
+[data-theme="dark"] .admin-bulk-pkg-card:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(212, 175, 55, 0.15);
+}
+
+[data-theme="dark"] .fam-combo-admin-card {
+  background: #14161D !important;
+  border-color: #2E3342 !important;
+}
+
+/* GST Invoices & Modals */
+[data-theme="dark"] .invoice-modal-content {
+  background: #14161D;
+  border-color: var(--color-gold);
+}
+
+[data-theme="dark"] .invoice-billing-grid {
+  background: #1A1D27;
+  border-color: #2E3342;
+  color: #F3F4F6;
+}
+
+[data-theme="dark"] .invoice-summary-box {
+  background: #1A1D27;
+  border-color: #2E3342;
+}
+
+[data-theme="dark"] .invoice-summary-row {
+  color: #D1D5DB;
+}
+
+[data-theme="dark"] .invoice-summary-row strong,
+[data-theme="dark"] .invoice-summary-row span:last-child {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .invoice-items-table th {
+  background: #2D0310;
+  color: #FFF2B2;
+  border-bottom: 2px solid var(--color-gold);
+}
+
+[data-theme="dark"] .invoice-items-table td {
+  border-bottom-color: #2E3342;
+  color: #F3F4F6;
+}
+
+[data-theme="dark"] .badge-softness {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+}
+
+[data-theme="dark"] .badge-dept {
+  background: rgba(212, 175, 55, 0.18) !important;
+  color: #F5D061 !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
 }
 

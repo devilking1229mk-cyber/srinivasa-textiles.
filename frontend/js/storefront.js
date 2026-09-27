@@ -35,30 +35,200 @@ class StorefrontController {
     this.setupOwnerAuthModal();
     this.setupNotifyModal();
     this.setupDepartmentNavScroll();
+    this.initScrollLockEngine();
   }
 
-  // Theme Management (Light & Dark Mode)
+  // ==========================================
+  // UNIVERSAL BACKGROUND SCROLL LOCK ENGINE
+  // Prevents background webpage from scrolling when modals/drawers are open
+  // ==========================================
+  // ==========================================
+  // UNIVERSAL BACKGROUND SCROLL LOCK ENGINE
+  // Prevents background webpage from scrolling when modals/drawers are open
+  // (Favourite, Shopping Bag, Feedback, Product Details, Combos, etc.)
+  // ==========================================
+  initScrollLockEngine() {
+    this.syncBodyScrollLock();
+
+    // Observe active modals/drawers via MutationObserver
+    if (typeof window !== "undefined" && window.MutationObserver) {
+      const observer = new MutationObserver(() => {
+        this.syncBodyScrollLock();
+      });
+      if (document.body) {
+        observer.observe(document.body, {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ["class", "style"]
+        });
+      }
+    }
+
+    // Desktop mousewheel guard: strictly prevent background scrolling when wheeling outside scrollable containers
+    window.addEventListener("wheel", (e) => {
+      if (document.body.classList.contains("modal-open")) {
+        const scrollable = e.target.closest(
+          ".pdp-modal-content, .cart-items-body, .wishlist-items-body, .feedback-box, .feedback-modal, .checkout-modal-content, .bulk-inquiry-modal, .family-combo-modal-content, #familyComboBookingModal > div, .drawer-body"
+        );
+        if (!scrollable) {
+          e.preventDefault();
+          return;
+        }
+        // Prevent scroll chaining to the background when container reaches boundaries
+        const isScrollable = scrollable.scrollHeight > scrollable.clientHeight;
+        if (isScrollable) {
+          const atTop = e.deltaY < 0 && scrollable.scrollTop <= 0;
+          const atBottom = e.deltaY > 0 && (scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 1);
+          if (atTop || atBottom) {
+            e.preventDefault();
+          }
+        } else {
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
+
+    // Touch event guard for mobile devices (prevents rubber-band / background scroll)
+    document.addEventListener("touchmove", (e) => {
+      if (document.body.classList.contains("modal-open")) {
+        const scrollable = e.target.closest(
+          ".pdp-modal-content, .cart-items-body, .wishlist-items-body, .feedback-box, .feedback-modal, .checkout-modal-content, .bulk-inquiry-modal, .family-combo-modal-content, #familyComboBookingModal > div, .drawer-body"
+        );
+        if (!scrollable) {
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
+
+    // Global ESC key listener to close active modals & restore background scroll
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        this.closeAllActiveModals();
+      }
+    });
+  }
+
+  syncBodyScrollLock() {
+    const isAnyActive = !!(
+      document.querySelector(".pdp-modal.active") ||
+      document.querySelector(".cart-drawer.active") ||
+      document.querySelector(".cart-drawer-overlay.active") ||
+      document.querySelector(".wishlist-drawer.active") ||
+      document.querySelector(".wishlist-drawer-overlay.active") ||
+      document.querySelector(".mobile-nav-drawer.active") ||
+      document.querySelector(".mobile-nav-overlay.active") ||
+      document.querySelector("#feedbackModal.active") ||
+      document.querySelector("#bulkInquiryModal.active") ||
+      document.querySelector("#notifyModal.active") ||
+      document.querySelector("#checkoutModal.active") ||
+      document.querySelector("#invoiceModal.active") ||
+      document.querySelector("#lightboxModal.active") ||
+      document.querySelector("#familyComboBookingModal.active") ||
+      (document.getElementById("familyComboBookingModal") && document.getElementById("familyComboBookingModal").style.display === "flex") ||
+      (document.getElementById("feedbackModal") && document.getElementById("feedbackModal").style.display === "flex")
+    );
+
+    if (isAnyActive) {
+      if (!document.body.classList.contains("modal-open")) {
+        const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        document.body.dataset.lockedScrollY = scrollY;
+        document.documentElement.classList.add("modal-open");
+        document.body.classList.add("modal-open");
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+      }
+    } else {
+      if (document.body.classList.contains("modal-open")) {
+        const scrollY = parseInt(document.body.dataset.lockedScrollY || "0", 10);
+        document.documentElement.classList.remove("modal-open");
+        document.body.classList.remove("modal-open");
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        window.scrollTo(0, scrollY);
+      }
+    }
+  }
+
+  closeAllActiveModals() {
+    document.getElementById("pdpModal")?.classList.remove("active");
+    document.getElementById("cartDrawer")?.classList.remove("active");
+    document.getElementById("cartDrawerOverlay")?.classList.remove("active");
+    document.getElementById("wishlistDrawer")?.classList.remove("active");
+    document.getElementById("wishlistDrawerOverlay")?.classList.remove("active");
+    document.getElementById("mobileNavDrawer")?.classList.remove("active");
+    document.getElementById("mobileNavOverlay")?.classList.remove("active");
+    document.getElementById("feedbackModal")?.classList.remove("active");
+    document.getElementById("bulkInquiryModal")?.classList.remove("active");
+    document.getElementById("notifyModal")?.classList.remove("active");
+    document.getElementById("checkoutModal")?.classList.remove("active");
+    document.getElementById("invoiceModal")?.classList.remove("active");
+    document.getElementById("lightboxModal")?.classList.remove("active");
+    const fcModal = document.getElementById("familyComboBookingModal");
+    if (fcModal) {
+      fcModal.classList.remove("active");
+      fcModal.style.display = "none";
+    }
+    this.syncBodyScrollLock();
+  }
+
+  // Theme Management (Light & Dark Mode - Strict Light Default)
   initTheme() {
-    const savedTheme = window.store.activeTheme || "light";
-    document.documentElement.setAttribute("data-theme", savedTheme);
-    this.updateThemeButtonUI(savedTheme);
+    const hasChosen = localStorage.getItem("st_user_theme_chosen") === "true";
+    const saved = (window.store && window.store.activeTheme) || localStorage.getItem("st_active_theme_v3");
+    const activeTheme = (hasChosen && saved === "dark") ? "dark" : "light";
+
+    document.documentElement.setAttribute("data-theme", activeTheme);
+    this.updateThemeButtonUI(activeTheme);
 
     const toggleBtn = document.getElementById("themeToggleBtn");
     if (toggleBtn) {
       toggleBtn.addEventListener("click", () => {
+        toggleBtn.classList.add("theme-rotating");
         const newTheme = window.store.toggleTheme();
         this.updateThemeButtonUI(newTheme);
-        this.showToast(`Switched to ${newTheme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}`, "info");
+        setTimeout(() => {
+          toggleBtn.classList.remove("theme-rotating");
+        }, 450);
+        setTimeout(() => {
+          this.showToast(`Switched to ${newTheme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}`, "info");
+        }, 120);
       });
     }
+
+    window.addEventListener("themeChanged", (e) => {
+      if (e && e.detail && e.detail.theme) {
+        this.updateThemeButtonUI(e.detail.theme);
+      }
+    });
   }
 
   updateThemeButtonUI(theme) {
     const btn = document.getElementById("themeToggleBtn");
     if (btn) {
-      btn.innerHTML = theme === "dark"
-        ? '<span class="theme-icon">☀️</span><span class="theme-label"> Dark</span>'
-        : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
+      const isDark = theme === "dark";
+      const iconSpan = btn.querySelector(".theme-icon");
+      const labelSpan = btn.querySelector(".theme-label");
+
+      if (iconSpan && labelSpan) {
+        iconSpan.textContent = isDark ? "☀️" : "🌙";
+        labelSpan.textContent = isDark ? " Light" : " Dark";
+      } else {
+        btn.innerHTML = isDark
+          ? '<span class="theme-icon">☀️</span><span class="theme-label"> Light</span>'
+          : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
+      }
+      btn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
+      btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
     }
   }
 
@@ -99,6 +269,16 @@ class StorefrontController {
 
     // Hash change routing
     window.addEventListener("hashchange", () => this.handleRouteFromHash());
+
+    // Collection 01 (Family Matching Combos) real-time visibility & rotation sync
+    window.addEventListener("collection01Updated", () => this.renderCollection01Section());
+    window.addEventListener("familyCombosUpdated", () => this.renderCollection01Section());
+    window.addEventListener("familyComboSettingsUpdated", () => this.renderCollection01Section());
+    window.addEventListener("storage", (e) => {
+      if (e.key === "st_collection01_enabled_v2" || e.key === "st_family_combos_v1" || e.key === "st_family_combo_settings_v1") {
+        this.renderCollection01Section();
+      }
+    });
 
     // Bulk Orders Desktop Nav Button
     const bulkNavBtn = document.getElementById("headerBulkOrdersBtn");
@@ -218,31 +398,21 @@ class StorefrontController {
       searchInput.addEventListener("input", (e) => this.handleSearchAutocomplete(e.target.value));
     }
 
-    // Cart Drawer
+    // Cart Drawer (Shopping Bag)
     const cartTriggerBtn = document.getElementById("cartTriggerBtn");
-    const cartDrawer = document.getElementById("cartDrawer");
-    const cartDrawerOverlay = document.getElementById("cartDrawerOverlay");
     const cartCloseBtn = document.getElementById("cartCloseBtn");
+    const cartDrawerOverlay = document.getElementById("cartDrawerOverlay");
 
-    if (cartTriggerBtn && cartDrawer && cartDrawerOverlay) {
-      cartTriggerBtn.addEventListener("click", () => {
-        cartDrawer.classList.add("active");
-        cartDrawerOverlay.classList.add("active");
-      });
+    if (cartTriggerBtn) {
+      cartTriggerBtn.addEventListener("click", () => this.openCartDrawer());
     }
 
-    if (cartCloseBtn && cartDrawer && cartDrawerOverlay) {
-      cartCloseBtn.addEventListener("click", () => {
-        cartDrawer.classList.remove("active");
-        cartDrawerOverlay.classList.remove("active");
-      });
+    if (cartCloseBtn) {
+      cartCloseBtn.addEventListener("click", () => this.closeCartDrawer());
     }
 
     if (cartDrawerOverlay) {
-      cartDrawerOverlay.addEventListener("click", () => {
-        cartDrawer.classList.remove("active");
-        cartDrawerOverlay.classList.remove("active");
-      });
+      cartDrawerOverlay.addEventListener("click", () => this.closeCartDrawer());
     }
 
     // Mobile Navigation & Department Drawer (3-Lines Menu)
@@ -255,6 +425,7 @@ class StorefrontController {
       mobileMenuBtn.addEventListener("click", () => {
         mobileNavDrawer.classList.add("active");
         mobileNavOverlay.classList.add("active");
+        this.syncBodyScrollLock();
       });
     }
 
@@ -262,6 +433,7 @@ class StorefrontController {
       mobileNavCloseBtn.addEventListener("click", () => {
         mobileNavDrawer.classList.remove("active");
         mobileNavOverlay.classList.remove("active");
+        this.syncBodyScrollLock();
       });
     }
 
@@ -269,6 +441,7 @@ class StorefrontController {
       mobileNavOverlay.addEventListener("click", () => {
         mobileNavDrawer?.classList.remove("active");
         mobileNavOverlay?.classList.remove("active");
+        this.syncBodyScrollLock();
       });
     }
 
@@ -277,9 +450,20 @@ class StorefrontController {
         const page = btn.getAttribute("data-page");
         mobileNavDrawer?.classList.remove("active");
         mobileNavOverlay?.classList.remove("active");
+        this.syncBodyScrollLock();
         if (page) this.navigateToPage(page);
       });
     });
+
+    const mobileCartBtn = document.getElementById("mobileCartBtn");
+    if (mobileCartBtn) {
+      mobileCartBtn.addEventListener("click", () => {
+        mobileNavDrawer?.classList.remove("active");
+        mobileNavOverlay?.classList.remove("active");
+        this.syncBodyScrollLock();
+        this.openCartDrawer();
+      });
+    }
 
     const mobileFeedbackBtn = document.getElementById("mobileFeedbackBtn");
     if (mobileFeedbackBtn) {
@@ -287,7 +471,10 @@ class StorefrontController {
         mobileNavDrawer?.classList.remove("active");
         mobileNavOverlay?.classList.remove("active");
         const feedbackModal = document.getElementById("feedbackModal");
-        if (feedbackModal) feedbackModal.classList.add("active");
+        if (feedbackModal) {
+          feedbackModal.classList.add("active");
+          this.syncBodyScrollLock();
+        }
       });
     }
 
@@ -340,12 +527,13 @@ class StorefrontController {
       });
     }
 
-    // PDP Modal Close
+    // PDP Modal Close (Product Details)
     const pdpModal = document.getElementById("pdpModal");
     const pdpCloseBtn = document.getElementById("pdpCloseBtn");
     if (pdpCloseBtn && pdpModal) {
       pdpCloseBtn.addEventListener("click", () => {
         pdpModal.classList.remove("active");
+        this.syncBodyScrollLock();
       });
     }
 
@@ -353,6 +541,7 @@ class StorefrontController {
       pdpModal.addEventListener("click", (e) => {
         if (e.target === pdpModal) {
           pdpModal.classList.remove("active");
+          this.syncBodyScrollLock();
         }
       });
     }
@@ -361,6 +550,7 @@ class StorefrontController {
       if (e.key === "Escape") {
         if (pdpModal && pdpModal.classList.contains("active")) {
           pdpModal.classList.remove("active");
+          this.syncBodyScrollLock();
         }
       }
     });
@@ -370,9 +560,15 @@ class StorefrontController {
     const lightboxClose = document.getElementById("lightboxCloseBtn");
     const lightboxImg = document.getElementById("lightboxMainImg");
     if (lightboxModal && lightboxClose) {
-      lightboxClose.addEventListener("click", () => lightboxModal.classList.remove("active"));
+      lightboxClose.addEventListener("click", () => {
+        lightboxModal.classList.remove("active");
+        this.syncBodyScrollLock();
+      });
       lightboxModal.addEventListener("click", (e) => {
-        if (e.target === lightboxModal || e.target === lightboxImg) lightboxModal.classList.remove("active");
+        if (e.target === lightboxModal || e.target === lightboxImg) {
+          lightboxModal.classList.remove("active");
+          this.syncBodyScrollLock();
+        }
       });
     }
 
@@ -388,14 +584,15 @@ class StorefrontController {
 
       // 2. Re-render Home Featured Products Grid (index.html)
       const homeGrid = document.getElementById("homeFeaturedProductsGrid");
-      if (homeGrid && typeof this.renderHomeFeaturedProducts === "function") {
-        this.renderHomeFeaturedProducts();
+      if (homeGrid && typeof this.renderHomePageFeatured === "function") {
+        this.renderHomePageFeatured();
       }
 
       // 3. Re-render Shop / Department Grid (shop.html or filtered page)
       const shopGrid = document.getElementById("productsGrid");
       if (shopGrid && typeof this.renderProductsForDepartment === "function") {
-        const activeDept = this.currentDepartment || "all";
+        const deptMeta = typeof this.getDepartmentMeta === "function" ? this.getDepartmentMeta(this.currentPage) : null;
+        const activeDept = (deptMeta && deptMeta.filterDept) ? deptMeta.filterDept : "All";
         this.renderProductsForDepartment(activeDept);
       }
 
@@ -429,6 +626,9 @@ class StorefrontController {
     window.addEventListener("productsUpdated", (e) => refreshStorefrontStockUI(e.detail));
     window.addEventListener("stockUpdated", (e) => refreshStorefrontStockUI(e.detail));
     window.addEventListener("catalogUpdated", (e) => refreshStorefrontStockUI(e.detail));
+    window.addEventListener("familyCombosUpdated", () => {
+      this.renderCollection01Section();
+    });
 
     // Listen for BroadcastChannel messages across tabs (0-delay real-time cross-tab sync)
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
@@ -438,6 +638,8 @@ class StorefrontController {
           const data = event.data;
           if (data && (data.type === "STOCK_UPDATED" || data.type === "CATALOG_UPDATED")) {
             refreshStorefrontStockUI(data);
+          } else if (data && data.type === "FAMILY_COMBOS_UPDATED") {
+            this.renderCollection01Section();
           }
         };
       } catch (e) {
@@ -449,6 +651,8 @@ class StorefrontController {
     window.addEventListener("storage", (e) => {
       if (e.key === "st_catalog_data_v2" || e.key === "st_products_data_v2" || e.key === "st_subscribers_data_v2") {
         refreshStorefrontStockUI();
+      } else if (e.key === "st_family_combos_v1") {
+        this.renderCollection01Section();
       }
     });
   }
@@ -466,7 +670,7 @@ class StorefrontController {
       return;
     }
 
-    const validPages = ["home", "explore", "women", "men", "girls", "boys", "infants", "family", "family-combos"];
+    const validPages = ["home", "explore", "all", "women", "men", "girls", "boys", "infants", "family", "family-combos"];
     if (hash === "family-combos") {
       this.navigateToPage("family", false);
     } else if (hash === "bulkordersstoresection" || hash === "bulk-orders") {
@@ -552,12 +756,14 @@ class StorefrontController {
       exploreSections.forEach(s => s.style.display = "none");
       if (deptBanner) deptBanner.style.display = "none";
       if (deptCatalogSection) deptCatalogSection.style.display = "none";
+      this.renderCollection01Section();
     } else if (this.currentPage === "explore") {
       homeSections.forEach(s => s.style.display = "none");
       exploreSections.forEach(s => s.style.display = "block");
       if (deptBanner) deptBanner.style.display = "none";
       if (deptCatalogSection) deptCatalogSection.style.display = "none";
       this.renderExploreCollections();
+      this.renderCollection01Section();
     } else {
       homeSections.forEach(s => s.style.display = "none");
       exploreSections.forEach(s => s.style.display = "none");
@@ -568,6 +774,12 @@ class StorefrontController {
       if (deptTitle) deptTitle.innerHTML = deptMeta.title;
       if (deptDesc) deptDesc.textContent = deptMeta.desc;
       if (deptBreadcrumbName) deptBreadcrumbName.textContent = deptMeta.breadcrumb;
+
+      if (this.currentPage === "family") {
+        const familySec = document.getElementById("familyCombosSection");
+        if (familySec) familySec.style.display = "block";
+        this.renderCollection01Section();
+      }
 
       this.renderProductsForDepartment(deptMeta.filterDept);
     }
@@ -620,6 +832,13 @@ class StorefrontController {
           breadcrumb: "Family Combos & Sets",
           filterDept: "Family Combos & Sets"
         };
+      case "all":
+        return {
+          title: `🛍️ All Handloom Collections & Master Weaver Creations`,
+          desc: "Browse our complete inventory of pure Kanchipuram silk sarees, festive dhotis, matching family sets, and organic baby wear.",
+          breadcrumb: "All Products",
+          filterDept: "All"
+        };
       default:
         return {
           title: "Srinivasa Family Collection",
@@ -628,6 +847,71 @@ class StorefrontController {
           filterDept: "All"
         };
     }
+  }
+
+  // Helper to ensure strict and mutually exclusive department separation
+  matchesDepartment(product, departmentName) {
+    if (!product) return false;
+    if (!departmentName || departmentName === "All" || departmentName === "all") return true;
+
+    const target = departmentName.toLowerCase().trim();
+    const pDept = (product.department || "").toLowerCase().trim();
+    const pCat = (product.category || product.subCategory || "").toLowerCase().trim();
+    const pTitle = (product.title || product.name || "").toLowerCase().trim();
+    const pAge = (product.ageGroup || "").toLowerCase().trim();
+    const fullText = `${pDept} ${pCat} ${pTitle} ${pAge}`;
+
+    // 1. Women's Collection / Ladies' Sarees
+    if (target.includes("women") || target.includes("ladies")) {
+      // Must NOT match kids, girls, boys, infants, or family combos
+      if (pDept.includes("kids") || pDept.includes("girl") || pDept.includes("boy") ||
+          pDept.includes("infant") || pDept.includes("baby") || pDept.includes("family")) {
+        return false;
+      }
+      return pDept.includes("women") || pDept.includes("ladies") || pDept.includes("saree") ||
+             fullText.includes("women's collection") || fullText.includes("ladies") || fullText.includes("saree");
+    }
+
+    // 2. Men's Collection / Dhotis
+    if (target.includes("men") && !target.includes("women")) {
+      // Must NOT match women, kids, girls, boys, infants, or family combos
+      if (pDept.includes("women") || pDept.includes("ladies") || pDept.includes("kids") ||
+          pDept.includes("girl") || pDept.includes("boy") || pDept.includes("infant") ||
+          pDept.includes("baby") || pDept.includes("family")) {
+        return false;
+      }
+      return (pDept.includes("men") && !pDept.includes("women")) ||
+             pDept.includes("dhoti") || pDept.includes("veshti") ||
+             ((fullText.includes("men") || fullText.includes("dhoti") || fullText.includes("veshti")) && !fullText.includes("women"));
+    }
+
+    // 3. Kids Wear (Girls)
+    if (target.includes("girl")) {
+      if (pDept.includes("boy") && !pDept.includes("girl")) return false;
+      if (pDept.includes("infant") || pDept.includes("baby") || pDept.includes("family")) return false;
+      return pDept.includes("girl") || fullText.includes("girl") || fullText.includes("pattu pavadai") || fullText.includes("pavadai") || fullText.includes("lehenga");
+    }
+
+    // 4. Kids Wear (Boys)
+    if (target.includes("boy")) {
+      if (pDept.includes("girl") || pDept.includes("infant") || pDept.includes("baby") || pDept.includes("family")) return false;
+      return pDept.includes("boy") || fullText.includes("boy") || (fullText.includes("kurta") && (fullText.includes("kid") || fullText.includes("boy")));
+    }
+
+    // 5. Infants & Toddlers / Born Babies
+    if (target.includes("infant") || target.includes("baby") || target.includes("toddler") || target.includes("born")) {
+      if (pDept.includes("family")) return false;
+      return pDept.includes("infant") || pDept.includes("baby") || pDept.includes("toddler") ||
+             fullText.includes("infant") || fullText.includes("baby") || fullText.includes("jhabla") || fullText.includes("swaddle") || fullText.includes("romper") || fullText.includes("0 - 2");
+    }
+
+    // 6. Family Combos & Sets
+    if (target.includes("family") || target.includes("combo")) {
+      return pDept.includes("family") || pDept.includes("combo") || fullText.includes("family combo") || fullText.includes("matching set") || fullText.includes("family matching");
+    }
+
+    // Default exact / fallback matching
+    return pDept === target || pDept.includes(target) || target.includes(pDept);
   }
 
   // ==========================================
@@ -639,8 +923,8 @@ class StorefrontController {
 
     let products = window.store.getAllProducts();
 
-    if (departmentName !== "All") {
-      products = products.filter(p => p.department === departmentName);
+    if (departmentName && departmentName !== "All" && departmentName !== "all") {
+      products = products.filter(p => this.matchesDepartment(p, departmentName));
     }
 
     if (this.currentFabricFilter !== "All") {
@@ -674,13 +958,20 @@ class StorefrontController {
 
     grid.innerHTML = products.map(product => this.createProductCardHTML(product)).join("");
     this.bindCardInteractions(grid);
+    if (typeof window.refreshScrollAnimations === "function") {
+      window.refreshScrollAnimations();
+    }
   }
 
   // ==========================================
   // EXPLORE SESSION INITIALIZATION
   // ==========================================
   renderExploreCollections() {
-    // Explore view has interactive gateways, family combo bundle, and festive offers
+    // Pure Handloom Catalog session removed per user request
+    const exploreGrid = document.getElementById("exploreLiveProductsGrid");
+    if (exploreGrid) {
+      exploreGrid.innerHTML = "";
+    }
   }
 
   bindCardInteractions(container) {
@@ -720,6 +1011,11 @@ class StorefrontController {
           e.stopPropagation();
           const isAdded = window.store.toggleWishlist(id);
           wishlistBtn.classList.toggle("wishlisted", isAdded);
+          if (window.Icons) {
+            wishlistBtn.innerHTML = isAdded
+              ? window.Icons.get('favouriteFilled', { className: 'card-action-icon' })
+              : window.Icons.get('favourite', { className: 'card-action-icon' });
+          }
           this.showToast(isAdded ? "Added to your Wishlist!" : "Removed from Wishlist", "info");
         });
       }
@@ -740,28 +1036,41 @@ class StorefrontController {
     if (!homeGrid) return;
 
     const catalog = window.store.getAllProducts();
-    // Pick 6 prominent family items (Featured + Multi-Gender)
-    const featuredItems = catalog.slice(0, 6);
+    // Pick first 8 items (newly added products appear first in catalog)
+    const featuredItems = catalog.slice(0, 8);
     homeGrid.innerHTML = featuredItems.map(p => this.createProductCardHTML(p)).join("");
     this.bindCardInteractions(homeGrid);
+    if (typeof window.refreshScrollAnimations === "function") {
+      window.refreshScrollAnimations();
+    }
   }
 
   createProductCardHTML(product) {
+    if (!product) return "";
     const isWishlisted = window.store.isInWishlist(product.id);
-    const isLowStock = product.stock > 0 && product.stock <= (product.lowStockThreshold || 2);
-    const isOutOfStock = product.stock <= 0;
+    const stockVal = product.stock !== undefined ? Number(product.stock) : (product.stockCount !== undefined ? Number(product.stockCount) : 10);
+    const isLowStock = stockVal > 0 && stockVal <= (product.lowStockThreshold || 2);
+    const isOutOfStock = stockVal <= 0;
 
-    const formattedPrice = window.store.formatPrice(product.priceINR);
-    const formattedMRP = window.store.formatPrice(product.mrpINR);
+    const priceVal = Number(product.priceINR || product.price || 0);
+    const mrpVal = Number(product.mrpINR || product.originalPriceINR || product.original_price || Math.round(priceVal * 1.3));
+
+    const formattedPrice = window.store.formatPrice(priceVal);
+    const formattedMRP = window.store.formatPrice(mrpVal);
+
+    const titleVal = product.title || product.name || "Handcrafted Heritage Handloom";
+    const deptVal = product.department || "Women's Collection";
+    const subtitleVal = product.subtitle || `${product.fabric || 'Pure Silk'} handcrafted for ${deptVal}`;
+    const primaryImg = product.mainImage || product.image || product.image_url || 'assets/images/family_matching_combo.jpg';
 
     return `
       <div class="product-card" data-id="${product.id}">
         <div class="product-image-box open-pdp">
-          <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
+          <img src="${primaryImg}" alt="${titleVal}" loading="lazy" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
 
           <div class="card-badges-top">
-            ${product.badges && product.badges[0] ? `<span class="badge-silk-mark">${product.badges[0]}</span>` : ""}
-            ${isLowStock ? `<span class="badge-scarcity">🔥 Only ${product.stock} Left!</span>` : ""}
+            ${product.badges && product.badges[0] ? `<span class="badge-silk-mark">${product.badges[0]}</span>` : `<span class="badge-silk-mark">✨ 100% Handloom</span>`}
+            ${isLowStock ? `<span class="badge-scarcity">🔥 Only ${stockVal} Left!</span>` : ""}
             ${isOutOfStock ? `<span class="badge-scarcity" style="background:#475569; color:#fff;">Sold Out</span>` : ""}
           </div>
 
@@ -776,9 +1085,9 @@ class StorefrontController {
         </div>
 
         <div class="product-details">
-          <span class="product-dept-meta">${product.department} • ${product.ageGroup || "All Ages"}</span>
-          <h3 class="product-title open-pdp">${product.title}</h3>
-          <p class="product-subtitle">${product.subtitle}</p>
+          <span class="product-dept-meta">${deptVal} • ${product.ageGroup || "All Ages"}</span>
+          <h3 class="product-title open-pdp">${titleVal}</h3>
+          <p class="product-subtitle">${subtitleVal}</p>
 
           ${product.safetyBadges && product.safetyBadges.length > 0 ? `
             <div style="display: flex; gap: 0.35rem; margin-bottom: 0.6rem; flex-wrap: wrap;">
@@ -960,20 +1269,46 @@ class StorefrontController {
     const formContainer = document.getElementById("feedbackFormContainer");
     const successContainer = document.getElementById("feedbackSuccessContainer");
 
-    if (triggerBtn && modal) {
-      triggerBtn.addEventListener("click", () => {
-        if (formContainer) formContainer.style.display = "block";
-        if (successContainer) successContainer.style.display = "none";
+    const openFeedback = () => {
+      if (formContainer) formContainer.style.display = "block";
+      if (successContainer) successContainer.style.display = "none";
+      if (modal) {
         modal.classList.add("active");
-      });
+        this.syncBodyScrollLock();
+      }
+    };
+
+    const closeFeedback = () => {
+      if (modal) {
+        modal.classList.remove("active");
+        this.syncBodyScrollLock();
+      }
+    };
+
+    if (triggerBtn && modal) {
+      triggerBtn.addEventListener("click", openFeedback);
     }
 
+    // Attach to all feedback trigger buttons across the site
+    document.querySelectorAll(".feedback-trigger-btn, #mobileFeedbackBtn, #footerFeedbackBtn, #floatingFeedbackBtn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        openFeedback();
+      });
+    });
+
     if (closeBtn && modal) {
-      closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+      closeBtn.addEventListener("click", closeFeedback);
     }
 
     if (closeSuccessBtn && modal) {
-      closeSuccessBtn.addEventListener("click", () => modal.classList.remove("active"));
+      closeSuccessBtn.addEventListener("click", closeFeedback);
+    }
+
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeFeedback();
+      });
     }
 
     // Interactive Star Rating Selector
@@ -1177,22 +1512,32 @@ class StorefrontController {
 
     container.innerHTML = this.createPDPContentHTML(product);
     modal.classList.add("active");
+    this.syncBodyScrollLock();
 
     this.bindPDPEvents(product);
   }
 
   createPDPContentHTML(product) {
-    const formattedPrice = window.store.formatPrice(product.priceINR);
-    const formattedMRP = window.store.formatPrice(product.mrpINR);
-    const isLowStock = product.stock > 0 && product.stock <= (product.lowStockThreshold || 2);
-    const isOutOfStock = product.stock <= 0;
+    const priceVal = Number(product.priceINR || product.price || 0);
+    const mrpVal = Number(product.mrpINR || product.originalPriceINR || product.original_price || Math.round(priceVal * 1.3));
+    const formattedPrice = window.store.formatPrice(priceVal);
+    const formattedMRP = window.store.formatPrice(mrpVal);
+
+    const stockVal = product.stock !== undefined ? Number(product.stock) : (product.stockCount !== undefined ? Number(product.stockCount) : 10);
+    const isLowStock = stockVal > 0 && stockVal <= (product.lowStockThreshold || 2);
+    const isOutOfStock = stockVal <= 0;
+
+    const titleVal = product.title || product.name || "Handcrafted Heritage Handloom";
+    const deptVal = product.department || "Women's Collection";
+    const subtitleVal = product.subtitle || `${product.fabric || 'Pure Silk'} handcrafted for ${deptVal}`;
+    const primaryImg = product.mainImage || product.image || product.image_url || 'assets/images/family_matching_combo.jpg';
 
     return `
       <button class="pdp-close-btn" id="pdpCloseBtnInner">✕</button>
 
       <div class="pdp-media-column">
         <div class="clean-img-viewer" id="cleanImgViewer" title="Click to open Fullscreen Lightbox">
-          <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" class="clean-pdp-img" id="pdpMainImg" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
+          <img src="${primaryImg}" alt="${titleVal}" class="clean-pdp-img" id="pdpMainImg" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" />
           <div class="lightbox-trigger-badge">${window.Icons ? window.Icons.get('search', { className: 'lightbox-badge-icon' }) : '🔍'} Click for Fullscreen Lightbox</div>
         </div>
 
@@ -1200,7 +1545,7 @@ class StorefrontController {
           <div class="pdp-gallery-thumbs">
             ${product.gallery.map((img, i) => `
               <div class="pdp-thumb ${i === 0 ? "active" : ""}" data-img="${img}">
-                <img src="${img}" alt="${product.title}" onerror="this.parentElement.style.display='none';" />
+                <img src="${img}" alt="${titleVal}" onerror="this.parentElement.style.display='none';" />
               </div>
             `).join("")}
           </div>
@@ -1209,11 +1554,11 @@ class StorefrontController {
 
       <div class="pdp-info-column">
         <div class="pdp-breadcrumbs">
-          Home / ${product.department} / <strong style="color: var(--color-primary);">${product.id}</strong>
+          Home / ${deptVal} / <strong style="color: var(--color-primary);">${product.id}</strong>
         </div>
 
-        <h2 class="pdp-title">${product.title}</h2>
-        <p class="pdp-subtitle">${product.subtitle}</p>
+        <h2 class="pdp-title">${titleVal}</h2>
+        <p class="pdp-subtitle">${subtitleVal}</p>
 
         <div class="pdp-price-row">
           <span class="pdp-price" id="pdpCalculatedPrice">${formattedPrice}</span>
@@ -1293,7 +1638,10 @@ class StorefrontController {
     const modal = document.getElementById("pdpModal");
     const closeBtn = document.getElementById("pdpCloseBtnInner");
     if (closeBtn && modal) {
-      closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+      closeBtn.addEventListener("click", () => {
+        modal.classList.remove("active");
+        this.syncBodyScrollLock();
+      });
     }
 
     const imgViewer = document.getElementById("cleanImgViewer");
@@ -1391,6 +1739,7 @@ class StorefrontController {
     if (successView) successView.style.display = "none";
 
     modal.classList.add("active");
+    this.syncBodyScrollLock();
   }
 
   setupNotifyModal() {
@@ -1402,7 +1751,10 @@ class StorefrontController {
     const successView = document.getElementById("notifySuccessView");
 
     const closeModal = () => {
-      if (modal) modal.classList.remove("active");
+      if (modal) {
+        modal.classList.remove("active");
+        this.syncBodyScrollLock();
+      }
     };
 
     if (closeBtn) closeBtn.addEventListener("click", closeModal);
@@ -1470,6 +1822,7 @@ class StorefrontController {
     if (modal && img) {
       img.src = imgUrl;
       modal.classList.add("active");
+      this.syncBodyScrollLock();
     }
   }
 
@@ -1491,11 +1844,23 @@ class StorefrontController {
   updateCartUI() {
     const cart = window.store.getCart();
     const totals = window.store.getCartTotals();
+    const count = (window.store && typeof window.store.getCartCount === "function")
+      ? window.store.getCartCount()
+      : (Array.isArray(cart) ? cart.length : totals.itemCount);
 
     const headerCartBadge = document.getElementById("headerCartBadge");
     const drawerItemCount = document.getElementById("drawerItemCount");
-    if (headerCartBadge) headerCartBadge.textContent = totals.itemCount;
-    if (drawerItemCount) drawerItemCount.textContent = totals.itemCount;
+    if (headerCartBadge) {
+      headerCartBadge.textContent = count;
+      headerCartBadge.classList.remove("badge-pop");
+      void headerCartBadge.offsetWidth;
+      headerCartBadge.classList.add("badge-pop");
+    }
+    if (drawerItemCount) drawerItemCount.textContent = count;
+
+    document.querySelectorAll(".cart-count-badge, .header-cart-badge").forEach(el => {
+      el.textContent = count;
+    });
 
     const freeShippingBar = document.getElementById("freeShippingBarText");
     const progressFill = document.getElementById("freeShippingProgressFill");
@@ -1686,106 +2051,10 @@ class StorefrontController {
 
   renderCartAvailableOffers(totals) {
     const offersBox = document.getElementById("cartAvailableOffersBox");
-    if (!offersBox) return;
-
-    if (!window.store) {
+    if (offersBox) {
       offersBox.innerHTML = "";
-      return;
+      offersBox.style.display = "none";
     }
-
-    const liveCoupons = window.store.getCoupons() || [];
-    const deletedCoupons = window.store.getDeletedCoupons() || [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (liveCoupons.length === 0 && deletedCoupons.length === 0) {
-      offersBox.innerHTML = "";
-      return;
-    }
-
-    // Dynamic placeholder suggestion
-    const couponInput = document.getElementById("cartCouponInput");
-    const activeValid = liveCoupons.filter(c => c.isActive && (!c.validUntil || new Date(c.validUntil) >= today));
-    if (couponInput && !totals.coupon) {
-      couponInput.placeholder = activeValid.length > 0
-        ? `Promo Code (Try '${activeValid[0].code}')`
-        : "Enter Promo Code";
-    }
-
-    let html = `
-      <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.6rem 0.75rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-          <span style="font-size: 0.72rem; font-weight: 800; color: var(--color-gold); letter-spacing: 0.04em;">
-            🏷️ AVAILABLE OFFERS &amp; CODES
-          </span>
-          <span style="font-size: 0.65rem; color: var(--text-muted);">Real-Time</span>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 0.35rem; max-height: 180px; overflow-y: auto;">
-    `;
-
-    // Live Coupons
-    liveCoupons.forEach(c => {
-      const isExpired = c.validUntil && new Date(c.validUntil) < today;
-      const isAvailable = c.isActive && !isExpired;
-      const isCurrentApplied = totals.coupon && totals.coupon.code === c.code;
-
-      if (!isAvailable) {
-        html += `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.5rem; background: rgba(239, 68, 68, 0.06); border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 4px;">
-            <div>
-              <span style="font-family: monospace; font-weight: 700; font-size: 0.75rem; text-decoration: line-through; color: var(--text-muted);">${c.code}</span>
-              <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.35rem;">${c.title}</span>
-            </div>
-            <span style="font-size: 0.65rem; font-weight: 800; color: #DC2626; background: rgba(239, 68, 68, 0.12); padding: 0.12rem 0.4rem; border-radius: 3px;">
-              Not Available
-            </span>
-          </div>
-        `;
-      } else {
-        const benefit = c.discountType === "flat" ? `₹${c.discountAmount} Flat OFF` : `${c.discountPercent}% OFF`;
-        html += `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.5rem; background: var(--bg-surface); border: 1px dashed ${isCurrentApplied ? 'var(--color-gold)' : 'var(--border-color)'}; border-radius: 4px;">
-            <div style="flex: 1; min-width: 0; padding-right: 0.4rem;">
-              <div style="display: flex; align-items: center; gap: 0.35rem;">
-                <strong style="font-family: monospace; color: var(--color-gold); font-size: 0.78rem; font-weight: 800;">${c.code}</strong>
-                <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">${benefit}</span>
-              </div>
-              <div style="font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                ${c.title}${c.minOrderValue > 0 ? ` • Min ₹${c.minOrderValue.toLocaleString('en-IN')}` : ''}
-              </div>
-            </div>
-            <div>
-              ${isCurrentApplied
-            ? `<span style="font-size: 0.7rem; color: #059669; font-weight: 800;">Applied ✓</span>`
-            : `<button type="button" class="btn btn-gold btn-xs" style="font-size: 0.68rem; padding: 0.15rem 0.5rem; font-weight: 700;" onclick="window.storefront && window.storefront.quickApplyCoupon('${c.code}')">Apply</button>`
-          }
-            </div>
-          </div>
-        `;
-      }
-    });
-
-    // Recently deleted coupons explicitly marked as "Not Available"
-    deletedCoupons.slice(0, 3).forEach(dc => {
-      html += `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0.5rem; background: rgba(239, 68, 68, 0.06); border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 4px;">
-          <div>
-            <span style="font-family: monospace; font-weight: 700; font-size: 0.75rem; text-decoration: line-through; color: #DC2626;">${dc.code}</span>
-            <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.35rem;">${dc.title || 'Removed Offer'}</span>
-          </div>
-          <span style="font-size: 0.65rem; font-weight: 800; color: #DC2626; background: rgba(239, 68, 68, 0.15); padding: 0.12rem 0.45rem; border-radius: 3px;">
-            ⚠️ Not Available
-          </span>
-        </div>
-      `;
-    });
-
-    html += `
-        </div>
-      </div>
-    `;
-
-    offersBox.innerHTML = html;
   }
 
   quickApplyCoupon(code) {
@@ -2172,7 +2441,10 @@ class StorefrontController {
   updateWishlistCount() {
     const badge = document.getElementById("headerWishlistBadge");
     const drawerCount = document.getElementById("wishlistDrawerCount");
-    const count = (window.store && window.store.wishlist) ? window.store.wishlist.length : 0;
+    const count = (window.store && typeof window.store.getWishlistCount === "function") 
+      ? window.store.getWishlistCount() 
+      : ((window.store && Array.isArray(window.store.wishlist)) ? window.store.wishlist.length : 0);
+
     if (badge) {
       badge.textContent = count;
       badge.style.display = "inline-flex";
@@ -2180,6 +2452,9 @@ class StorefrontController {
     if (drawerCount) {
       drawerCount.textContent = count;
     }
+    document.querySelectorAll(".wishlist-count-badge").forEach(el => {
+      el.textContent = count;
+    });
   }
 
   syncCardWishlistButtons() {
@@ -2189,6 +2464,11 @@ class StorefrontController {
       if (btn && id) {
         const isWish = window.store.isInWishlist(id);
         btn.classList.toggle("wishlisted", isWish);
+        if (window.Icons) {
+          btn.innerHTML = isWish 
+            ? window.Icons.get('favouriteFilled', { className: 'card-action-icon' }) 
+            : window.Icons.get('favourite', { className: 'card-action-icon' });
+        }
       }
     });
   }
@@ -2255,8 +2535,10 @@ class StorefrontController {
 
   openWishlistDrawer() {
     // Close cart drawer if open
-    document.getElementById("cartDrawer")?.classList.remove("active");
-    document.getElementById("cartDrawerOverlay")?.classList.remove("active");
+    this.closeCartDrawer();
+    // Close mobile nav drawer if open
+    document.getElementById("mobileNavDrawer")?.classList.remove("active");
+    document.getElementById("mobileNavOverlay")?.classList.remove("active");
 
     const drawer = document.getElementById("wishlistDrawer");
     const overlay = document.getElementById("wishlistDrawerOverlay");
@@ -2264,6 +2546,7 @@ class StorefrontController {
       this.renderWishlistDrawer();
       drawer.classList.add("active");
       overlay.classList.add("active");
+      this.syncBodyScrollLock();
     }
   }
 
@@ -2272,12 +2555,12 @@ class StorefrontController {
     const overlay = document.getElementById("wishlistDrawerOverlay");
     if (drawer) drawer.classList.remove("active");
     if (overlay) overlay.classList.remove("active");
+    this.syncBodyScrollLock();
   }
 
   openCartDrawer() {
     // Close wishlist drawer if open
-    document.getElementById("wishlistDrawer")?.classList.remove("active");
-    document.getElementById("wishlistDrawerOverlay")?.classList.remove("active");
+    this.closeWishlistDrawer();
 
     const drawer = document.getElementById("cartDrawer");
     const overlay = document.getElementById("cartDrawerOverlay");
@@ -2285,7 +2568,16 @@ class StorefrontController {
       this.updateCartUI();
       drawer.classList.add("active");
       overlay.classList.add("active");
+      this.syncBodyScrollLock();
     }
+  }
+
+  closeCartDrawer() {
+    const drawer = document.getElementById("cartDrawer");
+    const overlay = document.getElementById("cartDrawerOverlay");
+    if (drawer) drawer.classList.remove("active");
+    if (overlay) overlay.classList.remove("active");
+    this.syncBodyScrollLock();
   }
 
   renderWishlistDrawer() {
@@ -2373,12 +2665,15 @@ class StorefrontController {
     // Move single item to bag
     body.querySelectorAll(".wishlist-move-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const id = e.target.getAttribute("data-id");
-        const res = window.store.moveWishlistItemToCart(id);
-        if (res) {
-          this.showToast("🎉 Added to your Shopping Bag!", "success");
-          this.renderWishlistDrawer();
-          this.updateCartUI();
+        e.stopPropagation();
+        const id = e.currentTarget.getAttribute("data-id") || e.target.closest("[data-id]")?.getAttribute("data-id");
+        if (id) {
+          const res = window.store.moveWishlistItemToCart(id);
+          if (res) {
+            this.showToast("🎉 Added to your Shopping Bag!", "success");
+            this.renderWishlistDrawer();
+            this.updateCartUI();
+          }
         }
       });
     });
@@ -2386,9 +2681,12 @@ class StorefrontController {
     // Remove item from wishlist
     body.querySelectorAll(".wishlist-remove-icon-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const id = e.target.getAttribute("data-id");
-        window.store.toggleWishlist(id);
-        this.showToast("Removed from Favourites", "info");
+        e.stopPropagation();
+        const id = e.currentTarget.getAttribute("data-id") || e.target.closest("[data-id]")?.getAttribute("data-id");
+        if (id) {
+          window.store.toggleWishlist(id);
+          this.showToast("Removed from Favourites", "info");
+        }
       });
     });
   }
@@ -2825,7 +3123,7 @@ class StorefrontController {
           <p>${order.customer ? order.customer.address : "N/A"}</p>
           <p><strong>Phone:</strong> ${order.customer ? order.customer.phone : "N/A"} | <strong>Email:</strong> ${(order.customer && order.customer.email) || "N/A"}</p>
           ${(order.customer && order.customer.gstin) ? `<p><strong>Buyer GSTIN:</strong> ${order.customer.gstin}</p>` : ""}
-          ${order.giftWrap ? `<p style="color: #059669; font-weight:700; margin-top:0.25rem;">🎁 Festive Gift Wrap with Handwritten Message Included</p>` : ""}
+          ${order.giftWrap ? `<p style="color: var(--color-success); font-weight:700; margin-top:0.25rem;">🎁 Festive Gift Wrap with Handwritten Message Included</p>` : ""}
         </div>
         <div>
           <strong style="color: var(--color-primary-dark); text-transform: uppercase;">Shipping Partner:</strong>
@@ -2858,7 +3156,7 @@ class StorefrontController {
                 <td>${i + 1}</td>
                 <td>
                   <strong>${item.title}</strong>
-                  <span style="display: block; font-size: 0.7rem; color: #555;">Size: ${item.size || "Standard"} • Color: ${item.color}</span>
+                  <span style="display: block; font-size: 0.7rem; color: var(--text-muted);">Size: ${item.size || "Standard"} • Color: ${item.color}</span>
                 </td>
                 <td>${item.hsnCode || "50072010"}</td>
                 <td>${item.qty}</td>
@@ -2874,10 +3172,10 @@ class StorefrontController {
 
       <div class="invoice-summary-box">
         <div class="invoice-summary-row"><span>Subtotal Taxable:</span> <span>₹${taxableAmount.toLocaleString("en-IN")}</span></div>
-        ${discount > 0 ? `<div class="invoice-summary-row" style="color: #059669;"><span>Discount (${order.couponCode || 'Custom'}):</span> <span>-₹${discount.toLocaleString("en-IN")}</span></div>` : ""}
+        ${discount > 0 ? `<div class="invoice-summary-row" style="color: var(--color-success); font-weight: 700;"><span>Discount (${order.couponCode || 'Custom'}):</span> <span>-₹${discount.toLocaleString("en-IN")}</span></div>` : ""}
         <div class="invoice-summary-row"><span>CGST (2.5%):</span> <span>₹${cgst.toLocaleString("en-IN")}</span></div>
         <div class="invoice-summary-row"><span>SGST (2.5%):</span> <span>₹${sgst.toLocaleString("en-IN")}</span></div>
-        ${shippingFee > 0 ? `<div class="invoice-summary-row"><span>Shipping &amp; Handling:</span> <span>₹${shippingFee.toLocaleString("en-IN")}</span></div>` : `<div class="invoice-summary-row" style="color: #059669;"><span>Shipping (Express Courier):</span> <span>FREE (₹0)</span></div>`}
+        ${shippingFee > 0 ? `<div class="invoice-summary-row"><span>Shipping &amp; Handling:</span> <span>₹${shippingFee.toLocaleString("en-IN")}</span></div>` : `<div class="invoice-summary-row" style="color: var(--color-success); font-weight: 700;"><span>Shipping (Express Courier):</span> <span>FREE (₹0)</span></div>`}
         <div class="invoice-summary-row total"><span>Total Amount:</span> <span>₹${finalAmount.toLocaleString("en-IN")}</span></div>
       </div>
 
@@ -2936,7 +3234,7 @@ class StorefrontController {
     }
 
     const matches = window.store.getAllProducts().filter(p =>
-      p.title.toLowerCase().includes(cleanQuery) ||
+      (p.title || p.name || "").toLowerCase().includes(cleanQuery) ||
       (p.department && p.department.toLowerCase().includes(cleanQuery)) ||
       (p.fabric && p.fabric.toLowerCase().includes(cleanQuery)) ||
       (p.occasion && p.occasion.toLowerCase().includes(cleanQuery))
@@ -3178,6 +3476,497 @@ class StorefrontController {
         </div>
       `;
     }).join("");
+  }
+
+  // ==========================================
+  // COLLECTION 01: FAMILY MATCHING COMBOS REAL-TIME CONTROLLER
+  // ==========================================
+  // COLLECTION 01: AUTO-ROTATING FAMILY COMBOS SHOWCASE
+  // ==========================================
+  renderCollection01Section() {
+    const isLive = !window.store || typeof window.store.isCollection01Enabled !== "function" || window.store.isCollection01Enabled();
+    const section = document.getElementById("familyCombosSection");
+    const homeSection = document.getElementById("familyCombosHomeSection");
+
+    // Hide any residual home section if found
+    if (homeSection) {
+      homeSection.style.display = "none";
+    }
+
+    // Family combos should only display on shop.html
+    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+    const isVisiblePage = isShopPage && (this.currentPage === "explore" || this.currentPage === "family");
+
+    if (section) {
+      if (!isLive || !isVisiblePage) {
+        section.style.display = "none";
+      } else {
+        section.style.display = "block";
+      }
+    }
+
+    if (!isLive || !isShopPage || !isVisiblePage) return;
+
+    const container = document.getElementById("familyCombosContainer");
+    if (!container || !window.store || typeof window.store.getFamilyCombos !== "function") return;
+
+    const combos = window.store.getFamilyCombos();
+    const activeCombos = combos.filter(c => c.isActive !== false);
+
+    if (activeCombos.length === 0) {
+      if (section) section.style.display = "none";
+      return;
+    }
+
+    const settings = typeof window.store.getFamilyComboSettings === "function"
+      ? window.store.getFamilyComboSettings()
+      : { autoRotate: true, intervalSeconds: 5, pauseOnHover: true };
+
+    this.buildFamilyComboCarousel(container, activeCombos, settings);
+  }
+
+  buildFamilyComboCarousel(container, activeCombos, settings) {
+    if (!container || !activeCombos || activeCombos.length === 0) return;
+
+    // Single combo case (no carousel needed)
+    if (activeCombos.length === 1) {
+      const single = activeCombos[0];
+      container.innerHTML = this.renderSingleComboBannerHTML(single);
+      return;
+    }
+
+    // Ensure active index is within range
+    if (typeof this.activeComboIndex !== "number" || this.activeComboIndex >= activeCombos.length) {
+      this.activeComboIndex = 0;
+    }
+
+    const intervalSecs = settings.intervalSeconds || 5;
+    const isAutoRotate = settings.autoRotate !== false;
+
+    // Build Slide Items
+    const slidesHTML = activeCombos.map((combo, idx) => `
+      <div class="combo-slide-item" data-index="${idx}">
+        ${this.renderSingleComboBannerHTML(combo)}
+      </div>
+    `).join("");
+
+    // Build Dots
+    const dotsHTML = activeCombos.map((_, idx) => `
+      <button class="combo-carousel-dot ${idx === this.activeComboIndex ? 'active' : ''}" data-index="${idx}" aria-label="Go to combo ${idx + 1}" title="Combo ${idx + 1}"></button>
+    `).join("");
+
+    container.innerHTML = `
+      <div class="family-combo-carousel-wrap" id="famCarouselWrap-${container.id}">
+        <!-- Top Animated Micro Progress Bar for Auto-Rotation -->
+        <div class="combo-timer-bar-wrap">
+          <div class="combo-timer-bar-progress" id="famProgress-${container.id}"></div>
+        </div>
+
+        <!-- Sleek Floating Combo Counter (Zero height impact on banner) -->
+        <div class="combo-floating-badge" id="famCounter-${container.id}">
+          <span>👨‍👩‍👧‍👦</span> <span id="famCounterText-${container.id}">Combo ${this.activeComboIndex + 1} of ${activeCombos.length}</span>
+        </div>
+
+        <!-- Slides Viewport & Track -->
+        <div class="family-combo-slides-viewport">
+          <div class="combo-slides-track" id="famTrack-${container.id}" style="transform: translateX(-${this.activeComboIndex * 100}%);">
+            ${slidesHTML}
+          </div>
+        </div>
+
+        <!-- Navigation Arrows -->
+        <button type="button" class="combo-carousel-arrow combo-arrow-prev" id="famPrevBtn-${container.id}" aria-label="Previous Combo">
+          ❮
+        </button>
+        <button type="button" class="combo-carousel-arrow combo-arrow-next" id="famNextBtn-${container.id}" aria-label="Next Combo">
+          ❯
+        </button>
+
+        <!-- Bottom Dots -->
+        <div class="combo-carousel-dots" id="famDots-${container.id}">
+          ${dotsHTML}
+        </div>
+      </div>
+    `;
+
+    // Initialize Interactive Carousel Engine
+    this.initCarouselEngine(container.id, activeCombos, settings);
+  }
+
+  renderSingleComboBannerHTML(combo) {
+    const mother = combo.inclusions?.mother || "Rajasi Heavy Gold Zari Kanchipuram Silk Saree";
+    const father = combo.inclusions?.father || "Pure Mulberry Silk Shirt & 8-Muzham Dhoti Set";
+    const daughter = combo.inclusions?.daughter || "Matching Mayuri Pattu Pavadai with Soft Cotton Lining";
+    const son = combo.inclusions?.son || "Royal Silk Jacquard Kurta & Elastic Dhoti Pant";
+
+    const priceStr = `₹${Number(combo.price).toLocaleString('en-IN')}`;
+    const origPriceStr = combo.originalPrice ? `₹${Number(combo.originalPrice).toLocaleString('en-IN')}` : '';
+    const savingsStr = combo.savingsText || '';
+
+    const waMsg = encodeURIComponent(
+      `Vanakkam Srinivasa Textiles 🙏\n` +
+      `I would like to inquire about the Family Matching Combo:\n` +
+      `"${combo.title}" (${priceStr})\n` +
+      `Could you assist me with family sizing and delivery timeline?`
+    );
+
+    const imgSrc = combo.posterImage || 'assets/images/family_matching_combo.jpg';
+
+    return `
+      <div class="family-combo-banner" id="comboBanner-${combo.id}">
+        <div class="combo-banner-image">
+          <div class="combo-banner-backdrop" style="background-image: url('${imgSrc}');"></div>
+          <img src="${imgSrc}" alt="${combo.title}"
+            onerror="this.onerror=null; this.src='assets/images/family_matching_combo.jpg';" />
+          <div class="combo-image-badge">
+            ✨ Single-Batch Ceremonial Handloom Dye
+          </div>
+        </div>
+
+        <div class="combo-banner-content">
+          <span class="combo-badge-tag">
+            ${combo.badge || '👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE'}
+          </span>
+          <h3 style="font-size: 1.85rem; color: var(--color-primary); margin: 0 0 0.5rem 0; font-family: var(--font-serif-display); line-height: 1.25;">
+            ${combo.title}
+          </h3>
+          <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            ${combo.subtitle || combo.description || ''}
+          </p>
+
+          <ul class="combo-features-list" style="margin-bottom: 1.25rem; list-style: none; padding: 0;">
+            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">✨ <strong>Mother:</strong> ${mother}</li>
+            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">👨 <strong>Father:</strong> ${father}</li>
+            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">👧 <strong>Daughter:</strong> ${daughter}</li>
+            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">👦 <strong>Son:</strong> ${son}</li>
+          </ul>
+
+          <div style="display: flex; align-items: baseline; gap: 0.85rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <span style="font-size: 2.1rem; font-weight: 800; color: var(--color-primary);">${priceStr}</span>
+            ${origPriceStr ? `<span style="font-size: 1.1rem; color: var(--text-muted); text-decoration: line-through;">${origPriceStr}</span>` : ''}
+            ${savingsStr ? `<span style="font-size: 0.85rem; font-weight: 800; color: var(--color-success); background: rgba(16,185,129,0.12); padding: 3px 8px; border-radius: 4px;">${savingsStr}</span>` : ''}
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn btn-gold btn-lg" onclick="window.storefront.openFamilyComboBookingModal('${combo.id}')"
+              style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800;">
+              <span>🛍️</span> Book This Family Bundle ➔
+            </button>
+            <a href="https://wa.me/916381265149?text=${waMsg}" target="_blank" class="btn btn-outline-gold"
+              style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 700;">
+              <span>💬</span> WhatsApp Inquiry
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  initCarouselEngine(containerId, activeCombos, settings) {
+    const wrap = document.getElementById(`famCarouselWrap-${containerId}`);
+    const track = document.getElementById(`famTrack-${containerId}`);
+    const progress = document.getElementById(`famProgress-${containerId}`);
+    const counterText = document.getElementById(`famCounterText-${containerId}`);
+    const prevBtn = document.getElementById(`famPrevBtn-${containerId}`);
+    const nextBtn = document.getElementById(`famNextBtn-${containerId}`);
+    const dotsWrap = document.getElementById(`famDots-${containerId}`);
+
+    if (!wrap || !track) return;
+
+    if (!this.carouselStates) this.carouselStates = {};
+
+    // Clear existing timer if any
+    if (this.carouselStates[containerId]) {
+      clearInterval(this.carouselStates[containerId].timer);
+      cancelAnimationFrame(this.carouselStates[containerId].raf);
+    }
+
+    const state = {
+      currentIndex: this.activeComboIndex || 0,
+      totalCombos: activeCombos.length,
+      intervalSecs: Math.max(2, settings.intervalSeconds || 5),
+      isAutoRotate: settings.autoRotate !== false,
+      isHovered: false,
+      timer: null,
+      raf: null
+    };
+
+    this.carouselStates[containerId] = state;
+
+    const syncViewportHeight = () => {
+      const viewport = wrap.querySelector(".family-combo-slides-viewport");
+      const slides = track.querySelectorAll(".combo-slide-item");
+      if (viewport && slides && slides[state.currentIndex]) {
+        const activeSlide = slides[state.currentIndex];
+        const h = activeSlide.offsetHeight;
+        if (h > 0) {
+          viewport.style.height = `${h}px`;
+        }
+      }
+    };
+
+    const updateUI = (idx) => {
+      state.currentIndex = idx;
+      this.activeComboIndex = idx;
+      track.style.transform = `translateX(-${idx * 100}%)`;
+
+      if (counterText) {
+        counterText.textContent = `Combo ${idx + 1} of ${state.totalCombos}`;
+      }
+
+      if (dotsWrap) {
+        const dots = dotsWrap.querySelectorAll(".combo-carousel-dot");
+        dots.forEach((dot, dIdx) => {
+          dot.classList.toggle("active", dIdx === idx);
+        });
+      }
+
+      syncViewportHeight();
+      resetProgress();
+    };
+
+    const resetProgress = () => {
+      if (progress) {
+        progress.style.transition = "none";
+        progress.style.width = "0%";
+      }
+    };
+
+    const animateProgress = () => {
+      resetProgress();
+      if (!state.isAutoRotate || state.isHovered) return;
+
+      const duration = state.intervalSecs * 1000;
+      let start = null;
+
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        if (state.isHovered || !state.isAutoRotate) {
+          return;
+        }
+
+        const elapsed = timestamp - start;
+        const pct = Math.min(100, (elapsed / duration) * 100);
+        if (progress) {
+          progress.style.transition = "width 0.1s linear";
+          progress.style.width = `${pct}%`;
+        }
+
+        if (elapsed < duration) {
+          state.raf = requestAnimationFrame(step);
+        }
+      };
+
+      cancelAnimationFrame(state.raf);
+      state.raf = requestAnimationFrame(step);
+    };
+
+    const startTimer = () => {
+      clearInterval(state.timer);
+      cancelAnimationFrame(state.raf);
+
+      if (!state.isAutoRotate || state.isHovered) {
+        resetProgress();
+        return;
+      }
+
+      animateProgress();
+      state.timer = setInterval(() => {
+        if (!state.isHovered && state.isAutoRotate) {
+          const nextIndex = (state.currentIndex + 1) % state.totalCombos;
+          updateUI(nextIndex);
+          animateProgress();
+        }
+      }, state.intervalSecs * 1000);
+    };
+
+    const goNext = () => {
+      const nextIndex = (state.currentIndex + 1) % state.totalCombos;
+      updateUI(nextIndex);
+      startTimer();
+    };
+
+    const goPrev = () => {
+      const prevIndex = (state.currentIndex - 1 + state.totalCombos) % state.totalCombos;
+      updateUI(prevIndex);
+      startTimer();
+    };
+
+    if (nextBtn) nextBtn.onclick = (e) => { e.stopPropagation(); goNext(); };
+    if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); goPrev(); };
+
+    if (dotsWrap) {
+      dotsWrap.querySelectorAll(".combo-carousel-dot").forEach((dot) => {
+        dot.onclick = (e) => {
+          e.stopPropagation();
+          const targetIdx = parseInt(dot.getAttribute("data-index"));
+          if (!isNaN(targetIdx)) {
+            updateUI(targetIdx);
+            startTimer();
+          }
+        };
+      });
+    }
+
+    if (settings.pauseOnHover !== false) {
+      wrap.onmouseenter = () => {
+        state.isHovered = true;
+        cancelAnimationFrame(state.raf);
+      };
+
+      wrap.onmouseleave = () => {
+        state.isHovered = false;
+        startTimer();
+      };
+    }
+
+    // Touch Swipe on mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    wrap.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    wrap.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 40) {
+        if (diff < 0) goNext();
+        else goPrev();
+      }
+    }, { passive: true });
+
+    // Auto-adjust carousel viewport height dynamically to images
+    const slideImgs = track.querySelectorAll("img");
+    slideImgs.forEach((img) => {
+      if (img.complete) {
+        syncViewportHeight();
+      } else {
+        img.addEventListener("load", syncViewportHeight);
+      }
+    });
+    window.addEventListener("resize", syncViewportHeight);
+    setTimeout(syncViewportHeight, 60);
+    setTimeout(syncViewportHeight, 300);
+
+    // Start rotation timer
+    startTimer();
+  }
+
+  // ==========================================
+  // FAMILY COMBO BOOKING MODAL & ORDER ENGINE
+  // ==========================================
+  openFamilyComboBookingModal(comboId) {
+    if (!window.store) return;
+    const combo = window.store.getFamilyComboById(comboId);
+    if (!combo) return;
+
+    const modal = document.getElementById("familyComboBookingModal");
+    if (!modal) return;
+
+    const badgeEl = document.getElementById("fcModalBadge");
+    const titleEl = document.getElementById("fcModalTitle");
+    const subEl = document.getElementById("fcModalSubtitle");
+    const priceEl = document.getElementById("fcModalPrice");
+    const origPriceEl = document.getElementById("fcModalOriginalPrice");
+    const savingsEl = document.getElementById("fcModalSavings");
+    const idInput = document.getElementById("fcFormComboId");
+    const titleInput = document.getElementById("fcFormComboTitle");
+    const totalInput = document.getElementById("fcFormTotalPrice");
+    const submitBtn = document.getElementById("fcSubmitOrderBtn");
+
+    if (badgeEl) badgeEl.textContent = combo.badge || "👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE";
+    if (titleEl) titleEl.textContent = combo.title;
+    if (subEl) subEl.textContent = combo.subtitle || combo.description || "";
+    if (priceEl) priceEl.textContent = `₹${Number(combo.price).toLocaleString('en-IN')}`;
+    if (origPriceEl) origPriceEl.textContent = combo.originalPrice ? `₹${Number(combo.originalPrice).toLocaleString('en-IN')}` : "";
+    if (savingsEl) savingsEl.textContent = combo.savingsText || "Special Bundle Savings";
+    if (idInput) idInput.value = combo.id;
+    if (titleInput) titleInput.value = combo.title;
+    if (totalInput) totalInput.value = combo.price;
+    if (submitBtn) submitBtn.innerHTML = `🛍️ Confirm &amp; Place Order (₹${Number(combo.price).toLocaleString('en-IN')})`;
+
+    modal.style.display = "flex";
+    modal.classList.add("active");
+    this.syncBodyScrollLock();
+
+    if (!modal._hasBackdropClick) {
+      modal._hasBackdropClick = true;
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) this.closeFamilyComboBookingModal();
+      });
+    }
+  }
+
+  closeFamilyComboBookingModal() {
+    const modal = document.getElementById("familyComboBookingModal");
+    if (modal) {
+      modal.style.display = "none";
+      modal.classList.remove("active");
+      this.syncBodyScrollLock();
+    }
+  }
+
+  handleFamilyComboOrderSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!window.store) return;
+
+    const comboId = document.getElementById("fcFormComboId")?.value;
+    const comboTitle = document.getElementById("fcFormComboTitle")?.value;
+    const totalPrice = parseFloat(document.getElementById("fcFormTotalPrice")?.value) || 0;
+    const fatherSize = document.getElementById("fcFormFatherSize")?.value;
+    const motherSize = document.getElementById("fcFormMotherSize")?.value;
+    const sonAgeSize = document.getElementById("fcFormSonSize")?.value;
+    const daughterAgeSize = document.getElementById("fcFormDaughterSize")?.value;
+    const customerName = document.getElementById("fcFormCustomerName")?.value?.trim();
+    const customerPhone = document.getElementById("fcFormCustomerPhone")?.value?.trim();
+    const deliveryAddress = document.getElementById("fcFormDeliveryAddress")?.value?.trim();
+    const pincode = document.getElementById("fcFormPincode")?.value?.trim();
+    const paymentMode = document.getElementById("fcFormPaymentMode")?.value;
+    const specialNotes = document.getElementById("fcFormSpecialNotes")?.value?.trim();
+
+    if (!customerName || !customerPhone || !deliveryAddress || !pincode) {
+      alert("Please enter your Name, Phone, Delivery Address, and Pincode.");
+      return;
+    }
+
+    const orderData = {
+      comboId,
+      comboTitle,
+      totalPrice,
+      fatherSize,
+      motherSize,
+      sonAgeSize,
+      daughterAgeSize,
+      customerName,
+      customerPhone,
+      deliveryAddress,
+      pincode,
+      paymentMode,
+      specialNotes,
+      status: "Pending"
+    };
+
+    const newOrder = window.store.addFamilyComboOrder(orderData);
+    this.closeFamilyComboBookingModal();
+
+    this.showToast(`🎉 Order Placed! Combo #${newOrder.orderId} is confirmed for ${customerName}!`, "success");
+
+    const cleanPhone = customerPhone.replace(/\D/g, "");
+    const waMsg = encodeURIComponent(
+      `Vanakkam Srinivasa Textiles 🙏\n` +
+      `I have placed a Family Combo Order online:\n` +
+      `Order ID: #${newOrder.orderId}\n` +
+      `Combo: ${comboTitle}\n` +
+      `Amount: ₹${Number(totalPrice).toLocaleString('en-IN')}\n` +
+      `Customer: ${customerName} (${customerPhone})\n` +
+      `Address: ${deliveryAddress}, Pincode: ${pincode}\n` +
+      `Sizes: Father: ${fatherSize}, Mother: ${motherSize}, Son: ${sonAgeSize}, Daughter: ${daughterAgeSize}\n` +
+      `Payment: ${paymentMode}`
+    );
+
+    window.open(`https://wa.me/916381265149?text=${waMsg}`, "_blank");
   }
 
   setupBulkInquiryModal() {

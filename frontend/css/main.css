@@ -66,6 +66,10 @@
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --theme-transition: background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+                      color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+                      border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+                      box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1);
 
   /* Radii */
   --radius-sm: 4px;
@@ -97,13 +101,19 @@
 
   --color-primary: #FF5A82;
   /* High-Contrast Luminous Crimson */
-  --color-primary-dark: #380312;
+  --color-primary-dark: #FFA3BA;
+  /* Luminous Rose for high contrast on dark surfaces */
   --color-primary-light: #FF7B9E;
 
   --color-gold: #F5D061;
   /* Luminous Zari Gold */
   --color-gold-light: #FFF5CF;
-  --color-gold-dark: #E5C358;
+  --color-gold-dark: #F5D061;
+
+  --color-success: #10B981;
+  --color-warning: #FBBF24;
+  --color-danger: #F87171;
+  --color-info: #60A5FA;
 
   --color-ivory: #171922;
   --color-cream: #222631;
@@ -144,17 +154,96 @@ body {
   cursor: default;
 }
 
-/* Global Transition Boost during active theme switch */
-html.theme-transitioning,
-html.theme-transitioning *,
-html.theme-transitioning *::before,
-html.theme-transitioning *::after {
+/* ==========================================================================
+   SILKY SMOOTH DUAL THEME TRANSITIONS ENGINE (Continuous & Stutter-Free)
+   Smoothly transitions colors across shop.html, index.html & admin
+   ========================================================================== */
+body,
+.main-header,
+.site-header,
+.nav-inner,
+.announcement-bar,
+.site-footer,
+.department-nav-bar,
+.dept-page-banner,
+.dept-menu,
+.dept-link,
+.dept-nav-arrow,
+.section,
+.section-tag,
+.section-title,
+.section-subtitle,
+.product-card,
+.product-card-body,
+.product-details,
+.product-bottom-row,
+.product-title,
+.product-subtitle,
+.feature-card,
+.gender-gateway-card,
+.gender-gateway-overlay,
+.festive-voucher-card,
+.festive-voucher-content,
+.festive-code-row,
+.festive-deal-card,
+.festive-deal-body,
+.festive-offers-section,
+.bulk-orders-section,
+.bulk-package-card,
+.video-shopping-banner,
+.video-shopping-info,
+.occasions-grid,
+.occasion-card,
+.occasion-overlay,
+.catalog-toolbar,
+.catalog-toolbar select,
+.form-control,
+.modal-content,
+.drawer,
+.cart-drawer,
+.wishlist-drawer,
+.drawer-content,
+.filter-sidebar,
+.theme-toggle-btn,
+.search-trigger-btn,
+.wishlist-btn,
+.cart-btn,
+.mobile-nav-drawer,
+.mobile-dept-btn,
+.admin-workspace,
+.admin-navbar,
+.admin-header,
+.admin-brand,
+.admin-session-pill,
+.admin-time-pill,
+.admin-nav-actions,
+.admin-nav-btn,
+.admin-sidebar,
+.admin-sidebar-nav,
+.admin-menu-item,
+.admin-nav-group-title,
+.admin-main,
+.admin-section,
+.admin-panel,
+.admin-welcome-hero,
+.admin-card,
+.kpi-card,
+.stat-card,
+.admin-table,
+.admin-lock-card,
+.admin-lock-screen,
+.admin-modal,
+.admin-modal-content,
+.bulk-subtab-btn,
+.timer-box,
+.exit-admin-btn,
+h1, h2, h3, h4, h5, h6,
+p, span, a, label,
+button, input, select, textarea {
   transition: background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-    color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
     border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-    box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-    fill 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-    stroke 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Ensure all wordings, headings, and labels maintain standard arrow cursor */
@@ -288,6 +377,13 @@ textarea {
   background-color: #222631 !important;
   color: #FFFFFF !important;
   border-color: #3D4455 !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] ::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1 !important;
 }
 
 [data-theme="dark"] select option {
@@ -448,7 +544,7 @@ textarea {
 /* Light Mode Specific: Crystal Clear High-Contrast Visibility */
 [data-theme="light"] .theme-toggle-btn,
 :root:not([data-theme="dark"]) .theme-toggle-btn {
-  background: #2D0310;
+  background-color: #2D0310;
   color: #FFF8D6 !important;
   border: 1.5px solid #D4AF37;
   box-shadow: 0 2px 12px rgba(45, 3, 16, 0.35), 0 0 8px rgba(212, 175, 55, 0.25);
@@ -462,7 +558,7 @@ textarea {
 
 [data-theme="light"] .theme-toggle-btn:hover,
 :root:not([data-theme="dark"]) .theme-toggle-btn:hover {
-  background: #4D051B;
+  background-color: #4D051B;
   color: #FFFFFF !important;
   border-color: #FBBF24;
   box-shadow: 0 4px 16px rgba(77, 5, 27, 0.45);
@@ -475,7 +571,7 @@ textarea {
 
 /* Dark Mode Specific Theme Button */
 [data-theme="dark"] .theme-toggle-btn {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(77, 5, 27, 0.5));
+  background-color: #171922;
   color: #FFF2B2 !important;
   border: 1.5px solid rgba(212, 175, 55, 0.85);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 0 8px rgba(212, 175, 55, 0.2);
@@ -487,10 +583,23 @@ textarea {
 }
 
 [data-theme="dark"] .theme-toggle-btn:hover {
-  background: var(--color-gold-gradient);
-  color: #2D0310 !important;
+  background-color: #2D0310;
+  color: #FFF2B2 !important;
   border-color: var(--color-gold);
   box-shadow: 0 4px 16px rgba(212, 175, 55, 0.5);
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover span {
+  color: #FFF2B2 !important;
+}
+
+.theme-toggle-btn .theme-icon {
+  display: inline-block;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+}
+
+.theme-toggle-btn.theme-rotating .theme-icon {
+  transform: rotate(360deg) scale(1.25);
 }
 
 [data-theme="dark"] .theme-toggle-btn:hover span {
@@ -1705,17 +1814,19 @@ textarea {
   .family-combo-banner {
     display: flex !important;
     flex-direction: column !important;
-    padding: 1.25rem 1rem !important;
-    gap: 1rem !important;
-    text-align: center !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    text-align: left !important;
     border-radius: 12px !important;
   }
 
-  .family-combo-media img {
-    height: 190px !important;
+  .family-combo-media img,
+  .combo-banner-image img {
+    height: auto !important;
+    max-height: 460px !important;
     width: 100% !important;
-    object-fit: cover !important;
-    border-radius: 8px !important;
+    object-fit: contain !important;
+    border-radius: 8px 8px 0 0 !important;
   }
 
   .combo-badge-tag {
@@ -2104,8 +2215,25 @@ textarea {
 
 [data-theme="dark"] p,
 [data-theme="dark"] .section-subtitle,
-[data-theme="dark"] .product-subtitle {
-  color: #E2D7CC !important;
+[data-theme="dark"] .product-subtitle,
+[data-theme="dark"] .site-footer p,
+[data-theme="dark"] .footer-brand p,
+[data-theme="dark"] .footer-links a {
+  color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .footer-links a:hover {
+  color: var(--color-gold) !important;
+}
+
+[data-theme="dark"] table th {
+  color: #FFFFFF !important;
+  border-color: #2E3342 !important;
+}
+
+[data-theme="dark"] table td {
+  color: #F3F4F6 !important;
+  border-color: #2E3342 !important;
 }
 
 [data-theme="dark"] .btn-outline-gold {
@@ -2175,6 +2303,16 @@ textarea {
   color: #111827 !important;
   border: 2px solid #1E293B !important;
   box-shadow: 0 0 10px rgba(251, 191, 36, 0.7) !important;
+}
+
+@keyframes badgePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.badge-pop {
+  animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* 3. High Value Family Bundle Badge */

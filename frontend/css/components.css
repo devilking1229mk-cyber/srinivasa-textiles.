@@ -1037,9 +1037,19 @@
 }
 
 @keyframes scanLaser {
-  0% { top: 6%; opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { top: 92%; opacity: 0.3; }
+  0% {
+    top: 6%;
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 92%;
+    opacity: 0.3;
+  }
 }
 
 .upi-qr-status-pill {
@@ -1191,10 +1201,27 @@
 }
 
 @keyframes shakeBox {
-  10%, 90% { transform: translate3d(-2px, 0, 0); }
-  20%, 80% { transform: translate3d(3px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
-  40%, 60% { transform: translate3d(5px, 0, 0); }
+
+  10%,
+  90% {
+    transform: translate3d(-2px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-5px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(5px, 0, 0);
+  }
 }
 
 .upi-verify-title {
@@ -1227,9 +1254,17 @@
 }
 
 @keyframes pulseVerifying {
-  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  70% { box-shadow: 0 0 0 8px rgba(212, 175, 55, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(212, 175, 55, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+  }
 }
 
 .verifying-spinner {
@@ -1302,7 +1337,8 @@
   color: #FFFFFF !important;
   border-color: #475569 !important;
   box-shadow: none !important;
-  pointer-events: auto; /* allows click to show alert */
+  pointer-events: auto;
+  /* allows click to show alert */
 }
 
 .btn-place-order-unlocked {
@@ -1314,9 +1350,17 @@
 }
 
 @keyframes pulseGoldBtn {
-  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+  }
 }
 
 .cod-shield-box {
@@ -2073,6 +2117,219 @@
   }
 }
 
+/* ==========================================================================
+   B2B DIRECT WEAVERS WHOLESALE INQUIRY MODAL (NEAT LUXURY ALIGNMENT)
+   ========================================================================== */
+.bulk-inquiry-dialog {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--color-gold);
+  border-radius: var(--radius-lg, 14px);
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem 2.25rem;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(212, 175, 55, 0.2);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.25rem;
+  animation: pdpPopFront 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overscroll-behavior: contain !important;
+  box-sizing: border-box;
+}
+
+.bulk-inquiry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  gap: 1rem;
+}
+
+.bulk-inquiry-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.bulk-inquiry-icon-box {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(122, 12, 46, 0.45));
+  border: 1.5px solid var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.2);
+}
+
+.bulk-inquiry-title-wrap h3 {
+  margin: 0 0 0.25rem 0;
+  font-family: var(--font-serif-display);
+  color: var(--color-primary);
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+[data-theme="dark"] .bulk-inquiry-title-wrap h3 {
+  color: var(--color-gold);
+}
+
+.bulk-inquiry-title-wrap p {
+  margin: 0;
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.bulk-pkg-highlight-banner {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(122, 12, 46, 0.12) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  border-radius: 10px;
+  padding: 0.9rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.08);
+}
+
+.bulk-pkg-banner-badge {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gold);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.bulk-pkg-banner-title {
+  color: var(--text-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.bulk-pkg-banner-price {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.bulk-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.bulk-form-grid-3 {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1.1fr;
+  gap: 1rem;
+}
+
+.bulk-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bulk-form-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.bulk-form-input,
+.bulk-form-select,
+.bulk-form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--text-main);
+  background: var(--bg-surface-alt, #faf6f0);
+  border: 1.5px solid var(--border-color, #e5d8c5);
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .bulk-form-input,
+[data-theme="dark"] .bulk-form-select,
+[data-theme="dark"] .bulk-form-textarea {
+  background: rgba(22, 12, 17, 0.8);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #FFF;
+}
+
+.bulk-form-input:focus,
+.bulk-form-select:focus,
+.bulk-form-textarea:focus {
+  border-color: var(--color-gold);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.22);
+}
+
+.bulk-form-textarea {
+  resize: vertical;
+  min-height: 85px;
+  line-height: 1.5;
+}
+
+.bulk-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .bulk-inquiry-dialog {
+    padding: 1.5rem 1.15rem !important;
+    max-width: 95vw !important;
+    width: 95vw !important;
+    border-radius: 12px !important;
+  }
+
+  .bulk-form-grid-2,
+  .bulk-form-grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .bulk-form-actions {
+    flex-direction: column-reverse;
+    gap: 0.65rem;
+  }
+
+  .bulk-form-actions button,
+  .bulk-form-actions a {
+    width: 100% !important;
+    justify-content: center;
+  }
+
+  .bulk-inquiry-close-btn {
+    position: static !important;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}
+
 .pdp-close-btn {
   position: absolute;
   top: 1.25rem;
@@ -2455,6 +2712,59 @@
 }
 
 /* ==========================================================================
+   UNIVERSAL MODAL & DRAWER BACKGROUND SCROLL LOCK
+   Prevents background webpage from scrolling when viewing Favourite,
+   Shopping Bag, Feedback, Product Details, or Family Combos.
+   ========================================================================== */
+html.modal-open,
+body.modal-open {
+  overflow: hidden !important;
+  width: 100% !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+html.modal-open body {
+  position: fixed !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Prevent scroll-chaining from inside scrollable modals/drawers to background page */
+.pdp-modal,
+.pdp-modal-content,
+.feedback-modal,
+.feedback-box,
+.cart-drawer,
+.cart-items-body,
+.wishlist-drawer,
+.wishlist-items-body,
+.drawer-body,
+.mobile-nav-drawer,
+.checkout-modal,
+.checkout-modal-content,
+.bulk-inquiry-modal,
+.notify-modal,
+.family-combo-modal-content,
+#familyComboBookingModal,
+#familyComboBookingModal>div {
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.cart-items-body,
+.wishlist-items-body,
+.pdp-modal-content,
+.feedback-box,
+.feedback-modal,
+.drawer-body,
+.checkout-modal-content,
+.bulk-inquiry-modal {
+  touch-action: pan-y !important;
+}
+
+/* ==========================================================================
    ROYAL HERITAGE OPENING LOGO ANIMATION & INTRO SPLASH SCREEN
    ========================================================================== */
 body.preloader-active {
@@ -2706,6 +3016,7 @@ body.preloader-active {
   background: linear-gradient(110deg, #F3E5AB 0%, #D4AF37 25%, #FFFFFF 50%, #D4AF37 75%, #F3E5AB 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: preloaderGoldShimmer 3.2s ease-in-out infinite, preloaderTitleReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   filter: drop-shadow(0 4px 18px rgba(212, 175, 55, 0.45));
@@ -3082,4 +3393,134 @@ body.preloader-active {
     max-width: 4.5in !important;
     margin: 0 auto !important;
   }
+}
+
+/* ==========================================================================
+   HIGH-CONTRAST DARK THEME STYLING SYSTEM FOR STOREFRONT COMPONENTS
+   Ensures crystal clear visibility in PDP Modal, Drawers, Checkout & Feedback
+   ========================================================================== */
+[data-theme="dark"] .specs-table {
+  border-top-color: #2E3342 !important;
+}
+
+[data-theme="dark"] .specs-table td {
+  border-bottom-color: #2E3342 !important;
+}
+
+[data-theme="dark"] .specs-table .spec-name {
+  color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .specs-table .spec-value {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pdp-size-pill {
+  background: #1E232E !important;
+  border-color: #374151 !important;
+  color: #F3F4F6 !important;
+}
+
+[data-theme="dark"] .pdp-size-pill:hover,
+[data-theme="dark"] .pdp-size-pill.active {
+  background: var(--color-gold) !important;
+  color: #2D0310 !important;
+  border-color: var(--color-gold) !important;
+}
+
+[data-theme="dark"] .search-modal-container {
+  background: #171922 !important;
+  border-color: var(--color-gold) !important;
+}
+
+[data-theme="dark"] .search-result-item {
+  border-bottom-color: #2E3342 !important;
+}
+
+[data-theme="dark"] .search-result-item:hover {
+  background: #222631 !important;
+}
+
+[data-theme="dark"] .search-result-item h4 {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .search-result-item p {
+  color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .feedback-modal-content,
+[data-theme="dark"] .feedback-box {
+  background: #171922 !important;
+  border-color: var(--color-gold) !important;
+  color: #F3F4F6 !important;
+}
+
+[data-theme="dark"] .feedback-header h3 {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .feedback-header p {
+  color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .reward-callout {
+  background: rgba(212, 175, 55, 0.12) !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  color: #F3F4F6 !important;
+}
+
+[data-theme="dark"] .checkout-modal-content {
+  background: #171922 !important;
+  border-color: var(--color-gold) !important;
+  color: #F3F4F6 !important;
+}
+
+[data-theme="dark"] .payment-card-opt {
+  background: #1C202B !important;
+  border-color: #2E3342 !important;
+  color: #F3F4F6 !important;
+}
+
+[data-theme="dark"] .payment-card-opt:hover {
+  border-color: var(--color-gold) !important;
+}
+
+[data-theme="dark"] .payment-card-opt.active {
+  background: rgba(212, 175, 55, 0.14) !important;
+  border-color: var(--color-gold) !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .cart-item-card,
+[data-theme="dark"] .wishlist-item-card {
+  background: #171922 !important;
+  border-color: #2E3342 !important;
+}
+
+[data-theme="dark"] .cart-item-title,
+[data-theme="dark"] .wishlist-item-title {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .cart-item-blouse {
+  color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .cart-summary-line {
+  color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .cart-summary-line strong {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .cart-summary-line.total strong {
+  color: var(--color-gold) !important;
+}
+
+[data-theme="dark"] .notify-modal-container {
+  background: #171922 !important;
+  border-color: var(--color-gold) !important;
+  color: #F3F4F6 !important;
 }

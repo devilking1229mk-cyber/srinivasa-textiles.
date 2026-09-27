@@ -5,13 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Immediate Theme Engine: Eliminates theme stutter & flicker during page navigation -->
+  <!-- Immediate Theme Engine: Guaranteed Default Light Theme for all first-time visitors -->
   <script>
     (function () {
       try {
-        var theme = localStorage.getItem("st_active_theme_v2") || localStorage.getItem("st_theme") || "light";
+        var userChosen = localStorage.getItem("st_user_theme_chosen");
+        var savedTheme = localStorage.getItem("st_active_theme_v3");
+        var theme = (userChosen === "true" && savedTheme === "dark") ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
-      } catch (e) { }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
     })();
   </script>
 
@@ -34,6 +38,7 @@
   <link rel="stylesheet" href="css/storefront.css" />
   <link rel="stylesheet" href="css/admin.css" />
   <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/scroll-animations.css" />
 </head>
 
 <body class="home-page">
@@ -428,6 +433,8 @@
       </div>
     </section>
 
+
+
     <!-- ==========================================================================
          HOME SECTION 5: FINAL EXPLORE & VIDEO SHOPPING CTA BANNER (At the bottom of Home page)
          ========================================================================== -->
@@ -507,7 +514,7 @@
         <div class="footer-bottom">
           <div>
             <p>© 2026 Srinivasa Textiles. All Rights Reserved. Master Weavers Since 1978.</p>
-            <p style="font-size: 0.75rem; color: #8C8276; margin-top: 0.2rem;">GSTIN: 33AABCS9876C1ZT | 108 Raja Veedhi,
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">GSTIN: 33AABCS9876C1ZT | 108 Raja Veedhi,
               Kanchipuram, Tamil Nadu - 631501</p>
           </div>
         </div>
@@ -537,14 +544,35 @@
       <div class="mobile-nav-section-title">✨ BROWSE DEPARTMENTS</div>
       <ul class="mobile-dept-list">
         <li><button class="mobile-dept-btn active" data-page="explore">🏠 All Collections (Explore)</button></li>
-        <li><button class="mobile-dept-btn highlight-combo" data-page="family">👨‍👩‍👧‍👦 Family Combos &amp; Matching
-            Sets</button></li>
+        <li><button class="mobile-dept-btn highlight-combo" data-page="family">👨‍👩‍👧‍👦 Family Combos &amp; Matching Sets</button></li>
         <li><button class="mobile-dept-btn" data-page="women"><img src="icons/ladies.jpeg" alt="Ladies" class="drawer-dept-icon" /> Ladies' Sarees &amp; Ethnic</button></li>
         <li><button class="mobile-dept-btn" data-page="girls"><img src="icons/kids.jpeg" alt="Kids" class="drawer-dept-icon" /> Girls (Pattu Pavadai 2-14Y)</button></li>
         <li><button class="mobile-dept-btn" data-page="boys"><img src="icons/kids.jpeg" alt="Kids" class="drawer-dept-icon" /> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
         <li><button class="mobile-dept-btn" data-page="men"><img src="icons/mens.jpeg" alt="Men" class="drawer-dept-icon" /> Men's Silk &amp; Dhotis</button></li>
         <li><button class="mobile-dept-btn" data-page="infants"><img src="icons/bourn%20babies.jpeg" alt="Born Babies" class="drawer-dept-icon" /> Born Babies &amp; Infants (0-2Y)</button></li>
       </ul>
+
+      <div class="mobile-nav-divider"></div>
+
+      <!-- Saved Favourites Session inside Mobile Drawer -->
+      <div class="mobile-nav-section-title">❤️ SAVED FAVOURITES</div>
+      <button class="mobile-drawer-action-btn favourites-trigger-btn" id="mobileWishlistBtn" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <img src="icons/favourite.jpeg" alt="Favourites" class="drawer-icon-img" /> My Saved Favourites
+        </span>
+        <span class="badge-count wishlist-count-badge" style="position: static; display: inline-flex;">0</span>
+      </button>
+
+      <div class="mobile-nav-divider"></div>
+
+      <!-- Shopping Bag Session inside Mobile Drawer -->
+      <div class="mobile-nav-section-title">🛍️ SHOPPING BAG</div>
+      <button class="mobile-drawer-action-btn" id="mobileCartBtn" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          🛍️ My Shopping Bag
+        </span>
+        <span class="badge-count cart-count-badge" id="mobileCartBadge" style="position: static; display: inline-flex;">0</span>
+      </button>
 
       <div class="mobile-nav-divider"></div>
 
@@ -689,70 +717,68 @@
 
   <!-- Customer Bulk Order Inquiry Modal (Royal Luxury Theme) -->
   <div class="pdp-modal" id="bulkInquiryModal" role="dialog" aria-modal="true">
-    <div class="pdp-modal-content" style="max-width: 640px; max-height: 90vh; overflow-y: auto; padding: 2rem;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(122, 12, 46, 0.35)); border: 1.5px solid var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+    <div class="bulk-inquiry-dialog">
+      <div class="bulk-inquiry-header">
+        <div class="bulk-inquiry-header-left">
+          <div class="bulk-inquiry-icon-box">
             🏢
           </div>
-          <div>
-            <h3 style="margin: 0; font-family: var(--font-serif-display); color: var(--text-heading); font-size: 1.25rem;">
-              Direct Handloom Bulk Inquiry
-            </h3>
-            <span style="font-size: 0.775rem; color: var(--text-muted);">
-              Srinivasa Textiles Master Weaver Direct Wholesale &amp; Wedding Troupe Quotation
-            </span>
+          <div class="bulk-inquiry-title-wrap">
+            <h3>Direct Handloom Bulk Inquiry</h3>
+            <p>Srinivasa Textiles Master Weaver Direct Wholesale &amp; Wedding Troupe Quotation</p>
           </div>
         </div>
-        <button type="button" class="pdp-close-btn" id="closeBulkInquiryModalBtn" title="Close Inquiry Modal" style="background: none; border: none; font-size: 1.35rem; cursor: pointer; color: var(--text-muted);">✕</button>
+        <button type="button" class="pdp-close-btn bulk-inquiry-close-btn" id="closeBulkInquiryModalBtn" title="Close Inquiry Modal">✕</button>
       </div>
 
       <!-- Selected Package Banner if triggered from a specific card -->
-      <div id="bulkInquirySelectedPkgBanner" style="display: none; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--color-gold); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
-        <div style="font-size: 0.725rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-gold); font-weight: 800;">Selected Bulk Package:</div>
-        <strong id="bulkInquirySelectedPkgTitle" style="color: var(--text-heading); font-size: 0.95rem; display: block; margin-top: 0.15rem;"></strong>
-        <span id="bulkInquirySelectedPkgPrice" style="font-size: 0.8rem; color: var(--text-muted);"></span>
+      <div id="bulkInquirySelectedPkgBanner" class="bulk-pkg-highlight-banner" style="display: none;">
+        <div class="bulk-pkg-banner-badge">
+          <span>👑</span> Selected Bulk Package:
+        </div>
+        <strong id="bulkInquirySelectedPkgTitle" class="bulk-pkg-banner-title"></strong>
+        <span id="bulkInquirySelectedPkgPrice" class="bulk-pkg-banner-price"></span>
       </div>
 
       <form id="customerBulkInquiryForm" style="display: flex; flex-direction: column; gap: 1rem;">
         <input type="hidden" id="bulkInquiryPackageId" value="" />
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div>
-            <label for="bulkCustName" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Full Name / Contact Person *
+        <div class="bulk-form-grid-2">
+          <div class="bulk-form-field">
+            <label for="bulkCustName" class="bulk-form-label">
+              <span>👤</span> Full Name / Contact Person *
             </label>
-            <input type="text" id="bulkCustName" required class="form-control" placeholder="e.g. S. Vijayaraghavan" style="font-size: 0.85rem;" />
+            <input type="text" id="bulkCustName" required class="bulk-form-input" placeholder="e.g. S. Vijayaraghavan" />
           </div>
-          <div>
-            <label for="bulkCustPhone" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Phone / WhatsApp Number *
+          <div class="bulk-form-field">
+            <label for="bulkCustPhone" class="bulk-form-label">
+              <span>📞</span> Phone / WhatsApp Number *
             </label>
-            <input type="tel" id="bulkCustPhone" required class="form-control" placeholder="+91 98400 12345" style="font-size: 0.85rem;" />
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div>
-            <label for="bulkCustEmail" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Email Address (Optional)
-            </label>
-            <input type="email" id="bulkCustEmail" class="form-control" placeholder="client@example.com" style="font-size: 0.85rem;" />
-          </div>
-          <div>
-            <label for="bulkCustCompany" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Company / Family / Occasion Name *
-            </label>
-            <input type="text" id="bulkCustCompany" required class="form-control" placeholder="e.g. Raghavan Wedding Troupe or Boutique" style="font-size: 0.85rem;" />
+            <input type="tel" id="bulkCustPhone" required class="bulk-form-input" placeholder="+91 98400 12345" />
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 0.85rem;">
-          <div>
-            <label for="bulkCustOrderType" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Requirement Type *
+        <div class="bulk-form-grid-2">
+          <div class="bulk-form-field">
+            <label for="bulkCustEmail" class="bulk-form-label">
+              <span>✉️</span> Email Address (Optional)
             </label>
-            <select id="bulkCustOrderType" class="form-control" style="font-size: 0.85rem;">
+            <input type="email" id="bulkCustEmail" class="bulk-form-input" placeholder="client@example.com" />
+          </div>
+          <div class="bulk-form-field">
+            <label for="bulkCustCompany" class="bulk-form-label">
+              <span>🏛️</span> Company / Family / Occasion Name *
+            </label>
+            <input type="text" id="bulkCustCompany" required class="bulk-form-input" placeholder="e.g. Raghavan Wedding Troupe or Boutique" />
+          </div>
+        </div>
+
+        <div class="bulk-form-grid-3">
+          <div class="bulk-form-field">
+            <label for="bulkCustOrderType" class="bulk-form-label">
+              <span>📋</span> Requirement Type *
+            </label>
+            <select id="bulkCustOrderType" class="bulk-form-select">
               <option value="Customer Bulk Inquiry">General Bulk Inquiry</option>
               <option value="Wedding Bulk">Wedding Troupe / Bridal Lot</option>
               <option value="Wholesale">Wholesale Showroom Stock</option>
@@ -760,45 +786,45 @@
               <option value="Corporate Gifting">Corporate Festive Gifting</option>
             </select>
           </div>
-          <div>
-            <label for="bulkCustPieces" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Estimated Pieces *
+          <div class="bulk-form-field">
+            <label for="bulkCustPieces" class="bulk-form-label">
+              <span>📦</span> Estimated Pieces *
             </label>
-            <input type="number" id="bulkCustPieces" required min="5" value="15" class="form-control" style="font-size: 0.85rem;" />
+            <input type="number" id="bulkCustPieces" required min="5" value="15" class="bulk-form-input" />
           </div>
-          <div>
-            <label for="bulkCustDeadline" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Needed By Date *
+          <div class="bulk-form-field">
+            <label for="bulkCustDeadline" class="bulk-form-label">
+              <span>📅</span> Needed By Date *
             </label>
-            <input type="date" id="bulkCustDeadline" required class="form-control" style="font-size: 0.85rem;" />
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div>
-            <label for="bulkCustCity" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              Delivery City / State *
-            </label>
-            <input type="text" id="bulkCustCity" required class="form-control" placeholder="e.g. Chennai, Tamil Nadu" style="font-size: 0.85rem;" />
-          </div>
-          <div>
-            <label for="bulkCustGstin" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-              GSTIN (If Business / Optional)
-            </label>
-            <input type="text" id="bulkCustGstin" class="form-control" placeholder="33AAAC1234F1Z5 or Unregistered" style="font-size: 0.85rem;" />
+            <input type="date" id="bulkCustDeadline" required class="bulk-form-input" />
           </div>
         </div>
 
-        <div>
-          <label for="bulkCustNotes" style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading); display: block; margin-bottom: 0.35rem;">
-            Specific Customization, Color Schemes, or Weaver Notes:
+        <div class="bulk-form-grid-2">
+          <div class="bulk-form-field">
+            <label for="bulkCustCity" class="bulk-form-label">
+              <span>📍</span> Delivery City / State *
+            </label>
+            <input type="text" id="bulkCustCity" required class="bulk-form-input" placeholder="e.g. Chennai, Tamil Nadu" />
+          </div>
+          <div class="bulk-form-field">
+            <label for="bulkCustGstin" class="bulk-form-label">
+              <span>💼</span> GSTIN (If Business / Optional)
+            </label>
+            <input type="text" id="bulkCustGstin" class="bulk-form-input" placeholder="33AAAC1234F1Z5 or Unregistered" />
+          </div>
+        </div>
+
+        <div class="bulk-form-field">
+          <label for="bulkCustNotes" class="bulk-form-label">
+            <span>📝</span> Specific Customization, Color Schemes, or Weaver Notes:
           </label>
-          <textarea id="bulkCustNotes" rows="3" class="form-control" placeholder="e.g. Need 15 sarees in Crimson &amp; Mustard with Korvai borders, plus matching raw silk unstitched blouse material..." style="font-size: 0.85rem;"></textarea>
+          <textarea id="bulkCustNotes" rows="3" class="bulk-form-textarea" placeholder="e.g. Need 15 sarees in Crimson &amp; Mustard with Korvai borders, plus matching raw silk unstitched blouse material..."></textarea>
         </div>
 
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem;">
-          <button type="button" class="btn btn-outline btn-sm" id="cancelBulkInquiryBtn">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-md" id="submitBulkInquiryBtn" style="font-weight: 800;">
+        <div class="bulk-form-actions">
+          <button type="button" class="btn btn-outline btn-md" id="cancelBulkInquiryBtn" style="padding: 0.65rem 1.4rem;">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-md" id="submitBulkInquiryBtn" style="font-weight: 800; padding: 0.65rem 1.75rem;">
             <span>📨</span> Submit Bulk Inquiry
           </button>
         </div>
@@ -830,7 +856,7 @@
   <div class="lightbox-modal" id="lightboxModal">
     <div class="lightbox-content">
       <span class="lightbox-close-btn" id="lightboxCloseBtn">✕</span>
-      <img src="" alt="Fullscreen High-Res View" class="lightbox-main-img" id="lightboxMainImg" />
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt="Fullscreen High-Res View" class="lightbox-main-img" id="lightboxMainImg" />
     </div>
   </div>
 
@@ -881,11 +907,10 @@
 
     <div class="cart-drawer-footer">
       <div class="coupon-input-box">
-        <input type="text" id="cartCouponInput" placeholder="Promo Code (Try 'HERITAGE10')" />
+        <input type="text" id="cartCouponInput" placeholder="ENTER A PROMO CODE (OPTIONAL)" />
         <button class="btn btn-gold btn-sm" id="applyCouponBtn">Apply</button>
       </div>
       <div id="cartActiveCouponBox" style="display: none; margin-bottom: 0.65rem;"></div>
-      <div id="cartAvailableOffersBox" style="margin-bottom: 0.75rem;"></div>
 
       <div class="cart-summary-line"><span>Subtotal:</span> <strong id="cartSubtotal">₹0</strong></div>
       <div class="cart-summary-line" id="cartDiscountLine"><span>Discount:</span> <strong id="cartDiscount">₹0</strong>
@@ -1139,6 +1164,186 @@
     <div class="invoice-modal-content" id="invoiceModalContent"></div>
   </div>
 
+  <!-- ==========================================================================
+       FAMILY COMBO BOOKING MODAL (DIRECT ORDERING WITH SIZES)
+       ========================================================================== -->
+  <div class="pdp-modal" id="familyComboBookingModal" role="dialog" aria-modal="true" style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.8); z-index: 9999;">
+    <div style="background: var(--bg-surface, #1A050D); border: 2px solid var(--color-gold, #D4AF37); border-radius: var(--radius-lg, 12px); max-width: 650px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); color: var(--text-main, #FFF);">
+      
+      <!-- Close Button -->
+      <button type="button" onclick="window.storefront && window.storefront.closeFamilyComboBookingModal()"
+        style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--color-gold); cursor: pointer; line-height: 1;">
+        &times;
+      </button>
+
+      <!-- Modal Header -->
+      <div style="border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <span class="combo-badge-tag" id="fcModalBadge" style="margin-bottom: 0.5rem; font-size: 0.7rem;">👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE</span>
+        <h3 id="fcModalTitle" style="color: var(--color-gold); font-size: 1.35rem; margin: 0 0 0.35rem 0; font-family: var(--font-serif-display);">
+          Book Coordinated Family Combo Bundle
+        </h3>
+        <p id="fcModalSubtitle" style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+          Harmonized ceremonial dye batch tailored for Father, Mother, Son &amp; Daughter.
+        </p>
+      </div>
+
+      <!-- Pricing Summary Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.3); padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Special Bundle Price (All 4 Items Included):</span>
+          <span id="fcModalPrice" style="font-size: 1.5rem; font-weight: 800; color: var(--color-gold);">₹58,500</span>
+          <span id="fcModalOriginalPrice" style="font-size: 0.9rem; color: var(--text-muted); text-decoration: line-through; margin-left: 0.5rem;">₹72,000</span>
+        </div>
+        <span id="fcModalSavings" style="font-size: 0.8rem; font-weight: 800; color: var(--color-success); background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 4px;">
+          Save ₹13,500
+        </span>
+      </div>
+
+      <!-- Booking Form -->
+      <form id="familyComboOrderForm" onsubmit="window.storefront && window.storefront.handleFamilyComboOrderSubmit(event)">
+        <input type="hidden" id="fcFormComboId" value="" />
+        <input type="hidden" id="fcFormComboTitle" value="" />
+        <input type="hidden" id="fcFormTotalPrice" value="" />
+
+        <!-- 4-Member Size Selection -->
+        <h4 style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
+          <span>📏</span> Select Family Member Sizing &amp; Tailoring
+        </h4>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+          <!-- Father Size -->
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              👨 Father's Shirt Size *
+            </label>
+            <select id="fcFormFatherSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="38 (S - Chest 38)">38 (S) - Chest 38" + 8-Muzham Dhoti</option>
+              <option value="40 (M - Chest 40)" selected>40 (M) - Chest 40" + 8-Muzham Dhoti</option>
+              <option value="42 (L - Chest 42)">42 (L) - Chest 42" + 8-Muzham Dhoti</option>
+              <option value="44 (XL - Chest 44)">44 (XL) - Chest 44" + 8-Muzham Dhoti</option>
+              <option value="46 (XXL - Chest 46)">46 (XXL) - Chest 46" + 8-Muzham Dhoti</option>
+            </select>
+          </div>
+
+          <!-- Mother Saree -->
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              ✨ Mother's Saree &amp; Blouse *
+            </label>
+            <select id="fcFormMotherSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="Standard 6.3m (Unstitched Pure Zari Blouse)" selected>Standard 6.3m (Unstitched Pure Zari Blouse)</option>
+              <option value="Standard 6.3m (Pre-Pleated / Ready Saree Request)">Standard 6.3m (Pre-Pleated / Ready Saree Request)</option>
+            </select>
+          </div>
+
+          <!-- Son Age/Size -->
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              👦 Son's Age &amp; Kurta Size *
+            </label>
+            <select id="fcFormSonSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="2-4 Years (Chest 22)">2 - 4 Years (Chest 22")</option>
+              <option value="4-6 Years (Chest 24)">4 - 6 Years (Chest 24")</option>
+              <option value="6-8 Years (Chest 26)" selected>6 - 8 Years (Chest 26")</option>
+              <option value="8-10 Years (Chest 28)">8 - 10 Years (Chest 28")</option>
+              <option value="10-12 Years (Chest 30)">10 - 12 Years (Chest 30")</option>
+              <option value="12-14 Years (Chest 32)">12 - 14 Years (Chest 32")</option>
+            </select>
+          </div>
+
+          <!-- Daughter Age/Size -->
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              👧 Daughter's Age &amp; Pavadai Size *
+            </label>
+            <select id="fcFormDaughterSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="2-4 Years (Length 24)">2 - 4 Years (Skirt 24")</option>
+              <option value="4-6 Years (Length 28)" selected>4 - 6 Years (Skirt 28")</option>
+              <option value="6-8 Years (Length 32)">6 - 8 Years (Skirt 32")</option>
+              <option value="8-10 Years (Length 36)">8 - 10 Years (Skirt 36")</option>
+              <option value="10-12 Years (Length 40)">10 - 12 Years (Skirt 40")</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Customer Contact & Shipping Details -->
+        <h4 style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
+          <span>📦</span> Delivery &amp; Contact Details
+        </h4>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              Full Name *
+            </label>
+            <input type="text" id="fcFormCustomerName" class="input-field" required
+              placeholder="e.g. Karthik &amp; Ananya Subramanian" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              WhatsApp Phone Number *
+            </label>
+            <input type="tel" id="fcFormCustomerPhone" class="input-field" required pattern="[0-9]{10}" maxlength="10"
+              placeholder="10-digit mobile number" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+          </div>
+
+          <div style="grid-column: 1 / -1;">
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              Full Delivery Address &amp; Landmark *
+            </label>
+            <textarea id="fcFormDeliveryAddress" class="input-field" required rows="2"
+              placeholder="Flat/House No, Street, Landmark, City, State" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              Postal Pincode *
+            </label>
+            <input type="text" id="fcFormPincode" class="input-field" required pattern="[0-9]{6}" maxlength="6"
+              placeholder="e.g. 600004" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              Payment Method *
+            </label>
+            <select id="fcFormPaymentMode" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="UPI Online (GPay / PhonePe / Paytm)" selected>📱 UPI Online (GPay / PhonePe / Paytm)</option>
+              <option value="COD (Cash on Delivery)">💵 Cash on Delivery (COD)</option>
+              <option value="Direct Bank NEFT / RTGS">🏛️ Direct Bank NEFT / RTGS</option>
+            </select>
+          </div>
+
+          <div style="grid-column: 1 / -1;">
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
+              Ceremony Date / Special Customization Note
+            </label>
+            <input type="text" id="fcFormSpecialNotes" class="input-field"
+              placeholder="e.g. Wedding on 18th Oct, please expedite delivery or gift pack." style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+          </div>
+        </div>
+
+        <!-- Submit & Guarantees -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(212, 175, 55, 0.3); padding-top: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+            🛡️ <strong>Silk Mark Certified</strong> &bull; Complimentary Heirloom Muslin Covers &bull; Free Insured Express Delivery
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button type="button" class="btn btn-outline" onclick="window.storefront && window.storefront.closeFamilyComboBookingModal()">
+              Cancel
+            </button>
+            <button type="submit" id="fcSubmitOrderBtn" class="btn btn-gold btn-lg" style="font-weight: 800;">
+              🛍️ Confirm &amp; Place Order
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
   <!-- Floating WhatsApp Concierge Widget -->
   <div class="whatsapp-widget-container" id="whatsappWidget">
     <div class="whatsapp-chat-popup" id="whatsappPopup">
@@ -1182,6 +1387,7 @@
   <script src="js/storefront.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/scroll-animations.js"></script>
 </body>
 
 </html>

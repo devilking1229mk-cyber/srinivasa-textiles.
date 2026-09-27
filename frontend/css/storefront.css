@@ -317,21 +317,50 @@
   border: 2px solid var(--color-gold);
   box-shadow: var(--shadow-lg);
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: stretch;
   margin-bottom: 3.5rem;
+  width: 100%;
 }
 
 .combo-banner-image {
   position: relative;
-  min-height: 420px;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  max-height: 650px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  background: #0f0a0d;
+}
+
+.combo-banner-backdrop {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(0.35) saturate(1.2);
+  opacity: 0.7;
+  transform: scale(1.15);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .combo-banner-image img {
+  position: relative;
+  z-index: 2;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease;
+  height: auto;
+  max-height: 650px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.4s ease;
 }
 
 .combo-banner-content {
@@ -684,7 +713,11 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  transition: transform var(--transition-normal),
+              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -743,7 +776,11 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.2s ease;
 }
 
 .quick-action-btn:hover {
@@ -758,6 +795,13 @@
   border-color: #FDA4AF !important;
   transform: scale(1.1);
   box-shadow: 0 0 10px rgba(225, 29, 72, 0.35);
+}
+
+[data-theme="dark"] .quick-action-btn.wishlisted {
+  background: rgba(225, 29, 72, 0.25) !important;
+  color: #FDA4AF !important;
+  border-color: #F43F5E !important;
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.5) !important;
 }
 
 .card-lightbox-hint {
@@ -1038,7 +1082,10 @@
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform var(--transition-fast),
+              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .festive-voucher-card:hover {
@@ -1125,7 +1172,10 @@
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  transition: transform var(--transition-normal),
+              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .festive-deal-card:hover {
@@ -1359,6 +1409,286 @@
   .festive-offers-section {
     padding: 1.5rem 0 !important;
   }
+}
+
+/* ==========================================================================
+   FAMILY COMBOS AUTO-ROTATING SHOWCASE (DEFAULT CLEAN SIZING, NO PAUSE BUTTON)
+   ========================================================================== */
+.family-combo-carousel-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg, 0 10px 30px rgba(0, 0, 0, 0.35));
+  background: var(--bg-surface);
+  border: 2px solid var(--color-gold);
+  margin-bottom: 2.5rem;
+}
+
+/* Micro Timer Bar embedded directly on the top border (takes 0 layout height) */
+.combo-timer-bar-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(212, 175, 55, 0.2);
+  overflow: hidden;
+  z-index: 12;
+}
+
+.combo-timer-bar-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #F5D77F, #D4AF37, #E5C158);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.9);
+  transition: width 0.1s linear;
+}
+
+/* Floating Combo Counter Badge on top-right of image (Zero layout displacement) */
+.combo-floating-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  color: var(--color-gold, #D4AF37);
+  font-size: 0.725rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--color-gold, #D4AF37);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Slides Viewport & Track with Smooth Height Adaptation */
+.family-combo-slides-viewport {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.combo-slides-track {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.combo-slide-item {
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+}
+
+/* The actual banner inside each slide dynamically adapts its height to the image! */
+.combo-slide-item .family-combo-banner {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  margin-bottom: 0 !important;
+  background: transparent !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) !important;
+  align-items: stretch !important;
+  min-height: auto !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+.combo-slide-item .combo-banner-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  max-height: 650px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0f0a0d;
+}
+
+.combo-slide-item .combo-banner-image img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: auto;
+  max-height: 650px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.combo-image-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(4px);
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 0.75rem;
+  font-weight: 800;
+  z-index: 4;
+}
+
+.combo-slide-item .combo-banner-content {
+  padding: 2.25rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--bg-surface);
+}
+
+.combo-slide-item .combo-banner-content h3 {
+  font-size: 1.7rem;
+  line-height: 1.25;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .combo-slide-item .combo-banner-content h3 {
+  color: #FFFFFF;
+}
+
+.combo-slide-item .combo-features-list {
+  margin: 1rem 0 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0;
+}
+
+.combo-slide-item .combo-features-list li {
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+/* Navigation Arrow Buttons */
+.combo-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(18, 4, 10, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid var(--color-gold, #D4AF37);
+  color: var(--color-gold, #D4AF37);
+  font-size: 1.25rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 12;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  user-select: none;
+}
+
+.combo-carousel-arrow:hover {
+  background: var(--color-gold, #D4AF37);
+  color: #3b0512;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.7);
+}
+
+.combo-arrow-prev {
+  left: 12px;
+}
+
+.combo-arrow-next {
+  right: 12px;
+}
+
+/* Bottom Pagination Dots */
+.combo-carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 12;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.combo-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: 0;
+}
+
+.combo-carousel-dot.active {
+  width: 22px;
+  border-radius: 10px;
+  background: var(--color-gold, #D4AF37);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+}
+
+@media (max-width: 992px) {
+  .family-combo-banner,
+  .combo-slide-item .family-combo-banner {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .combo-slide-item .family-combo-banner {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+    max-height: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .combo-slide-item .combo-banner-image,
+  .combo-banner-image {
+    min-height: 220px !important;
+    height: auto !important;
+    max-height: 480px !important;
+    width: 100% !important;
+  }
+  .combo-slide-item .combo-banner-image img,
+  .combo-banner-image img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 460px !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+  .combo-slide-item .combo-banner-content {
+    padding: 1.5rem !important;
+  }
+  .combo-carousel-arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+  .combo-arrow-prev { left: 6px; }
+  .combo-arrow-next { right: 6px; }
 }
 
 

@@ -45,39 +45,57 @@ class SupabaseService {
 
       // Transform DB row into frontend product format
       return data.map(row => {
-        const primaryImg = (Array.isArray(row.images) && row.images.length > 0)
+        const primaryImg = (Array.isArray(row.images) && row.images.length > 0 && row.images[0])
           ? row.images[0]
-          : (row.image_url || row.image || row.mainImage || "");
+          : (row.image_url || row.image || row.mainImage || "assets/images/family_matching_combo.jpg");
         const imageList = Array.isArray(row.images) && row.images.length > 0
           ? row.images
-          : (primaryImg ? [primaryImg] : []);
+          : (primaryImg ? [primaryImg] : ["assets/images/family_matching_combo.jpg"]);
+
+        const titleVal = row.name || row.title || "Handcrafted Heritage Handloom";
+        const priceVal = Number(row.price || row.priceINR || 0);
+        const origPriceVal = Number(row.original_price || row.originalPriceINR || row.mrpINR || 0) || Math.round(priceVal * 1.3);
+        const deptVal = row.department || "Women's Collection";
 
         return {
           id: row.id,
-          title: row.name || row.title,
-          department: row.department,
-          category: row.category,
-          fabric: row.fabric,
-          priceINR: Number(row.price || row.priceINR || 0),
-          originalPriceINR: Number(row.original_price || row.originalPriceINR || 0),
+          title: titleVal,
+          name: titleVal,
+          subtitle: row.subtitle || row.description?.substring(0, 90) || `${row.fabric || 'Pure Silk'} handcrafted for ${deptVal}`,
+          department: deptVal,
+          category: row.category || "Silk Sarees",
+          subCategory: row.category || "Silk Sarees",
+          ageGroup: row.age_group || (deptVal.includes("Kids") ? "2 - 14 Years" : deptVal.includes("Infants") ? "0 - 2 Years" : "Adults"),
+          fabric: row.fabric || "Pure Handloom Silk",
+          priceINR: priceVal,
+          price: priceVal,
+          originalPriceINR: origPriceVal,
+          mrpINR: origPriceVal,
           rating: row.rating || 4.9,
           reviewsCount: row.reviews_count || 128,
-          inStock: (row.stock !== undefined ? row.stock > 0 : true),
-          stockCount: row.stock || 10,
-          stock: row.stock || 10,
+          inStock: (row.stock !== undefined ? Number(row.stock) > 0 : true),
+          stockCount: (row.stock !== undefined ? Number(row.stock) : 10),
+          stock: (row.stock !== undefined ? Number(row.stock) : 10),
+          lowStockThreshold: 2,
           mainImage: primaryImg,
           image: primaryImg,
+          image_url: primaryImg,
           images: imageList,
           gallery: imageList,
-          colors: Array.isArray(row.colors) ? row.colors : [],
+          colors: (Array.isArray(row.colors) && row.colors.length > 0) ? row.colors : [
+            { name: "Signature Palette", hex: "#7A0C2E", image: primaryImg, code: "SIG-01" }
+          ],
           weave: row.weave || "Traditional Pit-Loom Weave",
           zariType: row.zari || "Pure Gold Zari",
           occasion: row.occasion || "Wedding & Muhurtham",
           origin: row.origin || "Kanchipuram, Tamil Nadu",
           silkMarkCertified: row.silk_mark ?? true,
           handloomMarkCertified: row.handloom_mark ?? true,
+          badges: ["✨ Silk Mark (SMOI) Certified"],
+          safetyBadges: (deptVal.includes("Kids") || deptVal.includes("Infants")) ? ["🛡️ Soft Inner-Lining Guarantee"] : [],
+          availableSizes: ["Standard", "Size 26 (4-5Y)", "Size 30 (6-8Y)", "Size 34 (9-11Y)", "Adult M/L"],
           hsnCode: row.hsn_code || "50072010",
-          description: row.description || ""
+          description: row.description || `Handcrafted ${titleVal} for ${deptVal} by Srinivasa Textiles master artisans.`
         };
       });
     } catch (err) {
@@ -89,19 +107,22 @@ class SupabaseService {
   async upsertProduct(product) {
     if (!this.isConfigured()) return null;
     try {
-      const primaryImg = product.mainImage || product.image || (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image_url || ""));
+      const primaryImg = product.mainImage || product.image || (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image_url || "assets/images/family_matching_combo.jpg"));
       const imgList = Array.isArray(product.images) && product.images.length > 0
         ? product.images
         : (Array.isArray(product.gallery) && product.gallery.length > 0 ? product.gallery : [primaryImg]);
 
+      const priceVal = Number(product.priceINR || product.price || 0);
+      const mrpVal = Number(product.mrpINR || product.originalPriceINR || product.original_price || Math.round(priceVal * 1.3));
+
       const dbProduct = {
         id: product.id,
-        name: product.title || product.name,
-        department: product.department || "Women",
-        category: product.category || "Silk Sarees",
+        name: product.title || product.name || "Handcrafted Heritage Textile",
+        department: product.department || "Women's Collection",
+        category: product.category || product.subCategory || "Silk Sarees",
         fabric: product.fabric || "Kanchipuram Silk",
-        price: Number(product.priceINR || product.price || 0),
-        original_price: Number(product.originalPriceINR || product.original_price || 0),
+        price: priceVal,
+        original_price: mrpVal,
         stock: product.stockCount ?? product.stock ?? 10,
         image_url: primaryImg,
         images: imgList,
@@ -113,7 +134,7 @@ class SupabaseService {
         silk_mark: product.silkMarkCertified ?? true,
         handloom_mark: product.handloomMarkCertified ?? true,
         hsn_code: product.hsnCode || "50072010",
-        description: product.description || ""
+        description: product.description || `Newly added ${product.title || product.name} for ${product.department || "Family"} handcrafted by Srinivasa Textiles master artisans.`
       };
 
       const { data, error } = await this.client.from("products").upsert([dbProduct], { onConflict: "id" });

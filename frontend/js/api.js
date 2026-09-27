@@ -3,7 +3,7 @@
 // Connects Frontend to Python Flask REST Engine with Fallback Support
 // =====================================================================
 
-const API_BASE_URL = window.API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = window.API_BASE_URL || (window.location.hostname ? `http://${window.location.hostname}:5000/api` : "http://localhost:5000/api");
 
 const API = {
   baseUrl: API_BASE_URL,

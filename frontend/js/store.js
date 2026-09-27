@@ -5,10 +5,11 @@ const STORE_KEYS = {
   CATALOG: "st_catalog_data_v2",
   ORDERS: "st_orders_data_v2",
   CART: "st_cart_data_v2",
-  WISHLIST: "st_wishlist_data_v3",
+  WISHLIST: "st_wishlist_data_v4",
   SUBSCRIBERS: "st_subscribers_data_v2",
   CURRENCY: "st_active_currency_v2",
-  THEME: "st_active_theme_v2",
+  THEME: "st_active_theme_v3",
+  THEME_CHOSEN: "st_user_theme_chosen",
   SETTINGS: "st_store_settings_v2",
   DYNAMIC_RULES: "st_dynamic_rules_v2",
   OWNER_AUTH: "st_owner_auth_session_v2",
@@ -19,8 +20,104 @@ const STORE_KEYS = {
   BULK_SETTINGS: "st_bulk_settings_data_v2",
   COUPONS: "st_coupons_data_v2",
   DELETED_COUPONS: "st_deleted_coupons_data_v2",
-  FESTIVE_CAMPAIGN: "st_festive_campaign_v1"
+  FESTIVE_CAMPAIGN: "st_festive_campaign_v1",
+  FAMILY_COMBOS: "st_family_combos_v1",
+  FAMILY_COMBO_ORDERS: "st_family_combo_orders_v1",
+  FAMILY_COMBO_SETTINGS: "st_family_combo_settings_v1"
 };
+
+const DEFAULT_FAMILY_COMBO_SETTINGS = {
+  autoRotate: true,
+  intervalSeconds: 5,
+  pauseOnHover: true,
+  transitionEffect: "slide"
+};
+
+const DEFAULT_FAMILY_COMBOS = [
+  {
+    id: "FAM-CMB-001",
+    title: "Samanvaya 4-Piece Grand Muhurtham Family Bundle",
+    subtitle: "Harmonized ceremonial dye batches for Father, Mother, Son & Daughter.",
+    badge: "👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE",
+    posterImage: "assets/images/family_matching_combo.jpg",
+    originalPrice: 72000,
+    price: 58500,
+    savingsText: "Save ₹13,500 (19% OFF)",
+    fabric: "Pure Kanchipuram Mulberry Silk 3-Ply Zari",
+    colorTheme: "Crimson Red & Royal Temple Gold",
+    inclusions: {
+      mother: "Rajasi Heavy Gold Zari Kanchipuram Silk Saree (6.3m with Blouse Piece)",
+      father: "Pure Mulberry Silk Shirt (Full Sleeve) & 8-Muzham Pure Zari Dhoti Set",
+      daughter: "Matching Mayuri Pattu Pavadai with Soft Breathable Cotton Lining",
+      son: "Royal Silk Jacquard Kurta & Elastic Adjust Dhoti Pant Set"
+    },
+    description: "Coordinated Kanchipuram Crimson & Gold silk attire woven from a single ceremonial dye lot. Complete festive harmony for weddings, milestone anniversaries, and grand family celebrations.",
+    isActive: true,
+    createdAt: "2026-09-01T10:00:00.000Z"
+  },
+  {
+    id: "FAM-CMB-002",
+    title: "Rajadhiraja Royal Peacock Blue & Gold Festive Ensemble",
+    subtitle: "Mayilkazhuthu pure handloom silk synchronized for the complete family.",
+    badge: "🦚 ROYAL HERITAGE EDITION",
+    posterImage: "assets/images/banarasi_blue_saree_1787491585268.jpg",
+    originalPrice: 65000,
+    price: 52000,
+    savingsText: "Save ₹13,000 (20% OFF)",
+    fabric: "Pure Handloom Kanchipuram Silk with Silver-Tested Zari",
+    colorTheme: "Mayilkazhuthu Royal Blue & Sunset Gold",
+    inclusions: {
+      mother: "Grand Mayilkazhuthu Korvai Contrast Border Kanchipuram Silk Saree",
+      father: "Raw Mulberry Silk Stitched Kurta & Matching Gold Border Angavastram Dhoti",
+      daughter: "Kids Heritage Silk Pavadai & Stitched Brocade Choli Set",
+      son: "Boys Royal Embroidered Silk Kurta with Pocket Square & Dhoti"
+    },
+    description: "Handcrafted with the iconic Mayilkazhuthu two-tone iridescent silk. Perfect for Diwali, Upanayanam, and family portrait photography.",
+    isActive: true,
+    createdAt: "2026-09-05T12:00:00.000Z"
+  }
+];
+
+const DEFAULT_FAMILY_COMBO_ORDERS = [
+  {
+    orderId: "FCO-2026-101",
+    comboId: "FAM-CMB-001",
+    comboTitle: "Samanvaya 4-Piece Grand Muhurtham Family Bundle",
+    customerName: "Karthik Subramanian & Dr. Ananya",
+    customerPhone: "9840123456",
+    customerEmail: "karthik.subramanian@gmail.com",
+    deliveryAddress: "No. 42, South Mada Street, Mylapore, Chennai, Tamil Nadu - 600004",
+    pincode: "600004",
+    fatherSize: "42 (L)",
+    motherSize: "Standard 6.3m (Unstitched Blouse Included)",
+    sonAgeSize: "8-10 Years",
+    daughterAgeSize: "6-8 Years",
+    specialNotes: "Need delivery before upcoming Friday for family engagement ceremony.",
+    totalPrice: 58500,
+    paymentMode: "UPI Online (Paid)",
+    status: "Confirmed",
+    orderDate: "2026-09-21T14:30:00.000Z"
+  },
+  {
+    orderId: "FCO-2026-102",
+    comboId: "FAM-CMB-002",
+    comboTitle: "Rajadhiraja Royal Peacock Blue & Gold Festive Ensemble",
+    customerName: "Ramesh Babu Narayanan",
+    customerPhone: "9444098765",
+    customerEmail: "ramesh.babu@outlook.com",
+    deliveryAddress: "Flat 3B, Temple View Apts, Gandhinagar, Adyar, Chennai - 600020",
+    pincode: "600020",
+    fatherSize: "40 (M)",
+    motherSize: "Standard 6.3m",
+    sonAgeSize: "6-8 Years",
+    daughterAgeSize: "4-6 Years",
+    specialNotes: "Please pack in wooden gift box.",
+    totalPrice: 52000,
+    paymentMode: "COD (Cash on Delivery)",
+    status: "In Weaving / Packing",
+    orderDate: "2026-09-22T11:15:00.000Z"
+  }
+];
 
 const DEFAULT_FESTIVE_CAMPAIGN = {
   enabled: true,
@@ -324,8 +421,9 @@ const OWNER_CREDENTIALS = {
 
 class TextileStore {
   constructor() {
-    // Purge old cached demo wishlists from previous versions so default is always 0
+    // Purge old cached demo wishlists from previous versions so default is strictly 0
     try {
+      localStorage.removeItem("st_wishlist_data_v3");
       localStorage.removeItem("st_wishlist_data_v2");
       localStorage.removeItem("st_wishlist_data");
       localStorage.removeItem("st_wishlist");
@@ -343,7 +441,8 @@ class TextileStore {
     this.cart = this.load(STORE_KEYS.CART, []);
     // Wishlist: Starts strictly at 0 items by default (empty array)
     const storedWishlist = this.load(STORE_KEYS.WISHLIST, []);
-    this.wishlist = Array.isArray(storedWishlist) ? storedWishlist : [];
+    this.wishlist = (Array.isArray(storedWishlist) ? storedWishlist : [])
+      .filter(id => typeof id === "string" && id.trim().length > 0 && !!this.getProductById(id.trim()));
     this.save(STORE_KEYS.WISHLIST, this.wishlist);
     this.subscribers = this.load(STORE_KEYS.SUBSCRIBERS, INITIAL_SUBSCRIBERS);
     this.feedbacks = this.load(STORE_KEYS.FEEDBACK, (typeof INITIAL_REVIEWS !== "undefined" ? INITIAL_REVIEWS : []));
@@ -370,7 +469,10 @@ class TextileStore {
 
     this.lastUnavailableCoupon = null;
     this.activeCurrency = this.load(STORE_KEYS.CURRENCY, "INR");
-    this.activeTheme = this.load(STORE_KEYS.THEME, "light");
+    const hasChosenTheme = localStorage.getItem(STORE_KEYS.THEME_CHOSEN) === "true";
+    const storedTheme = this.load(STORE_KEYS.THEME, "light");
+    this.activeTheme = (hasChosenTheme && storedTheme === "dark") ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", this.activeTheme);
     this.settings = this.load(STORE_KEYS.SETTINGS, DEFAULT_SETTINGS);
     this.settings.freeShippingThresholdINR = 0;
     this.orderSheetConfig = this.load(STORE_KEYS.ORDER_SHEET, DEFAULT_ORDER_SHEET_CONFIG);
@@ -408,6 +510,12 @@ class TextileStore {
             this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
             this.validateActiveCoupon();
             window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons, ...(data.payload || {}) } }));
+          } else if (data && data.type === "COLLECTION01_UPDATED") {
+            window.dispatchEvent(new CustomEvent("collection01Updated", { detail: data }));
+          } else if (data && data.type === "FAMILY_COMBOS_UPDATED") {
+            window.dispatchEvent(new CustomEvent("familyCombosUpdated", { detail: data }));
+          } else if (data && data.type === "FAMILY_COMBO_ORDERS_UPDATED") {
+            window.dispatchEvent(new CustomEvent("familyComboOrdersUpdated", { detail: data }));
           }
         };
       } catch (e) {
@@ -422,6 +530,20 @@ class TextileStore {
           this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
           this.validateActiveCoupon();
           window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons } }));
+        } else if (e.key === "st_collection01_enabled_v2") {
+          window.dispatchEvent(new CustomEvent("collection01Updated", { detail: { enabled: this.isCollection01Enabled() } }));
+        } else if (e.key === STORE_KEYS.FAMILY_COMBOS) {
+          window.dispatchEvent(new CustomEvent("familyCombosUpdated", { detail: { combos: this.getFamilyCombos() } }));
+        } else if (e.key === STORE_KEYS.FAMILY_COMBO_ORDERS) {
+          window.dispatchEvent(new CustomEvent("familyComboOrdersUpdated", { detail: { orders: this.getFamilyComboOrders() } }));
+        } else if (e.key === STORE_KEYS.CART) {
+          this.cart = this.load(STORE_KEYS.CART, []);
+          window.dispatchEvent(new CustomEvent("cartUpdated"));
+        } else if (e.key === STORE_KEYS.WISHLIST) {
+          this.wishlist = this.load(STORE_KEYS.WISHLIST, []);
+          window.dispatchEvent(new CustomEvent("wishlistUpdated"));
+        } else if (e.key === STORE_KEYS.FAMILY_COMBO_SETTINGS) {
+          window.dispatchEvent(new CustomEvent("familyComboSettingsUpdated", { detail: { settings: this.getFamilyComboSettings() } }));
         }
       });
     }
@@ -480,33 +602,68 @@ class TextileStore {
 
   async initSupabaseSync() {
     if (typeof window !== "undefined" && window.supabaseService) {
-      // Products sync
-      const remoteProducts = await window.supabaseService.getProducts();
-      if (Array.isArray(remoteProducts) && remoteProducts.length > 0) {
-        this.catalog = remoteProducts;
-        this.save(STORE_KEYS.CATALOG, this.catalog);
-        window.dispatchEvent(new CustomEvent("catalogUpdated"));
+      try {
+        // Products sync: merge with existing catalog rather than replacing entirely
+        const remoteProducts = await window.supabaseService.getProducts();
+        if (Array.isArray(remoteProducts) && remoteProducts.length > 0) {
+          const merged = [];
+          const seenIds = new Set();
+
+          // 1. Process remote products (merge with local product metadata if present)
+          for (const rp of remoteProducts) {
+            seenIds.add(rp.id);
+            const localMatch = this.catalog.find(lp => lp.id === rp.id);
+            merged.push(localMatch ? { ...localMatch, ...rp } : rp);
+          }
+
+          // 2. Preserve any local products that are not yet in remote
+          for (const lp of this.catalog) {
+            if (!seenIds.has(lp.id)) {
+              merged.push(lp);
+              seenIds.add(lp.id);
+              // Also sync this local product to Supabase so it becomes available to all devices
+              try {
+                window.supabaseService.upsertProduct(lp);
+              } catch (e) {}
+            }
+          }
+
+          this.catalog = merged;
+          this.save(STORE_KEYS.CATALOG, this.catalog);
+          window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { catalog: this.catalog } }));
+          window.dispatchEvent(new CustomEvent("productsUpdated", { detail: { catalog: this.catalog } }));
+        }
+      } catch (err) {
+        console.warn("[Supabase] Products sync error:", err);
       }
 
       // Orders sync
-      const remoteOrders = await window.supabaseService.getOrders();
-      if (Array.isArray(remoteOrders) && remoteOrders.length > 0) {
-        const existingMap = new Map((this.orders || []).map(o => [o.orderId, o]));
-        remoteOrders.forEach(ro => {
-          existingMap.set(ro.orderId, { ...(existingMap.get(ro.orderId) || {}), ...ro });
-        });
-        this.orders = Array.from(existingMap.values());
-        this.orders.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-        this.save(STORE_KEYS.ORDERS, this.orders);
-        window.dispatchEvent(new CustomEvent("ordersUpdated"));
+      try {
+        const remoteOrders = await window.supabaseService.getOrders();
+        if (Array.isArray(remoteOrders) && remoteOrders.length > 0) {
+          const existingMap = new Map((this.orders || []).map(o => [o.orderId, o]));
+          remoteOrders.forEach(ro => {
+            existingMap.set(ro.orderId, { ...(existingMap.get(ro.orderId) || {}), ...ro });
+          });
+          this.orders = Array.from(existingMap.values());
+          this.orders.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+          this.save(STORE_KEYS.ORDERS, this.orders);
+          window.dispatchEvent(new CustomEvent("ordersUpdated"));
+        }
+      } catch (err) {
+        console.warn("[Supabase] Orders sync error:", err);
       }
 
       // Feedbacks sync
-      const remoteFeedbacks = await window.supabaseService.getFeedbacks();
-      if (Array.isArray(remoteFeedbacks) && remoteFeedbacks.length > 0) {
-        this.feedbacks = remoteFeedbacks;
-        this.save(STORE_KEYS.FEEDBACK, this.feedbacks);
-        window.dispatchEvent(new CustomEvent("feedbacksUpdated"));
+      try {
+        const remoteFeedbacks = await window.supabaseService.getFeedbacks();
+        if (Array.isArray(remoteFeedbacks) && remoteFeedbacks.length > 0) {
+          this.feedbacks = remoteFeedbacks;
+          this.save(STORE_KEYS.FEEDBACK, this.feedbacks);
+          window.dispatchEvent(new CustomEvent("feedbacksUpdated"));
+        }
+      } catch (err) {
+        console.warn("[Supabase] Feedbacks sync error:", err);
       }
     }
   }
@@ -526,6 +683,28 @@ class TextileStore {
       localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
       console.error("Storage save error for key", key, e);
+      // QuotaExceededError recovery: if catalog is too large (due to base64 images), sanitize huge images
+      if (key === STORE_KEYS.CATALOG && Array.isArray(data)) {
+        try {
+          const sanitized = data.map(item => {
+            const clean = { ...item };
+            if (clean.mainImage && clean.mainImage.length > 200000) {
+              clean.mainImage = "assets/images/family_matching_combo.jpg";
+              clean.image = clean.mainImage;
+              clean.image_url = clean.mainImage;
+            }
+            if (Array.isArray(clean.images)) {
+              clean.images = clean.images.filter(img => typeof img === "string" && img.length < 200000);
+              if (clean.images.length === 0) clean.images = [clean.mainImage];
+              clean.gallery = clean.images;
+            }
+            return clean;
+          });
+          localStorage.setItem(key, JSON.stringify(sanitized));
+        } catch (retryErr) {
+          console.error("Critical storage quota exceeded:", retryErr);
+        }
+      }
     }
   }
 
@@ -562,20 +741,16 @@ class TextileStore {
     window.dispatchEvent(new CustomEvent("ownerAuthChanged", { detail: { isAuthenticated: false } }));
   }
 
-  // Theme Management
+  // Theme Management (Guaranteed Default Light Theme)
   setTheme(theme) {
-    this.activeTheme = theme;
-    this.save(STORE_KEYS.THEME, theme);
-    document.documentElement.classList.add("theme-transitioning");
-    document.documentElement.setAttribute("data-theme", theme);
-    window.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme } }));
-
-    if (this._themeTransitionTimer) {
-      clearTimeout(this._themeTransitionTimer);
-    }
-    this._themeTransitionTimer = setTimeout(() => {
-      document.documentElement.classList.remove("theme-transitioning");
-    }, 550);
+    const validTheme = theme === "dark" ? "dark" : "light";
+    this.activeTheme = validTheme;
+    try {
+      localStorage.setItem(STORE_KEYS.THEME_CHOSEN, "true");
+      this.save(STORE_KEYS.THEME, validTheme);
+    } catch (e) {}
+    document.documentElement.setAttribute("data-theme", validTheme);
+    window.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme: validTheme } }));
   }
 
   toggleTheme() {
@@ -595,7 +770,9 @@ class TextileStore {
 
   convertPrice(priceINR, targetCurrency = this.activeCurrency) {
     const curr = CURRENCIES[targetCurrency] || CURRENCIES.INR;
-    return Math.round(priceINR * curr.rate);
+    const num = Number(priceINR);
+    if (isNaN(num)) return 0;
+    return Math.round(num * curr.rate);
   }
 
   formatPrice(priceINR, currencyCode = this.activeCurrency) {
@@ -609,24 +786,74 @@ class TextileStore {
 
   // Catalog methods
   getAllProducts() {
-    return this.catalog;
+    return this.catalog || [];
   }
 
   getProductById(id) {
+    if (!this.catalog) return null;
     return this.catalog.find(p => p.id === id);
   }
 
   addProduct(product) {
     if (!product.id) {
-      const prefix = product.department ? product.department.substring(0, 3).toUpperCase() : "ST";
-      product.id = `ST-${prefix}-${Date.now().toString().slice(-4)}`;
+      const prefix = product.department ? product.department.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, "") : "ST";
+      product.id = `ST-${prefix || "GEN"}-${Date.now().toString().slice(-4)}`;
     }
+
+    // Comprehensive field normalization to support all frontend display components
+    product.title = product.title || product.name || "Handcrafted Heritage Textile";
+    product.name = product.name || product.title;
+    product.priceINR = Number(product.priceINR || product.price || 0);
+    product.price = product.priceINR;
+    product.mrpINR = Number(product.mrpINR || product.originalPriceINR || product.original_price || Math.round(product.priceINR * 1.3));
+    product.originalPriceINR = product.mrpINR;
+    product.original_price = product.mrpINR;
+    product.stock = product.stock !== undefined ? Number(product.stock) : 10;
+    product.stockCount = product.stock;
+    product.inStock = product.stock > 0;
+    product.department = product.department || "Women's Collection";
+    product.category = product.category || product.subCategory || "Silk Sarees";
+    product.subCategory = product.subCategory || product.category;
+    product.mainImage = product.mainImage || product.image || (Array.isArray(product.images) && product.images[0]) || "assets/images/family_matching_combo.jpg";
+    product.image = product.mainImage;
+    product.image_url = product.mainImage;
+    product.images = (Array.isArray(product.images) && product.images.length > 0) ? product.images : [product.mainImage];
+    product.gallery = (Array.isArray(product.gallery) && product.gallery.length > 0) ? product.gallery : product.images;
+
+    // Insert at front so it appears as new arrival on top of home & catalog
     this.catalog.unshift(product);
     this.save(STORE_KEYS.CATALOG, this.catalog);
-    if (typeof window !== "undefined" && window.supabaseService) {
-      window.supabaseService.upsertProduct(product);
+
+    // Instant real-time multi-tab broadcasting
+    if (this.broadcastChannel) {
+      try {
+        this.broadcastChannel.postMessage({
+          type: "CATALOG_UPDATED",
+          payload: { action: "add", product }
+        });
+      } catch (e) {
+        console.warn("[BroadcastChannel] postMessage warning:", e);
+      }
     }
-    window.dispatchEvent(new CustomEvent("catalogUpdated"));
+
+    // Cloud Database Sync (Supabase)
+    if (typeof window !== "undefined" && window.supabaseService) {
+      try {
+        window.supabaseService.upsertProduct(product);
+      } catch (e) {
+        console.warn("[Supabase] Upsert warning:", e);
+      }
+    }
+
+    // Backend REST API Sync
+    if (typeof window !== "undefined" && window.API && window.API.isOnline) {
+      try {
+        window.API.createProduct(product).catch(() => {});
+      } catch (e) {}
+    }
+
+    window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { product, action: "add" } }));
+    window.dispatchEvent(new CustomEvent("productsUpdated", { detail: { product, action: "add" } }));
     return product;
   }
 
@@ -635,10 +862,29 @@ class TextileStore {
     if (index !== -1) {
       this.catalog[index] = { ...this.catalog[index], ...updatedFields };
       this.save(STORE_KEYS.CATALOG, this.catalog);
-      if (typeof window !== "undefined" && window.supabaseService) {
-        window.supabaseService.upsertProduct(this.catalog[index]);
+
+      if (this.broadcastChannel) {
+        try {
+          this.broadcastChannel.postMessage({
+            type: "CATALOG_UPDATED",
+            payload: { action: "update", id, product: this.catalog[index] }
+          });
+        } catch (e) {}
       }
-      window.dispatchEvent(new CustomEvent("catalogUpdated"));
+
+      if (typeof window !== "undefined" && window.supabaseService) {
+        try {
+          window.supabaseService.upsertProduct(this.catalog[index]);
+        } catch (e) {}
+      }
+      if (typeof window !== "undefined" && window.API && window.API.isOnline) {
+        try {
+          window.API.updateProduct(id, updatedFields).catch(() => {});
+        } catch (e) {}
+      }
+
+      window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { id, product: this.catalog[index] } }));
+      window.dispatchEvent(new CustomEvent("productsUpdated", { detail: { id, product: this.catalog[index] } }));
       return this.catalog[index];
     }
     return null;
@@ -647,10 +893,29 @@ class TextileStore {
   deleteProduct(id) {
     this.catalog = this.catalog.filter(p => p.id !== id);
     this.save(STORE_KEYS.CATALOG, this.catalog);
-    if (typeof window !== "undefined" && window.supabaseService) {
-      window.supabaseService.deleteProduct(id);
+
+    if (this.broadcastChannel) {
+      try {
+        this.broadcastChannel.postMessage({
+          type: "CATALOG_UPDATED",
+          payload: { action: "delete", id }
+        });
+      } catch (e) {}
     }
-    window.dispatchEvent(new CustomEvent("catalogUpdated"));
+
+    if (typeof window !== "undefined" && window.supabaseService) {
+      try {
+        window.supabaseService.deleteProduct(id);
+      } catch (e) {}
+    }
+    if (typeof window !== "undefined" && window.API && window.API.isOnline) {
+      try {
+        window.API.deleteProduct(id).catch(() => {});
+      } catch (e) {}
+    }
+
+    window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { id, action: "delete" } }));
+    window.dispatchEvent(new CustomEvent("productsUpdated", { detail: { id, action: "delete" } }));
   }
 
   updateStock(id, newStock) {
@@ -1193,8 +1458,13 @@ class TextileStore {
     const shippingINR = (this.settings.freeShippingThresholdINR === 0 || subtotalINR >= this.settings.freeShippingThresholdINR || subtotalINR === 0) ? 0 : 0;
     const totalINR = discountedSubtotal + gstINR + shippingINR + giftWrapINR;
 
+    const productCount = Array.isArray(this.cart) ? this.cart.length : 0;
+    const totalQty = Array.isArray(this.cart) ? this.cart.reduce((acc, item) => acc + (Number(item.qty) || 1), 0) : 0;
+
     return {
-      itemCount: this.cart.reduce((acc, item) => acc + item.qty, 0),
+      itemCount: productCount,
+      productCount: productCount,
+      totalQty: totalQty,
       subtotalINR,
       discountINR,
       coupon: this.activeCoupon,
@@ -1205,21 +1475,44 @@ class TextileStore {
     };
   }
 
+  // Shopping Bag / Cart Products Count
+  getCartCount() {
+    if (!Array.isArray(this.cart)) return 0;
+    return this.cart.length;
+  }
+
   // Wishlist / Favourites
+  getWishlistCount() {
+    if (!Array.isArray(this.wishlist)) return 0;
+    return this.wishlist.filter(id => !!id && !!this.getProductById(id)).length;
+  }
+
   toggleWishlist(productId) {
-    const idx = this.wishlist.indexOf(productId);
+    if (!productId || typeof productId !== "string") return false;
+    const cleanId = productId.trim();
+    if (!cleanId || !this.getProductById(cleanId)) return false;
+
+    const idx = this.wishlist.indexOf(cleanId);
+    let isAdded = false;
     if (idx > -1) {
       this.wishlist.splice(idx, 1);
+      isAdded = false;
     } else {
-      this.wishlist.push(productId);
+      this.wishlist.push(cleanId);
+      isAdded = true;
     }
+    // Strictly sanitize to avoid duplicate or invalid IDs
+    this.wishlist = Array.from(new Set(this.wishlist)).filter(id => !!id && !!this.getProductById(id));
     this.save(STORE_KEYS.WISHLIST, this.wishlist);
-    window.dispatchEvent(new CustomEvent("wishlistUpdated", { detail: { wishlist: this.wishlist } }));
-    return idx === -1;
+    window.dispatchEvent(new CustomEvent("wishlistUpdated", { 
+      detail: { wishlist: this.wishlist, count: this.wishlist.length, productId: cleanId, isAdded } 
+    }));
+    return isAdded;
   }
 
   isInWishlist(productId) {
-    return this.wishlist.includes(productId);
+    if (!productId || !Array.isArray(this.wishlist)) return false;
+    return this.wishlist.includes(String(productId).trim());
   }
 
   getWishlistProducts() {
@@ -1231,7 +1524,9 @@ class TextileStore {
   clearWishlist() {
     this.wishlist = [];
     this.save(STORE_KEYS.WISHLIST, this.wishlist);
-    window.dispatchEvent(new CustomEvent("wishlistUpdated", { detail: { wishlist: this.wishlist } }));
+    window.dispatchEvent(new CustomEvent("wishlistUpdated", { 
+      detail: { wishlist: this.wishlist, count: 0, cleared: true } 
+    }));
   }
 
   moveWishlistItemToCart(productId, size = null) {
@@ -1805,25 +2100,32 @@ class TextileStore {
 
   addBulkPackage(data) {
     if (!data) return null;
-    const id = data.id || `BLK-PKG-${Date.now().toString().slice(-4)}`;
+    const sku = data.sku || data.id || `BLK-KANCHI-${Date.now().toString().slice(-4)}`;
+    const id = data.id || sku;
     const wholesalePrice = parseFloat(data.wholesalePrice) || 3500;
     const retailMrp = parseFloat(data.retailMrp) || (wholesalePrice ? Math.round(wholesalePrice * 2) : 7000);
     const discountPercent = data.discountPercent || (retailMrp && wholesalePrice ? Math.round(((retailMrp - wholesalePrice) / retailMrp) * 100) : 50);
 
     const newPkg = {
       id,
+      sku,
       title: data.title || "Custom Handloom Bulk Lot",
+      subtitle: data.subtitle || "Pure Handloom Silk with Certified Silk Mark",
       category: data.category || "Wholesale Lot",
       badge: data.badge || "✨ Verified Bulk Lot",
+      occasion: data.occasion || "Grand Weddings & Wholesale Lots",
       moq: parseInt(data.moq, 10) || 15,
       unitLabel: data.unitLabel || "Pieces",
       wholesalePrice,
       retailMrp,
       discountPercent,
       timeline: data.timeline || "10-14 Working Days",
+      availability: data.availability || "Ready Stock",
       fabric: data.fabric || "Pure Handloom Silk with Certified Silk Mark",
+      silkMark: data.silkMark !== false,
       description: data.description || "Direct pitloom woven authentic handloom collection for bulk buyers and wedding troupes.",
       inclusions: data.inclusions || "Matching unstitched blouses + Silk Mark authenticity tags + Insured shipping",
+      packaging: data.packaging || "Royal Velvet Heirloom Presentation Box",
       image: data.image || "assets/images/family_matching_combo.jpg",
       isActive: data.isActive !== false,
       createdAt: new Date().toISOString()
@@ -2281,6 +2583,269 @@ class TextileStore {
     const campaign = this.getFestiveCampaign();
     const deals = (campaign.deals || []).filter(d => d.id !== id);
     return this.saveFestiveCampaign({ deals });
+  }
+
+  // ==========================================
+  // COLLECTION 01: FAMILY MATCHING COMBOS ON/OFF ENGINE
+  // ==========================================
+  isCollection01Enabled() {
+    return this.load("st_collection01_enabled_v2", true) !== false;
+  }
+
+  setCollection01Enabled(enabled) {
+    const isLive = Boolean(enabled);
+    this.save("st_collection01_enabled_v2", isLive);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("collection01Updated", { detail: { enabled: isLive } }));
+      if (this.broadcastChannel) {
+        try {
+          this.broadcastChannel.postMessage({ type: "COLLECTION01_UPDATED", enabled: isLive });
+        } catch (e) {}
+      }
+    }
+    return isLive;
+  }
+
+  // ==========================================
+  // FAMILY COMBOS & SETS MANAGEMENT & ORDER LEDGER
+  // ==========================================
+  getFamilyComboSettings() {
+    const stored = this.load(STORE_KEYS.FAMILY_COMBO_SETTINGS, null);
+    if (!stored || typeof stored !== "object") {
+      this.save(STORE_KEYS.FAMILY_COMBO_SETTINGS, DEFAULT_FAMILY_COMBO_SETTINGS);
+      return { ...DEFAULT_FAMILY_COMBO_SETTINGS };
+    }
+    const merged = { ...DEFAULT_FAMILY_COMBO_SETTINGS, ...stored };
+    if (!merged.intervalSeconds || merged.intervalSeconds < 1) merged.intervalSeconds = 5;
+    return merged;
+  }
+
+  saveFamilyComboSettings(settings) {
+    const current = this.getFamilyComboSettings();
+    const merged = { ...current, ...settings };
+    if (!merged.intervalSeconds || merged.intervalSeconds < 1) merged.intervalSeconds = 5;
+    this.save(STORE_KEYS.FAMILY_COMBO_SETTINGS, merged);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("familyComboSettingsUpdated", { detail: { settings: merged } }));
+      if (this.broadcastChannel) {
+        try {
+          this.broadcastChannel.postMessage({ type: "FAMILY_COMBO_SETTINGS_UPDATED", settings: merged });
+        } catch (e) {}
+      }
+    }
+    return merged;
+  }
+
+  getFamilyCombos() {
+    const stored = this.load(STORE_KEYS.FAMILY_COMBOS, null);
+    if (!stored || !Array.isArray(stored) || stored.length === 0) {
+      this.save(STORE_KEYS.FAMILY_COMBOS, DEFAULT_FAMILY_COMBOS);
+      return JSON.parse(JSON.stringify(DEFAULT_FAMILY_COMBOS));
+    }
+    return stored;
+  }
+
+  getFamilyComboById(id) {
+    if (!id) return null;
+    const combos = this.getFamilyCombos();
+    return combos.find(c => c.id === id) || null;
+  }
+
+  saveFamilyCombos(combos) {
+    const list = Array.isArray(combos) ? combos : [];
+    this.save(STORE_KEYS.FAMILY_COMBOS, list);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("familyCombosUpdated", { detail: { combos: list } }));
+      if (this.broadcastChannel) {
+        try {
+          this.broadcastChannel.postMessage({ type: "FAMILY_COMBOS_UPDATED", combos: list });
+        } catch (e) {}
+      }
+    }
+    return list;
+  }
+
+  addFamilyCombo(data) {
+    const combos = this.getFamilyCombos();
+    const id = data.id || `FAM-CMB-${Math.floor(100 + Math.random() * 900)}`;
+    const originalPrice = parseFloat(data.originalPrice) || 0;
+    const price = parseFloat(data.price) || 0;
+    const savings = originalPrice > price ? originalPrice - price : 0;
+    const percent = originalPrice > 0 ? Math.round((savings / originalPrice) * 100) : 0;
+    const savingsText = data.savingsText || (savings > 0 ? `Save ₹${savings.toLocaleString('en-IN')} (${percent}% OFF)` : "");
+
+    const newCombo = {
+      id,
+      title: data.title || "Royal Handloom Family Set",
+      subtitle: data.subtitle || "Coordinated Silk Ensemble for the Complete Family",
+      badge: data.badge || "👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE",
+      posterImage: data.posterImage || "assets/images/family_matching_combo.jpg",
+      originalPrice,
+      price,
+      savingsText,
+      fabric: data.fabric || "Pure Kanchipuram Mulberry Silk 3-Ply Zari",
+      colorTheme: data.colorTheme || "Traditional Festive Harmony",
+      inclusions: {
+        mother: (data.inclusions && data.inclusions.mother) || data.motherItem || "Kanchipuram Silk Saree (6.3m with Blouse)",
+        father: (data.inclusions && data.inclusions.father) || data.fatherItem || "Pure Silk Shirt & Dhoti Set",
+        daughter: (data.inclusions && data.inclusions.daughter) || data.daughterItem || "Pure Pattu Pavadai Set",
+        son: (data.inclusions && data.inclusions.son) || data.sonItem || "Silk Kurta & Dhoti Pant Set"
+      },
+      description: data.description || "Synchronized heirloom color palette woven from certified pure silk.",
+      isActive: data.isActive !== false,
+      createdAt: data.createdAt || new Date().toISOString()
+    };
+
+    combos.unshift(newCombo);
+    this.saveFamilyCombos(combos);
+    return newCombo;
+  }
+
+  updateFamilyCombo(id, updatedData) {
+    const combos = this.getFamilyCombos();
+    const index = combos.findIndex(c => c.id === id);
+    if (index === -1) return null;
+
+    const current = combos[index];
+    const originalPrice = updatedData.originalPrice !== undefined ? parseFloat(updatedData.originalPrice) : current.originalPrice;
+    const price = updatedData.price !== undefined ? parseFloat(updatedData.price) : current.price;
+    const savings = originalPrice > price ? originalPrice - price : 0;
+    const percent = originalPrice > 0 ? Math.round((savings / originalPrice) * 100) : 0;
+    const savingsText = updatedData.savingsText || (savings > 0 ? `Save ₹${savings.toLocaleString('en-IN')} (${percent}% OFF)` : "");
+
+    const merged = {
+      ...current,
+      ...updatedData,
+      originalPrice,
+      price,
+      savingsText,
+      inclusions: {
+        mother: (updatedData.inclusions && updatedData.inclusions.mother) || updatedData.motherItem || current.inclusions?.mother || "",
+        father: (updatedData.inclusions && updatedData.inclusions.father) || updatedData.fatherItem || current.inclusions?.father || "",
+        daughter: (updatedData.inclusions && updatedData.inclusions.daughter) || updatedData.daughterItem || current.inclusions?.daughter || "",
+        son: (updatedData.inclusions && updatedData.inclusions.son) || updatedData.sonItem || current.inclusions?.son || ""
+      },
+      updatedAt: new Date().toISOString()
+    };
+
+    combos[index] = merged;
+    this.saveFamilyCombos(combos);
+    return merged;
+  }
+
+  deleteFamilyCombo(id) {
+    const combos = this.getFamilyCombos();
+    const filtered = combos.filter(c => c.id !== id);
+    this.saveFamilyCombos(filtered);
+    return true;
+  }
+
+  toggleFamilyComboStatus(id) {
+    const combo = this.getFamilyComboById(id);
+    if (!combo) return null;
+    return this.updateFamilyCombo(id, { isActive: !combo.isActive });
+  }
+
+  // --- Customer Family Combo Orders Ledger ---
+  getFamilyComboOrders() {
+    const stored = this.load(STORE_KEYS.FAMILY_COMBO_ORDERS, null);
+    if (!stored || !Array.isArray(stored) || stored.length === 0) {
+      this.save(STORE_KEYS.FAMILY_COMBO_ORDERS, DEFAULT_FAMILY_COMBO_ORDERS);
+      return JSON.parse(JSON.stringify(DEFAULT_FAMILY_COMBO_ORDERS));
+    }
+    return stored;
+  }
+
+  getFamilyComboOrderById(orderId) {
+    if (!orderId) return null;
+    const orders = this.getFamilyComboOrders();
+    return orders.find(o => o.orderId === orderId) || null;
+  }
+
+  saveFamilyComboOrders(orders) {
+    const list = Array.isArray(orders) ? orders : [];
+    this.save(STORE_KEYS.FAMILY_COMBO_ORDERS, list);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("familyComboOrdersUpdated", { detail: { orders: list } }));
+      if (this.broadcastChannel) {
+        try {
+          this.broadcastChannel.postMessage({ type: "FAMILY_COMBO_ORDERS_UPDATED", orders: list });
+        } catch (e) {}
+      }
+    }
+    return list;
+  }
+
+  addFamilyComboOrder(orderData) {
+    const orders = this.getFamilyComboOrders();
+    const orderId = orderData.orderId || `FCO-2026-${Math.floor(100 + Math.random() * 900)}`;
+
+    const newOrder = {
+      orderId,
+      comboId: orderData.comboId || "",
+      comboTitle: orderData.comboTitle || "Custom Family Combo Bundle",
+      customerName: orderData.customerName || "Customer",
+      customerPhone: orderData.customerPhone || "",
+      customerEmail: orderData.customerEmail || "",
+      deliveryAddress: orderData.deliveryAddress || "",
+      pincode: orderData.pincode || "",
+      fatherSize: orderData.fatherSize || "40 (M)",
+      motherSize: orderData.motherSize || "Standard 6.3m",
+      sonAgeSize: orderData.sonAgeSize || "Not Selected",
+      daughterAgeSize: orderData.daughterAgeSize || "Not Selected",
+      specialNotes: orderData.specialNotes || "",
+      totalPrice: parseFloat(orderData.totalPrice) || 0,
+      paymentMode: orderData.paymentMode || "COD",
+      status: orderData.status || "Pending",
+      orderDate: orderData.orderDate || new Date().toISOString()
+    };
+
+    orders.unshift(newOrder);
+    this.saveFamilyComboOrders(orders);
+    return newOrder;
+  }
+
+  updateFamilyComboOrderStatus(orderId, newStatus) {
+    const orders = this.getFamilyComboOrders();
+    const index = orders.findIndex(o => o.orderId === orderId);
+    if (index === -1) return null;
+
+    orders[index].status = newStatus;
+    orders[index].updatedAt = new Date().toISOString();
+    this.saveFamilyComboOrders(orders);
+    return orders[index];
+  }
+
+  deleteFamilyComboOrder(orderId) {
+    const orders = this.getFamilyComboOrders();
+    const filtered = orders.filter(o => o.orderId !== orderId);
+    this.saveFamilyComboOrders(filtered);
+    return true;
+  }
+
+  getFamilyComboStats() {
+    const combos = this.getFamilyCombos();
+    const orders = this.getFamilyComboOrders();
+
+    const activeCombos = combos.filter(c => c.isActive !== false).length;
+    const pendingOrders = orders.filter(o => o.status === "Pending").length;
+    const confirmedOrders = orders.filter(o => o.status === "Confirmed").length;
+    const inProgressOrders = orders.filter(o => o.status === "In Weaving / Packing").length;
+    const dispatchedOrders = orders.filter(o => o.status === "Dispatched").length;
+    const deliveredOrders = orders.filter(o => o.status === "Delivered").length;
+    const totalRevenue = orders.reduce((sum, o) => sum + (parseFloat(o.totalPrice) || 0), 0);
+
+    return {
+      totalCombos: combos.length,
+      activeCombos,
+      totalOrders: orders.length,
+      pendingOrders,
+      confirmedOrders,
+      inProgressOrders,
+      dispatchedOrders,
+      deliveredOrders,
+      totalRevenue
+    };
   }
 }
 

@@ -15,11 +15,15 @@ class AdminController {
     try { this.renderInventoryKPIs(); } catch (e) { console.error("renderInventoryKPIs error:", e); }
     try { this.renderInventoryTable(); } catch (e) { console.error("renderInventoryTable error:", e); }
     try { this.renderOrdersTable(); } catch (e) { console.error("renderOrdersTable error:", e); }
+    try { this.renderBulkPackagesSection(); } catch (e) { console.error("renderBulkPackagesSection error:", e); }
     try { this.renderBulkOrdersSession(); } catch (e) { console.error("renderBulkOrdersSession error:", e); }
     try { this.renderBulkOrderKPIs(); } catch (e) { console.error("renderBulkOrderKPIs error:", e); }
     try { this.renderSubscribersTable(); } catch (e) { console.error("renderSubscribersTable error:", e); }
     try { this.renderFeedbacksTable(); } catch (e) { console.error("renderFeedbacksTable error:", e); }
     try { this.setupMediaUploader(); } catch (e) { console.error("setupMediaUploader error:", e); }
+    try { this.renderBulkOrdersMasterSwitch(); } catch (e) { console.error("renderBulkOrdersMasterSwitch error:", e); }
+    try { this.renderCollection01MasterSwitch(); } catch (e) { console.error("renderCollection01MasterSwitch error:", e); }
+    try { this.renderFamilyCombosTab(); } catch (e) { console.error("renderFamilyCombosTab error:", e); }
     try { this.updateFestiveBadges(); } catch (e) { console.error("updateFestiveBadges error:", e); }
     try { this.initFestiveCountdownPreview(); } catch (e) { console.error("initFestiveCountdownPreview error:", e); }
   }
@@ -148,6 +152,26 @@ class AdminController {
       this.updateFestiveBadges();
       if (this.currentTab === "festive") {
         this.renderFestivePanel();
+      }
+    });
+
+    window.addEventListener("collection01Updated", () => {
+      this.renderCollection01MasterSwitch();
+    });
+
+    window.addEventListener("familyCombosUpdated", () => {
+      this.renderFamilyCombosTab();
+    });
+
+    window.addEventListener("familyComboOrdersUpdated", () => {
+      this.renderFamilyCombosTab();
+    });
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === "st_collection01_enabled_v2") {
+        this.renderCollection01MasterSwitch();
+      } else if (e.key === "st_family_combos_v1" || e.key === "st_family_combo_orders_v1") {
+        this.renderFamilyCombosTab();
       }
     });
 
@@ -441,11 +465,15 @@ class AdminController {
     } else if (normTab === "inventory") {
       this.renderInventoryKPIs();
       this.renderInventoryTable();
-    } else if (normTab === "bulk") {
+    } else if (normTab === "bulk-products" || normTab === "bulk_products") {
+      this.renderBulkOrdersMasterSwitch();
+      this.renderBulkPackagesSection();
+    } else if (normTab === "bulk-orders" || normTab === "bulk_orders") {
       this.renderBulkOrdersMasterSwitch();
       this.renderBulkOrdersSession();
-      this.renderBulkPackagesSection();
       this.renderBulkOrderKPIs();
+    } else if (normTab === "bulk") {
+      this.switchTab("bulk-products");
     } else if (normTab === "feedbacks" || normTab === "feedback") {
       this.renderFeedbacksTable();
     } else if (normTab === "subscribers") {
@@ -455,6 +483,8 @@ class AdminController {
       this.renderCouponKPIs();
     } else if (normTab === "festive") {
       this.renderFestivePanel();
+    } else if (normTab === "family-combos" || normTab === "family_combos") {
+      this.renderFamilyCombosTab();
     } else if (normTab === "overview") {
       this.renderDashboardKPIs();
     }
@@ -586,7 +616,34 @@ class AdminController {
   readFileAsDataURL(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
+      reader.onload = (e) => {
+        const rawData = e.target.result;
+        // High quality client-side canvas compression to ensure localStorage never hits quota
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL("image/jpeg", 0.78);
+          resolve(compressed);
+        };
+        img.onerror = () => resolve(rawData);
+        img.src = rawData;
+      };
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(file);
     });
@@ -628,19 +685,19 @@ class AdminController {
   handleAddProduct(e) {
     e.preventDefault();
 
-    const title = document.getElementById("pTitle")?.value;
-    const subtitle = document.getElementById("pSubtitle")?.value;
+    const title = (document.getElementById("pTitle")?.value || "").trim() || "Handcrafted Heritage Textile";
+    const subtitle = (document.getElementById("pSubtitle")?.value || "").trim();
     const department = document.getElementById("pDepartment")?.value || "Women's Collection";
-    const subCategory = document.getElementById("pSubCategory")?.value || "Ethnic Wear";
+    const subCategory = (document.getElementById("pSubCategory")?.value || "").trim() || "Ethnic Wear";
     const ageGroup = document.getElementById("pAgeGroup")?.value || "Adults";
     const fabric = document.getElementById("pFabric")?.value || "Kanchipuram Silk";
     const occasion = document.getElementById("pOccasion")?.value || "Wedding & Grand Celebration";
-    const technique = document.getElementById("pTechnique")?.value || "Handloom";
+    const technique = (document.getElementById("pTechnique")?.value || "").trim() || "Handloom";
     const priceINR = parseInt(document.getElementById("pPrice")?.value, 10) || 12000;
     const mrpINR = parseInt(document.getElementById("pMRP")?.value, 10) || Math.round(priceINR * 1.3);
     const stock = parseInt(document.getElementById("pStock")?.value, 10) || 3;
-    const hsnCode = document.getElementById("pHSN")?.value || "50072010";
-    const customUrl = document.getElementById("pImageURL")?.value.trim();
+    const hsnCode = (document.getElementById("pHSN")?.value || "").trim() || "50072010";
+    const customUrl = (document.getElementById("pImageURL")?.value || "").trim();
     const hasSoftLining = document.getElementById("pSoftLiningCheckbox")?.checked;
     const hasOrganicCotton = document.getElementById("pOrganicCottonCheckbox")?.checked;
 
@@ -651,7 +708,6 @@ class AdminController {
     } else if (customUrl) {
       mainImage = customUrl;
     } else {
-      // High-resolution thematic default fallback
       const fallbacks = {
         "Women's Collection": "assets/images/banarasi_blue.jpg",
         "Kids Wear (Girls)": "assets/images/kids_pattu_pavadai.jpg",
@@ -672,54 +728,70 @@ class AdminController {
     if (hasSoftLining) safetyBadges.push("🛡️ Soft Inner-Lining Guarantee");
     if (hasOrganicCotton) safetyBadges.push("🌿 100% Skin-Friendly Organic Cotton");
 
+    const deptPrefix = department.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, "") || "ST";
+    const productId = `ST-${deptPrefix}-${Date.now().toString().slice(-4)}`;
+
     const newProduct = {
-      title,
-      subtitle,
-      department,
-      subCategory,
-      ageGroup,
-      fabric,
+      id: productId,
+      title: title,
+      name: title,
+      subtitle: subtitle || `${fabric} Handloom Creation`,
+      department: department,
+      subCategory: subCategory,
+      category: subCategory || "Silk Sarees",
+      ageGroup: ageGroup,
+      fabric: fabric,
       fabricType: `100% Certified ${fabric}`,
       warpWeft: "3-Ply Silk Warp & Weft",
       zariType: "Pure Tested Gold Zari",
       threadCount: "240 EPI x 140 PPI",
       length: "Standard Sizing",
       weight: "550g",
-      hsnCode,
+      hsnCode: hsnCode,
       gstRate: 5,
-      priceINR,
-      mrpINR,
-      stock,
+      priceINR: priceINR,
+      price: priceINR,
+      mrpINR: mrpINR,
+      originalPriceINR: mrpINR,
+      original_price: mrpINR,
+      stock: stock,
+      stockCount: stock,
+      inStock: stock > 0,
       lowStockThreshold: 2,
       collections: [department, "Festive Silk 2026"],
-      occasion,
-      technique,
+      occasion: occasion,
+      technique: technique,
       availableSizes: ["Standard", "Size 26 (4-5Y)", "Size 30 (6-8Y)", "Size 34 (9-11Y)", "Adult M/L"],
       colors: [
         { name: "Signature Palette", hex: "#7A0C2E", image: mainImage, code: "SIG-01" }
       ],
       mainImage: mainImage,
       image: mainImage,
+      image_url: mainImage,
       zoomImage: mainImage,
       images: allImages,
       gallery: allImages,
-      badges,
-      safetyBadges,
+      badges: badges,
+      safetyBadges: safetyBadges,
       rating: 5.0,
       reviewCount: 1,
       description: `Newly added ${title} for ${department} handcrafted by Srinivasa Textiles master artisans.`,
-      careInstructions: ["Professional Dry Clean or gentle wash"]
+      careInstructions: ["Professional Dry Clean or gentle wash"],
+      createdAt: new Date().toISOString()
     };
 
     window.store.addProduct(newProduct);
+
     e.target.reset();
     this.uploadedImages = [];
     this.renderMediaPreviews([]);
 
     if (window.storefront) {
-      window.storefront.showToast(`✅ Product "${title}" published with image to live storefront!`, "success");
+      window.storefront.showToast(`✅ Product "${title}" published live to storefront & home page!`, "success");
     }
 
+    this.renderInventoryKPIs();
+    this.renderInventoryTable();
     this.switchTab("inventory");
   }
 
@@ -802,7 +874,7 @@ class AdminController {
               <img src="${product.mainImage || 'assets/images/family_matching_combo.jpg'}" alt="${product.title}" onerror="this.onerror=null;this.src='assets/images/family_matching_combo.jpg';" style="width: 46px; height: 56px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" />
               <div>
                 <strong style="display: block; font-size: 0.875rem; color: var(--text-heading);">${product.title}</strong>
-                <span style="font-size: 0.725rem; color: #64748B;">SKU: <strong style="color: var(--color-primary);">${product.id}</strong> • ${product.department}</span>
+                <span style="font-size: 0.725rem; color: var(--text-muted);">SKU: <strong style="color: var(--color-primary);">${product.id}</strong> • ${product.department}</span>
               </div>
             </div>
           </td>
@@ -1061,30 +1133,733 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
   renderBulkOrdersMasterSwitch() {
     if (!window.store) return;
     const settings = window.store.getBulkSettings();
-    const toggle = document.getElementById("bulkMasterToggle");
-    const label = document.getElementById("bulkToggleStateLabel");
-    if (toggle) {
-      toggle.checked = Boolean(settings && settings.enabled);
-    }
-    if (label) {
-      if (settings && settings.enabled) {
-        label.textContent = "SESSION ON (VISIBLE ON WEBSITE)";
-        label.style.color = "var(--color-success, #10B981)";
-      } else {
-        label.textContent = "SESSION OFF (REMOVED FROM WEBSITE)";
-        label.style.color = "#EF4444";
+    const isEnabled = Boolean(settings && settings.enabled !== false);
+
+    ['bulkMasterToggle', 'bulkMasterToggleProducts'].forEach(id => {
+      const toggle = document.getElementById(id);
+      if (toggle) toggle.checked = isEnabled;
+    });
+
+    ['bulkToggleStateLabel', 'bulkToggleStateLabelProducts'].forEach(id => {
+      const label = document.getElementById(id);
+      if (label) {
+        if (isEnabled) {
+          label.textContent = "SESSION ON (VISIBLE ON WEBSITE)";
+          label.style.color = "var(--color-success, #10B981)";
+        } else {
+          label.textContent = "SESSION OFF (REMOVED FROM WEBSITE)";
+          label.style.color = "#EF4444";
+        }
       }
+    });
+  }
+
+  handleMasterCollection01Toggle(checked) {
+    if (!window.store) return;
+    window.store.setCollection01Enabled(checked);
+    this.renderCollection01MasterSwitch();
+    const msg = checked
+      ? "Collection 01 (Family Matching Combos) is now ON (Visible on website)!"
+      : "Collection 01 (Family Matching Combos) is now OFF (Hidden from website).";
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(msg, checked ? "success" : "warning");
     }
   }
 
+  renderCollection01MasterSwitch() {
+    if (!window.store || typeof window.store.isCollection01Enabled !== "function") return;
+    const isLive = window.store.isCollection01Enabled();
+
+    ['collection01MasterToggle', 'collection01MasterToggleInv', 'collection01MasterToggleFamTab'].forEach(id => {
+      const toggle = document.getElementById(id);
+      if (toggle) toggle.checked = isLive;
+    });
+
+    ['collection01ToggleStateLabel', 'collection01ToggleStateLabelInv', 'collection01ToggleStateLabelFamTab'].forEach(id => {
+      const label = document.getElementById(id);
+      if (label) {
+        if (isLive) {
+          label.textContent = "SESSION ON (VISIBLE ON WEBSITE)";
+          label.style.color = "var(--color-success, #10B981)";
+        } else {
+          label.textContent = "SESSION OFF (HIDDEN ON WEBSITE)";
+          label.style.color = "#EF4444";
+        }
+      }
+    });
+  }
+
   // ==========================================================================
-  // SESSION 2: WEBSITE BULK PACKAGES (CATALOG & ADD NEW)
+  // DEDICATED FAMILY COMBOS & SETS CONTROLLER
   // ==========================================================================
+  switchFamilyCombosSubTab(subTab, scrollToForm = false) {
+    const isCombos = subTab === "combos";
+    const subCombosView = document.getElementById("famSubView-combos");
+    const subOrdersView = document.getElementById("famSubView-orders");
+    const btnCombos = document.getElementById("famSubTabBtn-combos");
+    const btnOrders = document.getElementById("famSubTabBtn-orders");
+
+    if (subCombosView) subCombosView.style.display = isCombos ? "block" : "none";
+    if (subOrdersView) subOrdersView.style.display = isCombos ? "none" : "block";
+
+    if (btnCombos) {
+      btnCombos.className = isCombos ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
+      btnCombos.style.borderColor = isCombos ? "" : "rgba(212, 175, 55, 0.4)";
+      btnCombos.style.color = isCombos ? "" : "var(--text-main)";
+    }
+    if (btnOrders) {
+      btnOrders.className = !isCombos ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
+      btnOrders.style.borderColor = !isCombos ? "" : "rgba(212, 175, 55, 0.4)";
+      btnOrders.style.color = !isCombos ? "" : "var(--text-main)";
+    }
+
+    if (isCombos && scrollToForm) {
+      const formCard = document.getElementById("famComboFormCard");
+      if (formCard) formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  renderFamilyCombosTab() {
+    if (!window.store) return;
+    const stats = typeof window.store.getFamilyComboStats === "function" ? window.store.getFamilyComboStats() : null;
+
+    const totalCombos = stats ? stats.totalCombos : (window.store.getFamilyCombos?.().length || 0);
+    const totalOrders = stats ? stats.totalOrders : (window.store.getFamilyComboOrders?.().length || 0);
+
+    const sidebarBadge = document.getElementById("sidebarFamilyCombosBadge");
+    if (sidebarBadge) sidebarBadge.textContent = `${totalCombos} Sets`;
+
+    const mobileBadge = document.getElementById("mobileSidebarFamilyCombosBadge");
+    if (mobileBadge) mobileBadge.textContent = `${totalCombos} Sets`;
+
+    const tabCombosBadge = document.getElementById("famCombosCountTabBadge");
+    if (tabCombosBadge) tabCombosBadge.textContent = totalCombos;
+
+    const tabOrdersBadge = document.getElementById("famOrdersCountTabBadge");
+    if (tabOrdersBadge) tabOrdersBadge.textContent = totalOrders;
+
+    this.renderFamilyCombosList();
+    this.renderFamilyComboOrdersTable();
+    this.renderCollection01MasterSwitch();
+    this.renderFamilyComboSettings();
+  }
+
+  // ==========================================
+  // FAMILY COMBOS AUTO-ROTATION SLIDESHOW SETTINGS
+  // ==========================================
+  renderFamilyComboSettings() {
+    if (!window.store || typeof window.store.getFamilyComboSettings !== "function") return;
+    const settings = window.store.getFamilyComboSettings();
+
+    const autoToggle = document.getElementById("famAutoRotateToggle");
+    const autoLabel = document.getElementById("famAutoRotateToggleLabel");
+    const secInput = document.getElementById("famRotationSecondsInput");
+    const pauseToggle = document.getElementById("famPauseOnHoverToggle");
+    const liveBadge = document.getElementById("famRotationLiveBadge");
+    const listSpeedText = document.getElementById("famListRotationSpeedText");
+
+    const isAuto = settings.autoRotate !== false;
+    const secs = settings.intervalSeconds || 5;
+
+    if (autoToggle) autoToggle.checked = isAuto;
+    if (autoLabel) {
+      autoLabel.textContent = isAuto ? "AUTO-ROTATION ON" : "AUTO-ROTATION OFF";
+      autoLabel.style.color = isAuto ? "var(--color-success)" : "var(--text-muted)";
+    }
+    if (secInput) secInput.value = secs;
+    if (pauseToggle) pauseToggle.checked = settings.pauseOnHover !== false;
+
+    if (liveBadge) {
+      if (isAuto) {
+        liveBadge.innerHTML = `<span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block;"></span> Auto-Rotating (${secs}s)`;
+        liveBadge.style.background = "rgba(16, 185, 129, 0.18)";
+        liveBadge.style.color = "#10B981";
+        liveBadge.style.borderColor = "rgba(16, 185, 129, 0.35)";
+      } else {
+        liveBadge.innerHTML = `⏸️ Slideshow Paused`;
+        liveBadge.style.background = "rgba(245, 158, 11, 0.18)";
+        liveBadge.style.color = "#F59E0B";
+        liveBadge.style.borderColor = "rgba(245, 158, 11, 0.35)";
+      }
+    }
+
+    if (listSpeedText) {
+      listSpeedText.textContent = isAuto ? `${secs}s Interval` : "Manual Arrows";
+    }
+  }
+
+  handleSaveFamilyComboSettings() {
+    if (!window.store || typeof window.store.saveFamilyComboSettings !== "function") return;
+
+    const autoToggle = document.getElementById("famAutoRotateToggle");
+    const secInput = document.getElementById("famRotationSecondsInput");
+    const pauseToggle = document.getElementById("famPauseOnHoverToggle");
+
+    const autoRotate = autoToggle ? autoToggle.checked : true;
+    let intervalSeconds = secInput ? parseInt(secInput.value) || 5 : 5;
+    if (intervalSeconds < 2) intervalSeconds = 2;
+    if (intervalSeconds > 60) intervalSeconds = 60;
+    const pauseOnHover = pauseToggle ? pauseToggle.checked : true;
+
+    window.store.saveFamilyComboSettings({ autoRotate, intervalSeconds, pauseOnHover });
+    this.renderFamilyComboSettings();
+    this.showToast(`Auto-rotation settings saved! Combos change every ${intervalSeconds}s on website.`, "success");
+  }
+
+  setRotationInterval(seconds) {
+    const secInput = document.getElementById("famRotationSecondsInput");
+    if (secInput) secInput.value = seconds;
+    this.handleSaveFamilyComboSettings();
+  }
+
+  handleRotationSecondsChange(val) {
+    const sec = parseInt(val);
+    if (!isNaN(sec) && sec >= 2) {
+      clearTimeout(this._rotationDebounce);
+      this._rotationDebounce = setTimeout(() => {
+        this.handleSaveFamilyComboSettings();
+      }, 500);
+    }
+  }
+
+  // ==========================================
+  // POSTER IMAGE UPLOAD & LIVE PREVIEW ENGINE
+  // ==========================================
+  handleFamilyPosterFileUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please choose a valid image file (JPG, PNG, WebP).");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (loadEvt) => {
+      const dataUrl = loadEvt.target.result;
+      const posterInput = document.getElementById("famComboFormPoster");
+      if (posterInput) posterInput.value = dataUrl;
+      this.updateFamilyPosterPreview(dataUrl);
+      this.showToast("Poster photo uploaded from device & preview ready!", "success");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  updateFamilyPosterPreview(url) {
+    const imgPreview = document.getElementById("famComboPosterImgPreview");
+    const statusPill = document.getElementById("famComboPosterStatusPill");
+    const cleanUrl = (url && url.trim()) ? url.trim() : "assets/images/family_matching_combo.jpg";
+    if (imgPreview) {
+      imgPreview.src = cleanUrl;
+    }
+    if (statusPill) {
+      statusPill.textContent = (cleanUrl.startsWith("data:") || cleanUrl.startsWith("http") || cleanUrl.startsWith("assets/")) ? "Ready" : "Checking";
+    }
+  }
+
+  applyPosterPreset(url, theme) {
+    const posterInput = document.getElementById("famComboFormPoster");
+    const themeInput = document.getElementById("famComboFormColorTheme");
+    if (posterInput) posterInput.value = url;
+    if (themeInput && theme) themeInput.value = theme;
+    this.updateFamilyPosterPreview(url);
+    this.showToast(`Preset loaded!`, "info");
+  }
+
+  // ==========================================
+  // ACTIVE FAMILY COMBOS LIST (NEAT LUXURY CARDS)
+  // ==========================================
+  renderFamilyCombosList() {
+    if (!window.store || typeof window.store.getFamilyCombos !== "function") return;
+    const combos = window.store.getFamilyCombos();
+    const container = document.getElementById("adminFamilyCombosList");
+    const countEl = document.getElementById("adminFamilyCombosListCount");
+    if (countEl) countEl.textContent = combos.length;
+    if (!container) return;
+
+    if (combos.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); background: rgba(255,255,255,0.02); border-radius: 8px;">
+          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">👨‍👩‍👧‍👦</span>
+          <h4 style="color: var(--color-gold); margin-bottom: 0.25rem;">No Family Combos Added Yet</h4>
+          <p style="font-size: 0.85rem; margin: 0;">Use the form above to publish your first grand big poster family ensemble.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = combos.map(combo => {
+      const isLive = combo.isActive !== false;
+      const statusColor = isLive ? "var(--color-success, #10B981)" : "#EF4444";
+      const statusText = isLive ? "LIVE ON WEBSITE" : "OFF (HIDDEN)";
+      const mother = combo.inclusions?.mother || "Silk Saree";
+      const father = combo.inclusions?.father || "Silk Shirt & Dhoti";
+      const daughter = combo.inclusions?.daughter || "Pattu Pavadai";
+      const son = combo.inclusions?.son || "Silk Kurta & Dhoti";
+      const poster = combo.posterImage || "assets/images/family_matching_combo.jpg";
+
+      return `
+        <div class="admin-card fam-combo-admin-card" style="border: 1.5px solid ${isLive ? 'rgba(212, 175, 55, 0.45)' : 'rgba(239, 68, 68, 0.4)'}; background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(212, 175, 55, 0.04) 100%); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); transition: all 0.25s ease;">
+          <div style="display: grid; grid-template-columns: minmax(220px, 260px) 1fr; gap: 1.5rem; align-items: start;" class="admin-combo-item-grid">
+            
+            <!-- NEAT, CRISP LUXURY POSTER IMAGE BOX -->
+            <div style="position: relative; width: 100%; height: 230px; border-radius: 10px; overflow: hidden; border: 2px solid rgba(212, 175, 55, 0.5); background: #0c080a; box-shadow: 0 8px 24px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+              <img src="${poster}" alt="${combo.title}"
+                style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease;"
+                onerror="this.onerror=null; this.src='assets/images/family_matching_combo.jpg';" />
+              
+              <!-- Top Badges Bar -->
+              <div style="position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; align-items: center; pointer-events: none;">
+                <span style="background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); color: var(--color-gold); font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--color-gold);">
+                  ${combo.id}
+                </span>
+                <span style="font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; ${isLive ? 'background: rgba(16, 185, 129, 0.9); color: #FFF;' : 'background: rgba(239, 68, 68, 0.9); color: #FFF;'}">
+                  ${isLive ? '🟢 LIVE' : '⏸️ HIDDEN'}
+                </span>
+              </div>
+
+              <!-- Bottom Overlay Bar -->
+              <div style="position: absolute; bottom: 8px; left: 8px; right: 8px; background: rgba(0,0,0,0.82); backdrop-filter: blur(4px); padding: 5px 8px; border-radius: 5px; border: 1px solid rgba(212, 175, 55, 0.35); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.68rem; color: #FFF2B2; font-weight: 700;">✨ 4-Piece Matching Set</span>
+                <a href="${poster}" target="_blank"
+                  style="font-size: 0.68rem; color: var(--color-gold); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
+                  <span>🔍</span> Full View
+                </a>
+              </div>
+            </div>
+
+            <!-- DETAILS & INCLUSIONS -->
+            <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; min-width: 0;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                  <div>
+                    <span style="font-size: 0.725rem; font-weight: 800; color: var(--color-gold); letter-spacing: 0.05em; text-transform: uppercase;">
+                      ${combo.badge || '👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE'}
+                    </span>
+                    <h3 style="margin: 0.2rem 0 0.3rem 0; font-size: 1.25rem; color: #FFF; font-weight: 800; font-family: var(--font-serif-display); line-height: 1.25;">
+                      ${combo.title}
+                    </h3>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">
+                      ${combo.subtitle || combo.description || ''}
+                    </p>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem; justify-content: flex-end;">
+                      <span style="font-size: 1.45rem; font-weight: 800; color: var(--color-gold);">₹${Number(combo.price).toLocaleString('en-IN')}</span>
+                      ${combo.originalPrice ? `<span style="font-size: 0.875rem; color: var(--text-muted); text-decoration: line-through;">₹${Number(combo.originalPrice).toLocaleString('en-IN')}</span>` : ''}
+                    </div>
+                    ${combo.savingsText ? `<span style="font-size: 0.75rem; font-weight: 800; color: var(--color-success); background: rgba(16,185,129,0.12); padding: 2px 6px; border-radius: 4px; display: inline-block;">${combo.savingsText}</span>` : ''}
+                  </div>
+                </div>
+
+                <!-- 4 Inclusions Neat 2x2 Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.65rem; margin: 0.85rem 0; background: rgba(0,0,0,0.3); padding: 0.85rem; border-radius: 8px; border-left: 3.5px solid var(--color-gold);">
+                  <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
+                    <span>🥻</span> <div><strong style="color: var(--color-gold);">Mother:</strong> <span style="color: #DDD;">${mother}</span></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
+                    <span>👔</span> <div><strong style="color: var(--color-gold);">Father:</strong> <span style="color: #DDD;">${father}</span></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
+                    <span>👧</span> <div><strong style="color: var(--color-gold);">Daughter:</strong> <span style="color: #DDD;">${daughter}</span></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
+                    <span>👦</span> <div><strong style="color: var(--color-gold);">Son:</strong> <span style="color: #DDD;">${son}</span></div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem; font-size: 0.775rem;">
+                  <span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);">🧵 ${combo.fabric || 'Pure Kanchipuram Silk'}</span>
+                  <span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);">🎨 ${combo.colorTheme || 'Festive Ensemble'}</span>
+                </div>
+              </div>
+
+              <!-- Actions & Live Switch -->
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.85rem; margin-top: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <button type="button" class="btn btn-outline btn-xs" style="border-color: ${isLive ? 'var(--color-success)' : '#EF4444'}; color: ${statusColor}; font-weight: 700;"
+                    onclick="window.admin && window.admin.toggleFamilyComboLiveStatus('${combo.id}')">
+                    ${isLive ? '🟢 ' + statusText : '🔴 ' + statusText}
+                  </button>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">Click to pause/publish</span>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <button type="button" class="btn btn-gold btn-xs" onclick="window.admin && window.admin.editFamilyCombo('${combo.id}')"
+                    style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
+                    ✏️ Alter / Edit
+                  </button>
+                  <button type="button" class="btn btn-outline btn-xs" onclick="window.admin && window.admin.deleteFamilyCombo('${combo.id}')"
+                    style="border-color: #EF4444; color: #EF4444; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    🗑️ Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  handleSaveFamilyCombo(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!window.store) return;
+
+    const id = document.getElementById("famComboFormId")?.value?.trim();
+    const title = document.getElementById("famComboFormTitle")?.value?.trim();
+    const subtitle = document.getElementById("famComboFormSubtitle")?.value?.trim();
+    const badge = document.getElementById("famComboFormBadge")?.value?.trim() || "👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE";
+    const colorTheme = document.getElementById("famComboFormColorTheme")?.value?.trim() || "Traditional Festive Harmony";
+    const originalPrice = parseFloat(document.getElementById("famComboFormOriginalPrice")?.value) || 0;
+    const price = parseFloat(document.getElementById("famComboFormPrice")?.value) || 0;
+    const fabric = document.getElementById("famComboFormFabric")?.value?.trim() || "Pure Kanchipuram Mulberry Silk 3-Ply Zari";
+    const posterImage = document.getElementById("famComboFormPoster")?.value?.trim() || "assets/images/family_matching_combo.jpg";
+    const motherItem = document.getElementById("famComboMotherItem")?.value?.trim();
+    const fatherItem = document.getElementById("famComboFatherItem")?.value?.trim();
+    const daughterItem = document.getElementById("famComboDaughterItem")?.value?.trim();
+    const sonItem = document.getElementById("famComboSonItem")?.value?.trim();
+    const description = document.getElementById("famComboFormDesc")?.value?.trim() || "";
+    const isActive = document.getElementById("famComboFormActive")?.checked !== false;
+
+    if (!title || !originalPrice || !price || !motherItem || !fatherItem || !daughterItem || !sonItem) {
+      alert("Please fill in all required fields (Title, Prices, and all 4 Family Inclusions).");
+      return;
+    }
+
+    const comboData = {
+      title,
+      subtitle,
+      badge,
+      colorTheme,
+      originalPrice,
+      price,
+      fabric,
+      posterImage,
+      inclusions: {
+        mother: motherItem,
+        father: fatherItem,
+        daughter: daughterItem,
+        son: sonItem
+      },
+      description,
+      isActive
+    };
+
+    if (id) {
+      window.store.updateFamilyCombo(id, comboData);
+      const msg = `Family Combo "${title}" updated successfully!`;
+      this.showToast(msg, "success");
+    } else {
+      window.store.addFamilyCombo(comboData);
+      const msg = `New Family Combo "${title}" published live with Big Poster!`;
+      this.showToast(msg, "success");
+    }
+
+    this.resetFamilyComboForm();
+    this.renderFamilyCombosTab();
+  }
+
+  editFamilyCombo(id) {
+    if (!window.store || !id) return;
+    const combo = window.store.getFamilyComboById(id);
+    if (!combo) return;
+
+    this.switchFamilyCombosSubTab("combos");
+
+    const idInput = document.getElementById("famComboFormId");
+    const titleInput = document.getElementById("famComboFormTitle");
+    const subInput = document.getElementById("famComboFormSubtitle");
+    const badgeInput = document.getElementById("famComboFormBadge");
+    const colorInput = document.getElementById("famComboFormColorTheme");
+    const origPriceInput = document.getElementById("famComboFormOriginalPrice");
+    const priceInput = document.getElementById("famComboFormPrice");
+    const fabricInput = document.getElementById("famComboFormFabric");
+    const posterInput = document.getElementById("famComboFormPoster");
+    const motherInput = document.getElementById("famComboMotherItem");
+    const fatherInput = document.getElementById("famComboFatherItem");
+    const daughterInput = document.getElementById("famComboDaughterItem");
+    const sonInput = document.getElementById("famComboSonItem");
+    const descInput = document.getElementById("famComboFormDesc");
+    const activeInput = document.getElementById("famComboFormActive");
+
+    if (idInput) idInput.value = combo.id;
+    if (titleInput) titleInput.value = combo.title || "";
+    if (subInput) subInput.value = combo.subtitle || "";
+    if (badgeInput) badgeInput.value = combo.badge || "";
+    if (colorInput) colorInput.value = combo.colorTheme || "";
+    if (origPriceInput) origPriceInput.value = combo.originalPrice || "";
+    if (priceInput) priceInput.value = combo.price || "";
+    if (fabricInput) fabricInput.value = combo.fabric || "";
+    if (posterInput) posterInput.value = combo.posterImage || "";
+    if (motherInput) motherInput.value = combo.inclusions?.mother || "";
+    if (fatherInput) fatherInput.value = combo.inclusions?.father || "";
+    if (daughterInput) daughterInput.value = combo.inclusions?.daughter || "";
+    if (sonInput) sonInput.value = combo.inclusions?.son || "";
+    if (descInput) descInput.value = combo.description || "";
+    if (activeInput) activeInput.checked = combo.isActive !== false;
+    this.updateFamilyPosterPreview(combo.posterImage);
+
+    const heading = document.getElementById("famComboFormHeading");
+    if (heading) heading.innerHTML = `<span>✏️</span> Alter Family Combo: <em style="color:#FFF;">${combo.title}</em>`;
+
+    const submitBtn = document.getElementById("famComboFormSubmitBtn");
+    if (submitBtn) submitBtn.innerHTML = `💾 Save &amp; Update Combo`;
+
+    const formCard = document.getElementById("famComboFormCard");
+    if (formCard) formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  deleteFamilyCombo(id) {
+    if (!window.store || !id) return;
+    const combo = window.store.getFamilyComboById(id);
+    const title = combo ? combo.title : "this combo";
+
+    if (!confirm(`Are you sure you want to remove "${title}" from the store and website?`)) {
+      return;
+    }
+
+    window.store.deleteFamilyCombo(id);
+    const msg = `Family Combo "${title}" removed.`;
+    this.showToast(msg, "warning");
+    this.renderFamilyCombosTab();
+  }
+
+  toggleFamilyComboLiveStatus(id) {
+    if (!window.store || !id) return;
+    const updated = window.store.toggleFamilyComboStatus(id);
+    if (updated) {
+      const msg = updated.isActive
+        ? `"${updated.title}" is now LIVE on website.`
+        : `"${updated.title}" is now HIDDEN from website.`;
+      if (window.storefront && typeof window.storefront.showToast === "function") {
+        window.storefront.showToast(msg, updated.isActive ? "success" : "info");
+      }
+      this.renderFamilyCombosTab();
+    }
+  }
+
+  resetFamilyComboForm() {
+    const form = document.getElementById("adminFamilyComboForm");
+    if (form) form.reset();
+
+    const idInput = document.getElementById("famComboFormId");
+    if (idInput) idInput.value = "";
+
+    const heading = document.getElementById("famComboFormHeading");
+    if (heading) heading.innerHTML = `<span>➕</span> Add New Family Combo Set`;
+
+    const submitBtn = document.getElementById("famComboFormSubmitBtn");
+    if (submitBtn) submitBtn.innerHTML = `➕ Publish Family Combo`;
+
+    const posterInput = document.getElementById("famComboFormPoster");
+    if (posterInput) posterInput.value = "assets/images/family_matching_combo.jpg";
+
+    const fileInput = document.getElementById("famComboPosterFileInput");
+    if (fileInput) fileInput.value = "";
+
+    this.updateFamilyPosterPreview("assets/images/family_matching_combo.jpg");
+  }
+
+  renderFamilyComboOrdersTable() {
+    if (!window.store || typeof window.store.getFamilyComboOrders !== "function") return;
+    const orders = window.store.getFamilyComboOrders();
+    const stats = typeof window.store.getFamilyComboStats === "function" ? window.store.getFamilyComboStats() : null;
+
+    if (stats) {
+      const elTot = document.getElementById("famKpiTotalOrders");
+      const elPen = document.getElementById("famKpiPendingOrders");
+      const elPrg = document.getElementById("famKpiInProgressOrders");
+      const elDel = document.getElementById("famKpiDeliveredOrders");
+      const elRev = document.getElementById("famKpiRevenue");
+      if (elTot) elTot.textContent = stats.totalOrders;
+      if (elPen) elPen.textContent = stats.pendingOrders;
+      if (elPrg) elPrg.textContent = stats.inProgressOrders;
+      if (elDel) elDel.textContent = stats.deliveredOrders;
+      if (elRev) elRev.textContent = `₹${stats.totalRevenue.toLocaleString('en-IN')}`;
+    }
+
+    const tbody = document.getElementById("adminFamilyOrdersTableBody");
+    if (!tbody) return;
+
+    const searchTerm = (document.getElementById("famOrderSearchInput")?.value || "").toLowerCase().trim();
+    const statusFilter = document.getElementById("famOrderStatusFilter")?.value || "ALL";
+
+    const filtered = orders.filter(o => {
+      const matchStatus = (statusFilter === "ALL" || o.status === statusFilter);
+      const matchSearch = !searchTerm || (
+        (o.orderId && o.orderId.toLowerCase().includes(searchTerm)) ||
+        (o.customerName && o.customerName.toLowerCase().includes(searchTerm)) ||
+        (o.customerPhone && o.customerPhone.toLowerCase().includes(searchTerm)) ||
+        (o.comboTitle && o.comboTitle.toLowerCase().includes(searchTerm)) ||
+        (o.deliveryAddress && o.deliveryAddress.toLowerCase().includes(searchTerm))
+      );
+      return matchStatus && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            No customer family combo orders matching the current filter.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(o => {
+      const dateStr = o.orderDate ? new Date(o.orderDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent';
+      const cleanPhone = (o.customerPhone || "").replace(/\D/g, "");
+
+      const statusColors = {
+        "Pending": "#F59E0B",
+        "Confirmed": "#3B82F6",
+        "In Weaving / Packing": "#8B5CF6",
+        "Dispatched": "#10B981",
+        "Delivered": "#059669"
+      };
+      const currentColor = statusColors[o.status] || "var(--color-gold)";
+
+      return `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <!-- Order ID & Date -->
+          <td style="vertical-align: top; padding: 1rem 0.75rem;">
+            <strong style="color: var(--color-gold); font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
+            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">📅 ${dateStr}</span>
+            <span style="display: inline-block; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; background: rgba(212,175,55,0.15); color: var(--color-gold); margin-top: 0.35rem;">
+              ${o.paymentMode || 'COD'}
+            </span>
+          </td>
+
+          <!-- Customer & Contact -->
+          <td style="vertical-align: top; padding: 1rem 0.75rem;">
+            <strong style="color: #FFF; font-size: 0.95rem; display: block;">${o.customerName}</strong>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              📞 <a href="tel:${cleanPhone}" style="color: var(--color-gold); text-decoration: none;">${o.customerPhone}</a>
+            </div>
+            ${o.deliveryAddress ? `
+              <div style="font-size: 0.75rem; color: #AAA; margin-top: 0.35rem; line-height: 1.35; max-width: 250px;">
+                📍 ${o.deliveryAddress}
+              </div>
+            ` : ''}
+          </td>
+
+          <!-- Combo Bundle -->
+          <td style="vertical-align: top; padding: 1rem 0.75rem;">
+            <strong style="color: #FFF; font-size: 0.9rem; display: block;">${o.comboTitle}</strong>
+            ${o.specialNotes ? `
+              <div style="font-size: 0.75rem; color: #F59E0B; margin-top: 0.4rem; font-style: italic; background: rgba(245, 158, 11, 0.08); padding: 4px 6px; border-radius: 4px;">
+                💬 Note: ${o.specialNotes}
+              </div>
+            ` : ''}
+          </td>
+
+          <!-- Configured Sizes -->
+          <td style="vertical-align: top; padding: 1rem 0.75rem; font-size: 0.8rem; line-height: 1.5; color: #DDD;">
+            <div>👨 <strong>Father:</strong> ${o.fatherSize || 'N/A'}</div>
+            <div>✨ <strong>Mother:</strong> ${o.motherSize || 'Standard Saree'}</div>
+            <div>👦 <strong>Son:</strong> ${o.sonAgeSize || 'N/A'}</div>
+            <div>👧 <strong>Daughter:</strong> ${o.daughterAgeSize || 'N/A'}</div>
+          </td>
+
+          <!-- Amount -->
+          <td style="vertical-align: top; padding: 1rem 0.75rem; text-align: right;">
+            <strong style="font-size: 1.05rem; color: var(--color-gold);">₹${Number(o.totalPrice || 0).toLocaleString('en-IN')}</strong>
+          </td>
+
+          <!-- Actions -->
+          <td style="vertical-align: top; padding: 1rem 0.75rem; text-align: center;">
+            <select class="admin-input" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; margin-bottom: 0.5rem; width: 100%; border-color: ${currentColor}; color: ${currentColor}; font-weight: 700;"
+              onchange="window.admin && window.admin.updateFamilyComboOrderStatus('${o.orderId}', this.value)">
+              <option value="Pending" ${o.status === "Pending" ? "selected" : ""}>⏳ Pending</option>
+              <option value="Confirmed" ${o.status === "Confirmed" ? "selected" : ""}>✓ Confirmed</option>
+              <option value="In Weaving / Packing" ${o.status === "In Weaving / Packing" ? "selected" : ""}>🧵 In Weaving</option>
+              <option value="Dispatched" ${o.status === "Dispatched" ? "selected" : ""}>🚚 Dispatched</option>
+              <option value="Delivered" ${o.status === "Delivered" ? "selected" : ""}>✅ Delivered</option>
+            </select>
+
+            <div style="display: flex; gap: 0.35rem; justify-content: center;">
+              <button type="button" class="btn btn-outline btn-xs" style="border-color: #10B981; color: #10B981; padding: 0.25rem 0.5rem;" title="1-Click WhatsApp Update"
+                onclick="window.admin && window.admin.handleFamilyOrderWhatsAppNotify('${o.orderId}')">
+                💬 WhatsApp
+              </button>
+              <button type="button" class="btn btn-outline btn-xs" style="border-color: #EF4444; color: #EF4444; padding: 0.25rem 0.5rem;" title="Delete Order"
+                onclick="window.admin && window.admin.deleteFamilyComboOrder('${o.orderId}')">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  updateFamilyComboOrderStatus(orderId, newStatus) {
+    if (!window.store || !orderId) return;
+    window.store.updateFamilyComboOrderStatus(orderId, newStatus);
+    const msg = `Order ${orderId} status updated to: ${newStatus}`;
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(msg, "success");
+    }
+    this.renderFamilyComboOrdersTable();
+  }
+
+  deleteFamilyComboOrder(orderId) {
+    if (!window.store || !orderId) return;
+    if (!confirm(`Are you sure you want to delete order ${orderId}?`)) return;
+
+    window.store.deleteFamilyComboOrder(orderId);
+    const msg = `Order ${orderId} deleted.`;
+    if (window.storefront && typeof window.storefront.showToast === "function") {
+      window.storefront.showToast(msg, "warning");
+    }
+    this.renderFamilyCombosTab();
+  }
+
+  handleFamilyOrderWhatsAppNotify(orderId) {
+    if (!window.store || !orderId) return;
+    const order = window.store.getFamilyComboOrderById(orderId);
+    if (!order) return;
+
+    const phone = (order.customerPhone || "").replace(/\D/g, "");
+    if (!phone) {
+      alert("No phone number found for this customer.");
+      return;
+    }
+
+    const message = encodeURIComponent(
+      `Vanakkam ${order.customerName} 🙏\n\n` +
+      `Greetings from Srinivasa Textiles (Since 1978, Kanchipuram).\n\n` +
+      `Regarding your Family Combo Order #${order.orderId} (${order.comboTitle}):\n` +
+      `Current Status: ${order.status}\n` +
+      `Amount: ₹${Number(order.totalPrice).toLocaleString('en-IN')}\n\n` +
+      `Family Sizes: Father: ${order.fatherSize}, Mother: ${order.motherSize}, Son: ${order.sonAgeSize}, Daughter: ${order.daughterAgeSize}\n\n` +
+      `We are preparing your coordinated handloom ceremonial ensemble with highest purity and care. Feel free to reply here for any customizations!\n\n` +
+      `Srinivasa Textiles, Kanchipuram`
+    );
+
+    window.open(`https://wa.me/91${phone}?text=${message}`, "_blank");
+  }
+
+  // ==========================================================================
+  // PAGE 1: WEBSITE BULK PRODUCTS (CATALOG & ADD NEW SKU)
+  // ==========================================================================
+  generateBulkSku() {
+    const prefixes = ["BLK-KANCHI", "BLK-WEDDING", "BLK-BOUTIQUE", "BLK-FAMILY", "BLK-SILK"];
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const num = Math.floor(100 + Math.random() * 900);
+    const sku = `${prefix}-${num}`;
+    const input = document.getElementById("bulkPkgSku");
+    if (input) input.value = sku;
+    return sku;
+  }
+
   renderBulkPackagesSection() {
     if (!window.store) return;
     const packages = window.store.getBulkPackages() || [];
     const container = document.getElementById("adminBulkPackagesList");
-    const activeCount = packages.filter(p => p.isActive).length;
+    const activeCount = packages.filter(p => p.isActive !== false).length;
 
     const countBadge = document.getElementById("adminBulkPackagesCountBadge");
     if (countBadge) {
@@ -1093,7 +1868,16 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
 
     const summaryBadge = document.getElementById("bulkPackagesActiveSummaryBadge");
     if (summaryBadge) {
-      summaryBadge.textContent = `${activeCount} of ${packages.length} Packages Active`;
+      summaryBadge.textContent = `${activeCount} of ${packages.length} Bulk Products Active on Website`;
+    }
+
+    const sidebarBadge = document.getElementById("sidebarBulkProductsBadge");
+    if (sidebarBadge) {
+      sidebarBadge.textContent = `${packages.length} SKUs`;
+    }
+    const mobileSidebarBadge = document.getElementById("mobileSidebarBulkProductsBadge");
+    if (mobileSidebarBadge) {
+      mobileSidebarBadge.textContent = `${packages.length} SKUs`;
     }
 
     if (!container) return;
@@ -1102,8 +1886,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
       container.innerHTML = `
         <div style="text-align: center; padding: 2.5rem; color: var(--text-muted); background: var(--bg-surface-alt); border-radius: 8px;">
           <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>
-          <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Packages Created Yet</h4>
-          <p style="font-size: 0.825rem; margin: 0;">Use the form above to add your first wholesale package for the website.</p>
+          <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Products Created Yet</h4>
+          <p style="font-size: 0.825rem; margin: 0;">Use the form above to add your first wholesale bulk product for the website.</p>
         </div>
       `;
       return;
@@ -1112,45 +1896,49 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     container.innerHTML = packages.map(pkg => {
       const wholesalePrice = Number(pkg.wholesalePrice || 0).toLocaleString("en-IN");
       const retailMrp = Number(pkg.retailMrp || 0).toLocaleString("en-IN");
-      const statusBadge = pkg.isActive
+      const statusBadge = pkg.isActive !== false
         ? `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; font-size: 0.72rem;">🟢 Live on Website</span>`
         : `<span class="status-badge" style="background: rgba(156, 163, 175, 0.15); color: #9CA3AF; border: 1px solid #9CA3AF; font-size: 0.72rem;">⚪ Paused (Hidden)</span>`;
 
       return `
         <div class="admin-bulk-pkg-card" data-pkg-id="${pkg.id}">
-          <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--border-color); background: var(--bg-surface-alt); flex-shrink: 0;">
+          <div style="width: 105px; height: 105px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--border-color); background: var(--bg-surface-alt); flex-shrink: 0;">
             <img src="${pkg.image || 'assets/images/family_matching_combo.jpg'}" alt="${pkg.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/family_matching_combo.jpg'" />
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.35rem; flex: 1;">
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="status-badge" style="background: rgba(212, 175, 55, 0.2); color: var(--color-gold); font-size: 0.72rem; font-weight: 800; border: 1px solid rgba(212, 175, 55, 0.4);">SKU: ${pkg.sku || pkg.id}</span>
               <strong style="color: var(--text-heading); font-size: 1.05rem;">${pkg.title}</strong>
               <span class="status-badge" style="background: rgba(212, 175, 55, 0.15); color: var(--color-gold); font-size: 0.7rem;">${pkg.category}</span>
               ${pkg.badge ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-size: 0.7rem;">${pkg.badge}</span>` : ""}
               ${statusBadge}
             </div>
 
+            ${pkg.subtitle ? `<div style="font-size: 0.8rem; color: var(--color-gold); font-weight: 600;">✦ ${pkg.subtitle}</div>` : ""}
+
             <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-              ${pkg.description}
+              ${pkg.description || 'Authentic pure handloom wholesale package.'}
             </p>
 
             <div style="display: flex; gap: 1.25rem; font-size: 0.825rem; flex-wrap: wrap; margin-top: 0.25rem;">
-              <span><strong>MOQ:</strong> <span style="color: var(--color-gold);">${pkg.moq} ${pkg.unitLabel || 'Pcs'}</span></span>
+              <span><strong>MOQ:</strong> <span style="color: var(--color-gold); font-weight: 800;">${pkg.moq} ${pkg.unitLabel || 'Pcs'}</span></span>
               <span><strong>Wholesale:</strong> <span style="color: var(--text-heading); font-weight: 800;">₹${wholesalePrice}</span> <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.75rem;">₹${retailMrp}</span></span>
               <span style="color: #10B981; font-weight: 700;">${pkg.discountPercent || 50}% OFF Wholesale</span>
               <span style="color: var(--text-muted);">⏳ ${pkg.timeline || '10-14 Days'}</span>
+              ${pkg.fabric ? `<span style="color: var(--text-muted); font-size: 0.75rem;">🧵 ${pkg.fabric}</span>` : ""}
             </div>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; min-width: 140px;">
-            <button type="button" class="btn ${pkg.isActive ? 'btn-outline' : 'btn-outline-gold'} btn-xs" onclick="window.admin && window.admin.handleToggleBulkPackage('${pkg.id}')">
-              ${pkg.isActive ? '⏸️ Pause on Website' : '▶️ Publish on Website'}
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; min-width: 150px;">
+            <button type="button" class="btn ${pkg.isActive !== false ? 'btn-outline' : 'btn-outline-gold'} btn-xs" onclick="window.admin && window.admin.handleToggleBulkPackage('${pkg.id}')">
+              ${pkg.isActive !== false ? '⏸️ Pause on Website' : '▶️ Publish on Website'}
             </button>
             <div style="display: flex; gap: 0.35rem;">
               <button type="button" class="btn btn-outline btn-xs" style="flex: 1;" onclick="window.admin && window.admin.handleEditBulkPackage('${pkg.id}')">
                 ✏️ Edit
               </button>
-              <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: #FECDD3;" onclick="window.admin && window.admin.handleDeleteBulkPackage('${pkg.id}')">
+              <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: #FECDD3;" onclick="window.admin && window.admin.handleDeleteBulkPackage('${pkg.id}')" title="Delete Bulk Product">
                 🗑️
               </button>
             </div>
@@ -1165,40 +1953,52 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (!window.store) return;
 
     const editId = document.getElementById("bulkPkgEditId")?.value?.trim();
+    const sku = document.getElementById("bulkPkgSku")?.value?.trim() || this.generateBulkSku();
     const title = document.getElementById("bulkPkgTitle")?.value?.trim();
+    const subtitle = document.getElementById("bulkPkgSubtitle")?.value?.trim() || "";
     const category = document.getElementById("bulkPkgCategory")?.value;
     const badge = document.getElementById("bulkPkgBadge")?.value?.trim();
+    const occasion = document.getElementById("bulkPkgOccasion")?.value?.trim() || "";
     const moq = parseInt(document.getElementById("bulkPkgMOQ")?.value, 10) || 15;
     const unitLabel = document.getElementById("bulkPkgUnitLabel")?.value || "Pieces";
     const wholesalePrice = parseFloat(document.getElementById("bulkPkgWholesalePrice")?.value) || 3500;
     const retailMrp = parseFloat(document.getElementById("bulkPkgRetailMrp")?.value) || (wholesalePrice * 2);
     const timeline = document.getElementById("bulkPkgTimeline")?.value?.trim() || "10-14 Working Days";
+    const availability = document.getElementById("bulkPkgAvailability")?.value || "Ready Stock";
     const fabric = document.getElementById("bulkPkgFabric")?.value?.trim();
+    const silkMark = document.getElementById("bulkPkgSilkMark") ? document.getElementById("bulkPkgSilkMark").checked : true;
     const desc = document.getElementById("bulkPkgDesc")?.value?.trim();
     const inclusions = document.getElementById("bulkPkgInclusions")?.value?.trim();
+    const packaging = document.getElementById("bulkPkgPackaging")?.value || "Royal Velvet Presentation Boxes";
     const image = document.getElementById("bulkPkgImageURL")?.value?.trim() || "assets/images/family_matching_combo.jpg";
     const isActive = document.getElementById("bulkPkgIsActive") ? document.getElementById("bulkPkgIsActive").checked : true;
 
     if (!title || !wholesalePrice) {
-      alert("Please enter package title and wholesale price.");
+      alert("Please enter product title and wholesale price.");
       return;
     }
 
     const discountPercent = retailMrp > wholesalePrice ? Math.round(((retailMrp - wholesalePrice) / retailMrp) * 100) : 50;
 
     const pkgData = {
+      sku,
       title,
+      subtitle,
       category,
       badge,
+      occasion,
       moq,
       unitLabel,
       wholesalePrice,
       retailMrp,
       discountPercent,
       timeline,
+      availability,
       fabric,
+      silkMark,
       description: desc,
       inclusions,
+      packaging,
       image,
       isActive
     };
@@ -1206,12 +2006,12 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (editId) {
       window.store.updateBulkPackage(editId, pkgData);
       if (window.storefront && typeof window.storefront.showToast === "function") {
-        window.storefront.showToast(`Updated bulk package "${title}" successfully!`, "success");
+        window.storefront.showToast(`Updated bulk product [${sku}] "${title}" successfully!`, "success");
       }
     } else {
       window.store.addBulkPackage(pkgData);
       if (window.storefront && typeof window.storefront.showToast === "function") {
-        window.storefront.showToast(`Published new bulk package "${title}" to website!`, "success");
+        window.storefront.showToast(`Published bulk product [${sku}] "${title}" to website!`, "success");
       }
     }
 
@@ -1225,13 +2025,14 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     const editIdInput = document.getElementById("bulkPkgEditId");
     if (editIdInput) editIdInput.value = "";
     const heading = document.getElementById("bulkPackageFormHeading");
-    if (heading) heading.innerHTML = `<span>➕</span> Add New Bulk Order Package for Website`;
+    if (heading) heading.innerHTML = `<span>➕</span> Add New Bulk Product SKU`;
     const btn = document.getElementById("saveBulkPkgSubmitBtn");
-    if (btn) btn.innerHTML = `<span>🚀</span> Publish Bulk Package to Website`;
+    if (btn) btn.innerHTML = `<span>🚀</span> Publish Bulk Product to Website`;
     const imgThumb = document.getElementById("bulkPkgPreviewImg");
     if (imgThumb) imgThumb.src = "assets/images/family_matching_combo.jpg";
     const urlInput = document.getElementById("bulkPkgImageURL");
     if (urlInput) urlInput.value = "assets/images/family_matching_combo.jpg";
+    this.generateBulkSku();
     this.recalcBulkSavings();
   }
 
@@ -1242,12 +2043,18 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
 
     const editId = document.getElementById("bulkPkgEditId");
     if (editId) editId.value = pkg.id;
+    const sku = document.getElementById("bulkPkgSku");
+    if (sku) sku.value = pkg.sku || pkg.id || "";
     const title = document.getElementById("bulkPkgTitle");
     if (title) title.value = pkg.title || "";
+    const subtitle = document.getElementById("bulkPkgSubtitle");
+    if (subtitle) subtitle.value = pkg.subtitle || "";
     const cat = document.getElementById("bulkPkgCategory");
     if (cat) cat.value = pkg.category || "Wedding Troupe";
     const badge = document.getElementById("bulkPkgBadge");
     if (badge) badge.value = pkg.badge || "";
+    const occasion = document.getElementById("bulkPkgOccasion");
+    if (occasion) occasion.value = pkg.occasion || "";
     const moq = document.getElementById("bulkPkgMOQ");
     if (moq) moq.value = pkg.moq || 15;
     const unit = document.getElementById("bulkPkgUnitLabel");
@@ -1258,12 +2065,18 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (mrp) mrp.value = pkg.retailMrp || 7000;
     const tl = document.getElementById("bulkPkgTimeline");
     if (tl) tl.value = pkg.timeline || "10-14 Working Days";
+    const availability = document.getElementById("bulkPkgAvailability");
+    if (availability) availability.value = pkg.availability || "Ready Stock";
     const fab = document.getElementById("bulkPkgFabric");
     if (fab) fab.value = pkg.fabric || "";
+    const silkMark = document.getElementById("bulkPkgSilkMark");
+    if (silkMark) silkMark.checked = pkg.silkMark !== false;
     const desc = document.getElementById("bulkPkgDesc");
     if (desc) desc.value = pkg.description || "";
     const inc = document.getElementById("bulkPkgInclusions");
     if (inc) inc.value = pkg.inclusions || "";
+    const packaging = document.getElementById("bulkPkgPackaging");
+    if (packaging) packaging.value = pkg.packaging || "Royal Velvet Presentation Boxes";
     const url = document.getElementById("bulkPkgImageURL");
     if (url) url.value = pkg.image || "";
     const imgThumb = document.getElementById("bulkPkgPreviewImg");
@@ -1272,9 +2085,9 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (activeCheck) activeCheck.checked = pkg.isActive !== false;
 
     const heading = document.getElementById("bulkPackageFormHeading");
-    if (heading) heading.innerHTML = `<span>✏️</span> Edit Bulk Package: ${pkg.title}`;
+    if (heading) heading.innerHTML = `<span>✏️</span> Edit Bulk Product SKU: [${pkg.sku || pkg.id}] ${pkg.title}`;
     const btn = document.getElementById("saveBulkPkgSubmitBtn");
-    if (btn) btn.innerHTML = `<span>💾</span> Update Bulk Package`;
+    if (btn) btn.innerHTML = `<span>💾</span> Update Bulk Product`;
 
     this.recalcBulkSavings();
     document.getElementById("adminAddBulkPackageForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1401,22 +2214,22 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
       const priorityBadge = order.orderStatus === "New Inquiry"
         ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid #FDE68A;">✨ New Inquiry</span>`
         : order.priority === "Urgent"
-        ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);">🔥 Urgent</span>`
-        : order.priority === "High Priority"
-        ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);">⚡ High</span>`
-        : `<span class="status-badge" style="background: var(--bg-surface-alt); color: var(--text-muted); font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid var(--border-color);">Standard</span>`;
+          ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);">🔥 Urgent</span>`
+          : order.priority === "High Priority"
+            ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);">⚡ High</span>`
+            : `<span class="status-badge" style="background: var(--bg-surface-alt); color: var(--text-muted); font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid var(--border-color);">Standard</span>`;
 
       const typeBadgeStyle =
         order.orderType === "Wholesale" ? "background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE;" :
-        order.orderType === "Wedding Bulk" ? "background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A;" :
-        order.orderType === "Corporate Gifting" ? "background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;" :
-        "background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;";
+          order.orderType === "Wedding Bulk" ? "background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A;" :
+            order.orderType === "Corporate Gifting" ? "background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;" :
+              "background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;";
 
       const paymentBadge = order.paymentStatus === "Fully Paid"
         ? `<span class="status-badge paid" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">✓ Paid</span>`
         : order.paymentStatus === "Advance Received"
-        ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; font-size: 0.7rem; padding: 0.15rem 0.5rem;">⏳ Advance Recd</span>`
-        : `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; font-size: 0.7rem; padding: 0.15rem 0.5rem;">Pending</span>`;
+          ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; font-size: 0.7rem; padding: 0.15rem 0.5rem;">⏳ Advance Recd</span>`
+          : `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; font-size: 0.7rem; padding: 0.15rem 0.5rem;">Pending</span>`;
 
       return `
         <tr data-bulk-id="${order.bulkOrderId}">
@@ -1428,7 +2241,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               </div>
               <div style="font-size: 0.735rem; color: var(--text-muted); line-height: 1.35;">
                 <div>📅 <span style="color: var(--text-main);">Booked:</span> ${order.orderDate}</div>
-                <div style="color: #DC2626; font-weight: 700; margin-top: 0.15rem;">🎯 Due: ${order.deliveryDeadline}</div>
+                <div style="color: var(--color-danger); font-weight: 700; margin-top: 0.15rem;">🎯 Due: ${order.deliveryDeadline}</div>
               </div>
             </div>
           </td>
@@ -1436,7 +2249,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
               <strong style="font-size: 0.885rem; color: var(--color-primary); line-height: 1.3;">${order.clientCompany}</strong>
               <span style="font-size: 0.785rem; color: var(--text-main); font-weight: 600;">👤 ${order.contactPerson}</span>
-              <span style="font-size: 0.735rem; color: #64748B;">📞 ${order.phone}</span>
+              <span style="font-size: 0.735rem; color: var(--text-muted);">📞 ${order.phone}</span>
               ${order.email ? `<span style="font-size: 0.715rem; color: var(--text-muted);">✉️ ${order.email}</span>` : ""}
               ${order.gstin && order.gstin !== 'URP-CUSTOMER-INQUIRY' ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
             </div>
@@ -1534,7 +2347,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     const advSubEl = document.getElementById("bulkKpiAdvanceSub");
     const balEl = document.getElementById("bulkKpiPendingBalance");
     const prodSubEl = document.getElementById("bulkKpiProductionSub");
-    const sidebarBadge = document.getElementById("sidebarBulkBadge");
+    const sidebarBadge = document.getElementById("sidebarBulkOrdersBadge") || document.getElementById("sidebarBulkBadge");
+    const mobileSidebarBadge = document.getElementById("mobileSidebarBulkOrdersBadge");
 
     if (ordersEl) ordersEl.textContent = `${stats.totalOrders} Active`;
     if (piecesEl) piecesEl.textContent = `${stats.totalPieces.toLocaleString("en-IN")} Pcs`;
@@ -1543,6 +2357,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (balEl) balEl.textContent = `₹${stats.pendingBalance.toLocaleString("en-IN")}`;
     if (prodSubEl) prodSubEl.textContent = `${stats.activeProduction} Under Active Weaving`;
     if (sidebarBadge) sidebarBadge.textContent = `${stats.totalOrders} B2B`;
+    if (mobileSidebarBadge) mobileSidebarBadge.textContent = `${stats.totalOrders} B2B`;
   }
 
   handleImportBulkOrdersCSV(e) {
@@ -1681,7 +2496,7 @@ ST-BLK-SAMPLE-02,Sri Krishna Mandapam Wedding Troupe,V. Radhakrishnan,9197890123
     const cleanPhone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
 
     const msg = encodeURIComponent(
-`*Namaste ${order.contactPerson || order.clientCompany}*,
+      `*Namaste ${order.contactPerson || order.clientCompany}*,
 Greetings from *Srinivasa Textiles (Master Weavers Since 1978)*.
 
 Here is the current status of your Wholesale Bulk Order:
@@ -1895,12 +2710,12 @@ Warm regards,
       <tr data-order-id="${order.orderId}">
         <td>
           <strong style="color: var(--color-primary);">${order.orderId}</strong>
-          <span style="display: block; font-size: 0.725rem; color: #64748B;">${order.date}</span>
+          <span style="display: block; font-size: 0.725rem; color: var(--text-muted);">${order.date}</span>
           ${order.giftWrap ? `<span class="badge-safety" style="margin-top: 0.2rem; display:inline-block;">🎁 Gift Wrapped</span>` : ""}
         </td>
         <td>
           <strong>${order.customer ? (order.customer.name || order.customer_name) : "Customer"}</strong>
-          <span style="display: block; font-size: 0.725rem; color: #64748B;">📞 ${order.customer ? (order.customer.phone || order.mobile_number) : "N/A"}</span>
+          <span style="display: block; font-size: 0.725rem; color: var(--text-muted);">📞 ${order.customer ? (order.customer.phone || order.mobile_number) : "N/A"}</span>
           <span style="display: block; font-size: 0.7rem; color: var(--text-muted); max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${order.customer ? (order.customer.address || order.shipping_address) : ""}">${order.customer ? (order.customer.address || order.shipping_address) : ""}</span>
         </td>
         <td>
@@ -1910,7 +2725,7 @@ Warm regards,
         <td>
           ${isPendingVerification ? `
             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-              <span class="status-badge" style="background: rgba(245, 158, 11, 0.18); color: #D97706; border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 700;">
+              <span class="status-badge" style="background: rgba(245, 158, 11, 0.18); color: var(--color-warning); border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 700;">
                 ⏳ PENDING_VERIFICATION
               </span>
               ${upiRef ? `<span style="font-size: 0.7rem; font-family: monospace; color: var(--color-primary); font-weight: 700;">Ref: ${upiRef}</span>` : ""}
@@ -1919,13 +2734,13 @@ Warm regards,
               </button>
             </div>
           ` : isVerified ? `
-            <span class="status-badge paid" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700; display: inline-block;">
+            <span class="status-badge paid" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: 700; display: inline-block;">
               ✓ VERIFIED
             </span>
             ${upiRef ? `<span style="display: block; font-size: 0.685rem; font-family: monospace; color: var(--text-muted); margin-top: 0.15rem;">Ref: ${upiRef}</span>` : ""}
             <span style="display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem;">${order.paymentMethod || "Direct UPI"}</span>
           ` : `
-            <span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: #DC2626;">
+            <span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: var(--color-danger);">
               ${order.paymentStatus}
             </span>
           `}
@@ -2426,11 +3241,11 @@ Warm regards,
               </thead>
               <tbody>
                 ${(inv.items || []).map((it, itemIdx) => {
-                  const itTaxable = it.totalINR || (it.unitPriceINR * it.qty);
-                  const itCgst = Math.round(itTaxable * 0.025);
-                  const itSgst = Math.round(itTaxable * 0.025);
-                  const itTotal = itTaxable + itCgst + itSgst;
-                  return `
+      const itTaxable = it.totalINR || (it.unitPriceINR * it.qty);
+      const itCgst = Math.round(itTaxable * 0.025);
+      const itSgst = Math.round(itTaxable * 0.025);
+      const itTotal = itTaxable + itCgst + itSgst;
+      return `
                     <tr>
                       <td>${itemIdx + 1}</td>
                       <td>
@@ -2445,7 +3260,7 @@ Warm regards,
                       <td style="text-align: right; font-weight: 700;">₹${itTotal.toLocaleString("en-IN")}</td>
                     </tr>
                   `;
-                }).join("")}
+    }).join("")}
               </tbody>
             </table>
 
@@ -2780,7 +3595,7 @@ Warm regards,
             <p>${order.customer ? order.customer.address : "N/A"}</p>
             <p><strong>Phone:</strong> ${order.customer ? order.customer.phone : "N/A"} | <strong>Email:</strong> ${(order.customer && order.customer.email) || "N/A"}</p>
             ${(order.customer && order.customer.gstin) ? `<p><strong>Buyer GSTIN:</strong> ${order.customer.gstin}</p>` : ""}
-            ${order.giftWrap ? `<p style="color: #059669; font-weight:700; margin-top:0.25rem;">🎁 Festive Gift Wrap with Handwritten Message Included</p>` : ""}
+            ${order.giftWrap ? `<p style="color: var(--color-success); font-weight:700; margin-top:0.25rem;">🎁 Festive Gift Wrap with Handwritten Message Included</p>` : ""}
           </div>
           <div>
             <strong style="color: var(--color-primary-dark); text-transform: uppercase;">Shipping Partner:</strong>
@@ -2813,7 +3628,7 @@ Warm regards,
                   <td>${i + 1}</td>
                   <td>
                     <strong>${item.title}</strong>
-                    <span style="display: block; font-size: 0.7rem; color: #555;">Size: ${item.size || "Standard"} • Color: ${item.color}</span>
+                    <span style="display: block; font-size: 0.7rem; color: var(--text-muted);">Size: ${item.size || "Standard"} • Color: ${item.color}</span>
                   </td>
                   <td>${item.hsnCode || "50072010"}</td>
                   <td>${item.qty}</td>
@@ -2829,7 +3644,7 @@ Warm regards,
 
         <div class="invoice-summary-box">
           <div class="invoice-summary-row"><span>Subtotal Taxable:</span> <span>₹${taxableAmount.toLocaleString("en-IN")}</span></div>
-          ${discount > 0 ? `<div class="invoice-summary-row" style="color: #059669;"><span>Discount (${order.couponCode || 'Custom'}):</span> <span>-₹${discount.toLocaleString("en-IN")}</span></div>` : ""}
+          ${discount > 0 ? `<div class="invoice-summary-row" style="color: var(--color-success); font-weight: 700;"><span>Discount (${order.couponCode || 'Custom'}):</span> <span>-₹${discount.toLocaleString("en-IN")}</span></div>` : ""}
           <div class="invoice-summary-row"><span>CGST (2.5%):</span> <span>₹${cgst.toLocaleString("en-IN")}</span></div>
           <div class="invoice-summary-row"><span>SGST (2.5%):</span> <span>₹${sgst.toLocaleString("en-IN")}</span></div>
           <div class="invoice-summary-row total"><span>Total Amount:</span> <span>₹${finalAmount.toLocaleString("en-IN")}</span></div>
@@ -3091,6 +3906,21 @@ Warm regards,
   // ==========================================
   // PATRON FEEDBACK & REVIEWS MANAGEMENT (OWNER CONSOLE)
   // ==========================================
+  getFeedbackDept(fb) {
+    if (fb.dept) return fb.dept;
+    if (fb.productId && window.store) {
+      const p = window.store.getProductById(fb.productId);
+      if (p && p.dept) return p.dept;
+    }
+    if (fb.productId && fb.productId.includes("FAM")) return "Family Combos & Sets";
+    if (fb.productId && fb.productId.includes("KDG")) return "Kids Wear (Girls)";
+    if (fb.productId && fb.productId.includes("KDB")) return "Kids Wear (Boys)";
+    if (fb.productId && fb.productId.includes("MEN")) return "Men's Ethnic & Pattu";
+    if (fb.productId && fb.productId.includes("INF")) return "Infants & Baby Pure Silk";
+    if (fb.productId && (fb.productId.includes("SAR") || fb.productId.includes("SILK"))) return "Women's Pure Silk Sarees";
+    return "Pure Handloom Silk";
+  }
+
   applyFeedbackFilters() {
     const searchVal = document.getElementById("feedbackSearchInput")?.value.toLowerCase().trim() || "";
     const deptVal = document.getElementById("feedbackDeptFilter")?.value || "";
@@ -3106,15 +3936,17 @@ Warm regards,
     // Filter by department
     if (deptFilter) {
       feedbacks = feedbacks.filter(f => {
-        const itemDept = (f.dept || f.title || "").toLowerCase();
-        return itemDept.includes(deptFilter.toLowerCase());
+        const itemDept = this.getFeedbackDept(f).toLowerCase();
+        const filterStr = deptFilter.toLowerCase();
+        return itemDept.includes(filterStr) || filterStr.includes(itemDept) || (f.title || "").toLowerCase().includes(filterStr);
       });
     }
 
     // Filter by search query
     if (searchQuery) {
       feedbacks = feedbacks.filter(f => {
-        const fullText = `${f.id} ${f.author} ${f.location} ${f.title} ${f.comment} ${f.dept || ''}`.toLowerCase();
+        const itemDept = this.getFeedbackDept(f);
+        const fullText = `${f.id} ${f.author} ${f.location} ${f.title} ${f.comment} ${itemDept}`.toLowerCase();
         return fullText.includes(searchQuery);
       });
     }
@@ -3138,6 +3970,7 @@ Warm regards,
       const cleanPhone = "916381265149"; // Store care line or patron reference
       const waMsg = encodeURIComponent(`Namaste ${fb.author}! 🙏 Thank you for your wonderful ${ratingNum}★ review with Srinivasa Textiles. We are honored to serve your family.`);
       const waLink = `https://wa.me/?text=${waMsg}`;
+      const resolvedDept = this.getFeedbackDept(fb);
 
       return `
         <tr data-feedback-id="${fb.id}">
@@ -3151,7 +3984,7 @@ Warm regards,
           </td>
           <td>
             <span class="badge-dept" style="background: rgba(212, 175, 55, 0.12); color: var(--color-gold-dark); border: 1px solid rgba(212, 175, 55, 0.3); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; display: inline-block;">
-              ${fb.dept || fb.title || "Pure Handloom Silk"}
+              ${resolvedDept}
             </span>
           </td>
           <td>
@@ -3333,16 +4166,16 @@ Warm regards,
       const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
       let statusBadge = "";
       if (isExpired) {
-        statusBadge = `<span class="status-badge" style="background: rgba(239, 68, 68, 0.12); color: #DC2626; border: 1px solid rgba(239, 68, 68, 0.3);">⚠️ Expired</span>`;
+        statusBadge = `<span class="status-badge" style="background: rgba(239, 68, 68, 0.12); color: var(--color-danger); border: 1px solid rgba(239, 68, 68, 0.3);">⚠️ Expired</span>`;
       } else if (!c.isActive) {
         statusBadge = `<span class="status-badge" style="background: rgba(107, 114, 128, 0.15); color: var(--text-muted); border: 1px solid rgba(107, 114, 128, 0.3);">⏸️ Inactive</span>`;
       } else {
-        statusBadge = `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35);">🟢 Live Active</span>`;
+        statusBadge = `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.35);">🟢 Live Active</span>`;
       }
 
       const discountDisplay = c.discountType === "flat"
-        ? `<strong style="font-size: 0.95rem; color: #059669;">₹${(c.discountAmount || 0).toLocaleString("en-IN")} Flat OFF</strong>`
-        : `<strong style="font-size: 0.95rem; color: #059669;">${c.discountPercent}% OFF</strong>${c.maxDiscount ? `<div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Cap: ₹${c.maxDiscount.toLocaleString("en-IN")}</div>` : ""}`;
+        ? `<strong style="font-size: 0.95rem; color: var(--color-success);">₹${(c.discountAmount || 0).toLocaleString("en-IN")} Flat OFF</strong>`
+        : `<strong style="font-size: 0.95rem; color: var(--color-success);">${c.discountPercent}% OFF</strong>${c.maxDiscount ? `<div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Cap: ₹${c.maxDiscount.toLocaleString("en-IN")}</div>` : ""}`;
 
       const minOrderDisplay = c.minOrderValue > 0
         ? `₹${c.minOrderValue.toLocaleString("en-IN")}`
@@ -3675,7 +4508,7 @@ Warm regards,
         if (!isNaN(d.getTime())) {
           countdownInput.value = d.toISOString().slice(0, 16);
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Render Offers Grid
