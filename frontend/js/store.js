@@ -1,4 +1,4 @@
-// Central Store & State Management with LocalStorage Persistence & Owner Security
+﻿// Central Store & State Management with LocalStorage Persistence & Owner Security
 // Srinivasa Textiles - Multi-Gender Family Architecture
 
 const STORE_KEYS = {
@@ -390,8 +390,8 @@ const DEFAULT_COUPONS = [
 const DEFAULT_SETTINGS = {
   storeName: "Srinivasa Textiles",
   tagline: "Master Weavers & Pure Silk Family Store Since 1978",
-  phone: "6381265149",
-  whatsapp: "6381265149",
+  phone: "8778503021",
+  whatsapp: "8778503021",
   email: "care@srinivasatextiles.com",
   gstin: "33AABCS9876C1ZT",
   address: "Srinivasa Heritage Weaving Mansion, 108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India",

@@ -1,4 +1,4 @@
-// Owner Admin Panel Controller & Multi-Category Family Management System
+﻿// Owner Admin Panel Controller & Multi-Category Family Management System
 // Compliant with Complete_Family_Textile_Website_Blueprint.md
 
 class AdminController {
@@ -2590,7 +2590,7 @@ Warm regards,
               <div class="brand-sub">Master Weavers & Pure Silk Family Handloom Store Since 1978</div>
               <div style="font-size: 11px; color: #475569; margin-top: 4px;">
                 108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501<br>
-                <strong>GSTIN:</strong> 33AABCS9876C1ZT | <strong>Phone:</strong> +91 6381265149 | <strong>Email:</strong> wholesale@srinivasatextiles.com
+                <strong>GSTIN:</strong> 33AABCS9876C1ZT | <strong>Phone:</strong> +91 8778503021 | <strong>Email:</strong> wholesale@srinivasatextiles.com
               </div>
             </div>
             <div class="inv-title">
@@ -3070,7 +3070,7 @@ Warm regards,
             <div class="brand-title">SRINIVASA TEXTILES</div>
             <div class="brand-sub">Master Weavers & Pure Silk Family Store • Since 1978</div>
             <div style="font-size: 11px; color: #475569; margin-top: 4px;">
-              108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 6381265149
+              108 Raja Veedhi, Kanchipuram, Tamil Nadu - 631501, India | Phone: +91 8778503021
             </div>
             <div style="font-size: 11px; font-weight: 700; color: #7A0C2E; margin-top: 2px;">
               GSTIN: 33AABCS9876C1ZT | State Code: 33 (Tamil Nadu) | Silk Mark (SMOI) Certified
@@ -3461,7 +3461,7 @@ Warm regards,
     const finalAmount = taxableAmount + totalTax + (order.shippingINR || 0);
 
     const waOrderMsg = encodeURIComponent(`Namaste ${order.customer ? order.customer.name : 'Customer'}! 🙏 Here is your official GST Tax Invoice from Srinivasa Textiles for Order #${order.orderId} (Total: ₹${finalAmount.toLocaleString("en-IN")}). Courier: ${order.courier || 'BlueDart Express'} (AWB: ${order.trackingNumber}).`);
-    const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '916381265149')}?text=${waOrderMsg}`;
+    const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '918778503021')}?text=${waOrderMsg}`;
 
     if (isEditMode) {
       // RENDER EDIT MODE
@@ -3977,7 +3977,7 @@ Warm regards,
     tbody.innerHTML = feedbacks.map(fb => {
       const ratingNum = parseInt(fb.rating, 10) || 5;
       const starsDisplay = "★".repeat(ratingNum) + "☆".repeat(Math.max(0, 5 - ratingNum));
-      const cleanPhone = "916381265149"; // Store care line or patron reference
+      const cleanPhone = "918778503021"; // Store care line or patron reference
       const waMsg = encodeURIComponent(`Namaste ${fb.author}! 🙏 Thank you for your wonderful ${ratingNum}★ review with Srinivasa Textiles. We are honored to serve your family.`);
       const waLink = `https://wa.me/?text=${waMsg}`;
       const resolvedDept = this.getFeedbackDept(fb);

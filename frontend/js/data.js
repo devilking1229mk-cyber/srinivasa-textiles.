@@ -1,4 +1,4 @@
-// Master Family Textile Catalog Dataset for Srinivasa Textiles
+﻿// Master Family Textile Catalog Dataset for Srinivasa Textiles
 // Dedicated Multi-Gender & Multi-Department Architecture
 
 const INITIAL_CATALOG = [
@@ -847,7 +847,7 @@ const DEFAULT_BULK_SETTINGS = {
   badge: "🏬 B2B DIRECT WEAVERS WHOLESALE",
   headline: "Handloom Bulk Orders & Wedding Troupe Ensembles",
   subtitle: "Direct from our Kanchipuram master weaving pit-looms. Specially curated bulk lots, certified pure silks, wholesale pricing, and dedicated relationship draper for wedding planners, dance troupes, boutiques, and corporate institutions.",
-  whatsappNumber: "916381265149",
+  whatsappNumber: "918778503021",
   minOrderNotice: "Minimum Order Quantity applies. Custom colorway dyeing available for lots over 25 pieces."
 };
 

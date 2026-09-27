@@ -1,4 +1,4 @@
-// Dedicated Multi-Gender Department Routing & Storefront Controller
+﻿// Dedicated Multi-Gender Department Routing & Storefront Controller
 // Srinivasa Textiles - High-Contrast Dark & Light Theme Support
 
 class StorefrontController {
@@ -1615,7 +1615,7 @@ class StorefrontController {
           <button class="btn btn-outline" id="pdpToggleFavBtn" style="padding: 0.85rem 1.1rem; border-color: rgba(225,29,72,0.35); color: #E11D48; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;" title="Save to Favourites">
             ${window.store.isInWishlist(product.id) ? "❤️ Saved" : "🤍 Favourite"}
           </button>
-          <a href="https://wa.me/916381265149?text=Hello%20Srinivasa%20Textiles,%20I%20am%20interested%20in%20${encodeURIComponent(product.title)}%20(SKU:%20${product.id})" target="_blank" style="padding: 0.85rem 1.1rem; background: #25D366; color: #fff; font-weight: 700; border-radius: var(--radius-sm); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; text-decoration: none;">
+          <a href="https://wa.me/918778503021?text=Hello%20Srinivasa%20Textiles,%20I%20am%20interested%20in%20${encodeURIComponent(product.title)}%20(SKU:%20${product.id})" target="_blank" style="padding: 0.85rem 1.1rem; background: #25D366; color: #fff; font-weight: 700; border-radius: var(--radius-sm); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; text-decoration: none;">
             💬 WhatsApp
           </a>
         </div>
@@ -3094,7 +3094,7 @@ class StorefrontController {
     const finalAmount = (order.totalAmountINR !== undefined && order.totalAmountINR !== null) ? order.totalAmountINR : (taxableAmount + totalTax + shippingFee);
 
     const waOrderMsg = encodeURIComponent(`Namaste ${order.customer ? order.customer.name : 'Customer'}! 🙏 Here is your official GST Tax Invoice from Srinivasa Textiles for Order #${order.orderId} (Total: ₹${finalAmount.toLocaleString("en-IN")}). Courier: ${order.courier || 'BlueDart Express'} (AWB: ${order.trackingNumber}).`);
-    const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '916381265149')}?text=${waOrderMsg}`;
+    const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '918778503021')}?text=${waOrderMsg}`;
 
     // RENDER OFFICIAL GST TAX INVOICE
     container.innerHTML = `
@@ -3652,7 +3652,7 @@ class StorefrontController {
               style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800;">
               <span>🛍️</span> Book This Family Bundle ➔
             </button>
-            <a href="https://wa.me/916381265149?text=${waMsg}" target="_blank" class="btn btn-outline-gold"
+            <a href="https://wa.me/918778503021?text=${waMsg}" target="_blank" class="btn btn-outline-gold"
               style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 700;">
               <span>💬</span> WhatsApp Inquiry
             </a>
@@ -3966,7 +3966,7 @@ class StorefrontController {
       `Payment: ${paymentMode}`
     );
 
-    window.open(`https://wa.me/916381265149?text=${waMsg}`, "_blank");
+    window.open(`https://wa.me/918778503021?text=${waMsg}`, "_blank");
   }
 
   setupBulkInquiryModal() {
@@ -4146,7 +4146,7 @@ class StorefrontController {
         `Needed By: ${deadline}\n` +
         `Please share the formal quote and fabric swatches.`
       );
-      waChatBtn.href = `https://wa.me/916381265149?text=${waText}`;
+      waChatBtn.href = `https://wa.me/918778503021?text=${waText}`;
     }
 
     if (successBox) successBox.style.display = "block";
