@@ -1,4 +1,4 @@
-﻿// Dedicated Multi-Gender Department Routing & Storefront Controller
+// Dedicated Multi-Gender Department Routing & Storefront Controller
 // Srinivasa Textiles - High-Contrast Dark & Light Theme Support
 
 class StorefrontController {
@@ -213,13 +213,23 @@ class StorefrontController {
   }
 
   updateThemeButtonUI(theme) {
-    const btn = document.getElementById("themeToggleBtn");
-    if (btn) {
+    const applyIcon = (attempt) => {
+      const btn = document.getElementById("themeToggleBtn");
+      if (!btn) return;
+
       const isDark = theme === "dark";
+
+      // If Icons not loaded yet and this is first attempt, retry after 200ms
+      if (!window.Icons && attempt === 0) {
+        setTimeout(() => applyIcon(1), 200);
+      }
+
+      const iconSvg = window.Icons
+        ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 })
+        : (isDark ? "☀️" : "🌙");
+
       const iconSpan = btn.querySelector(".theme-icon");
       const labelSpan = btn.querySelector(".theme-label");
-
-      const iconSvg = window.Icons ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 }) : (isDark ? "☀️" : "🌙");
 
       if (iconSpan && labelSpan) {
         iconSpan.innerHTML = iconSvg;
@@ -229,7 +239,8 @@ class StorefrontController {
       }
       btn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
       btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
-    }
+    };
+    applyIcon(0);
   }
 
   bindEvents() {

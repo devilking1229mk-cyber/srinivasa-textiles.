@@ -3697,9 +3697,16 @@
       // Theme toggle
       const themeBtn = document.getElementById("adminThemeToggleBtn");
       if (themeBtn) {
-        const updateAdminThemeBtn = (theme) => {
+        const updateAdminThemeBtn = (theme, attempt) => {
+          attempt = attempt || 0;
           const isDark = theme === "dark";
-          const iconSvg = window.Icons ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 }) : (isDark ? "☀️" : "🌙");
+          // Retry if Icons not loaded yet
+          if (!window.Icons && attempt === 0) {
+            setTimeout(() => updateAdminThemeBtn(theme, 1), 200);
+          }
+          const iconSvg = window.Icons
+            ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 })
+            : (isDark ? "☀️" : "🌙");
           themeBtn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${isDark ? " Light" : " Dark"}</span>`;
           themeBtn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
         };

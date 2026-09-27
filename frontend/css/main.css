@@ -571,26 +571,36 @@ textarea {
 
 /* Dark Mode Specific Theme Button */
 [data-theme="dark"] .theme-toggle-btn {
-  background-color: #171922;
+  background-color: #0F1320;
   color: #FFF2B2 !important;
   border: 1.5px solid rgba(212, 175, 55, 0.85);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
-[data-theme="dark"] .theme-toggle-btn span {
+[data-theme="dark"] .theme-toggle-btn span,
+[data-theme="dark"] .theme-toggle-btn .theme-icon,
+[data-theme="dark"] .theme-toggle-btn .theme-label {
   color: #FFF2B2 !important;
   font-weight: 800;
 }
 
+/* Dark mode hover: stays dark background with golden text — no light-theme colour bleed */
 [data-theme="dark"] .theme-toggle-btn:hover {
-  background-color: #2D0310;
-  color: #FFF2B2 !important;
-  border-color: var(--color-gold);
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.5);
+  background-color: #1C2540;
+  color: #FFE88A !important;
+  border-color: #FFD700;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.55), 0 0 12px rgba(255, 215, 0, 0.35);
+  transform: translateY(-1px);
 }
 
-[data-theme="dark"] .theme-toggle-btn:hover span {
-  color: #FFF2B2 !important;
+[data-theme="dark"] .theme-toggle-btn:hover span,
+[data-theme="dark"] .theme-toggle-btn:hover .theme-icon,
+[data-theme="dark"] .theme-toggle-btn:hover .theme-label {
+  color: #FFE88A !important;
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover svg {
+  stroke: #FFE88A;
 }
 
 .theme-toggle-btn .theme-icon {
@@ -600,10 +610,6 @@ textarea {
 
 .theme-toggle-btn.theme-rotating .theme-icon {
   transform: rotate(360deg) scale(1.25);
-}
-
-[data-theme="dark"] .theme-toggle-btn:hover span {
-  color: #2D0310 !important;
 }
 
 .currency-selector {

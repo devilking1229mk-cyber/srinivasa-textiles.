@@ -232,7 +232,7 @@
 }
 
 .theme-toggle-btn {
-  background: #3B0616;
+  background: #0F1320;
   border: 1.5px solid var(--color-gold);
   color: #FFF2B2 !important;
   padding: 0.45rem 0.95rem;
@@ -248,29 +248,71 @@
   white-space: nowrap;
 }
 
-.theme-toggle-btn span {
+.theme-toggle-btn span,
+.theme-toggle-btn .theme-icon,
+.theme-toggle-btn .theme-label {
   color: #FFF2B2 !important;
   font-weight: 800;
 }
 
+/* Default / Light mode hover — warm maroon glow */
 .theme-toggle-btn:hover {
-  background: #5C0A23;
+  background: #4D051B;
   border-color: #FDE68A;
   color: #FFFFFF !important;
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(92, 10, 35, 0.5);
 }
 
-.theme-toggle-btn:hover span {
+.theme-toggle-btn:hover span,
+.theme-toggle-btn:hover .theme-icon,
+.theme-toggle-btn:hover .theme-label {
   color: #FFFFFF !important;
 }
 
+/* Dark mode base */
+[data-theme="dark"] .theme-toggle-btn {
+  background: #0F1320;
+  color: #FFF2B2 !important;
+  border: 1.5px solid rgba(212, 175, 55, 0.85);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="dark"] .theme-toggle-btn span,
+[data-theme="dark"] .theme-toggle-btn .theme-icon,
+[data-theme="dark"] .theme-toggle-btn .theme-label {
+  color: #FFF2B2 !important;
+}
+
+/* Dark mode hover — stays dark navy, text turns bright gold (NO light-theme maroon bleed) */
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background: #1C2540;
+  color: #FFE88A !important;
+  border-color: #FFD700;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.55), 0 0 12px rgba(255, 215, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover span,
+[data-theme="dark"] .theme-toggle-btn:hover .theme-icon,
+[data-theme="dark"] .theme-toggle-btn:hover .theme-label {
+  color: #FFE88A !important;
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover svg {
+  stroke: #FFE88A;
+}
+
+/* Light mode explicit */
 [data-theme="light"] .theme-toggle-btn {
   background: #2D0310;
   color: #FFF8D6 !important;
   border: 1.5px solid #D4AF37;
 }
 
-[data-theme="light"] .theme-toggle-btn span {
+[data-theme="light"] .theme-toggle-btn span,
+[data-theme="light"] .theme-toggle-btn .theme-icon,
+[data-theme="light"] .theme-toggle-btn .theme-label {
   color: #FFF8D6 !important;
 }
 
