@@ -2831,7 +2831,8 @@ body:not(.shop-page) .festive-top-ticker-bar {
   transition: transform var(--transition-fast), color var(--transition-fast);
 }
 
-.svg-icon-wrapper {
+.svg-icon-wrapper,
+[data-icon] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2839,38 +2840,86 @@ body:not(.shop-page) .festive-top-ticker-bar {
   vertical-align: middle;
 }
 
+[data-icon] svg,
+.svg-elevated-icon {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .svg-icon.sm { width: 14px; height: 14px; }
 .svg-icon.md { width: 18px; height: 18px; }
 .svg-icon.lg { width: 22px; height: 22px; }
 .svg-icon.xl { width: 28px; height: 28px; }
 
+/* Desktop & Drawer Action Icons */
 .feedback-btn-icon.svg-icon-inlined,
+.feedback-btn-icon svg,
 .footer-link-icon.svg-icon-inlined,
-.drawer-icon-img.svg-icon-inlined {
+.footer-link-icon svg,
+.drawer-icon-img.svg-icon-inlined,
+.drawer-icon-img svg {
   width: 18px;
   height: 18px;
   color: var(--color-gold);
 }
 
 .st-icon-search.svg-icon-inlined,
+.st-icon-search svg,
 .st-icon-favourite.svg-icon-inlined,
-.card-action-icon.svg-icon-inlined {
-  width: 17px;
-  height: 17px;
+.st-icon-favourite svg,
+.card-action-icon.svg-icon-inlined,
+.card-action-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .dept-nav-img-icon.svg-icon-inlined,
+.dept-nav-img-icon svg,
 .drawer-dept-icon.svg-icon-inlined,
+.drawer-dept-icon svg,
 .footer-dept-icon.svg-icon-inlined,
-.gateway-title-icon.svg-icon-inlined {
+.footer-dept-icon svg,
+.gateway-title-icon.svg-icon-inlined,
+.gateway-title-icon svg {
   width: 20px;
   height: 20px;
   color: var(--color-gold);
   margin-right: 0.35rem;
 }
 
-.btn-video-icon.svg-icon-inlined {
+.btn-video-icon.svg-icon-inlined,
+.btn-video-icon svg {
   width: 20px;
   height: 20px;
   color: inherit;
+}
+
+.cart-btn svg,
+.st-icon-cart svg,
+.drawer-header-icon svg {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
+.theme-toggle-btn .theme-icon svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: -2px;
+  display: inline-block;
+  color: inherit;
+}
+
+.mobile-menu-btn svg {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
+.feedback-modal-icon-img svg {
+  width: 26px;
+  height: 26px;
+  color: var(--color-gold);
 }

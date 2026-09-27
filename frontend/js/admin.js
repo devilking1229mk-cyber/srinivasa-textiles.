@@ -910,10 +910,10 @@ class AdminController {
           <td>
             <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
               <a href="shop.html" target="_blank" class="btn btn-outline btn-sm" style="font-size: 0.725rem; padding: 0.25rem 0.5rem;" title="View on customer shop page">
-                👁️ View
+                <span data-icon="eye" data-icon-size="14"></span> View
               </a>
               <button type="button" class="btn btn-outline btn-sm delete-prod-btn" data-id="${product.id}" style="color: var(--color-danger); border-color: #FECDD3; font-size: 0.725rem; padding: 0.25rem 0.5rem;" title="Delete SKU">
-                🗑️
+                <span data-icon="trash" data-icon-size="14"></span>
               </button>
             </div>
           </td>
@@ -922,6 +922,9 @@ class AdminController {
     }).join("");
 
     this.bindInventoryRowEvents(tbody);
+    if (window.Icons && window.Icons.init) {
+      window.Icons.init(tbody);
+    }
   }
 
   applyLiveStockUpdate(id, newQty) {
@@ -2711,11 +2714,11 @@ Warm regards,
         <td>
           <strong style="color: var(--color-primary);">${order.orderId}</strong>
           <span style="display: block; font-size: 0.725rem; color: var(--text-muted);">${order.date}</span>
-          ${order.giftWrap ? `<span class="badge-safety" style="margin-top: 0.2rem; display:inline-block;">🎁 Gift Wrapped</span>` : ""}
+          ${order.giftWrap ? `<span class="badge-safety" style="margin-top: 0.2rem; display:inline-block;"><span data-icon="gift" data-icon-size="12"></span> Gift Wrapped</span>` : ""}
         </td>
         <td>
           <strong>${order.customer ? (order.customer.name || order.customer_name) : "Customer"}</strong>
-          <span style="display: block; font-size: 0.725rem; color: var(--text-muted);">📞 ${order.customer ? (order.customer.phone || order.mobile_number) : "N/A"}</span>
+          <span style="display: block; font-size: 0.725rem; color: var(--text-muted);"><span data-icon="phone" data-icon-size="12"></span> ${order.customer ? (order.customer.phone || order.mobile_number) : "N/A"}</span>
           <span style="display: block; font-size: 0.7rem; color: var(--text-muted); max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${order.customer ? (order.customer.address || order.shipping_address) : ""}">${order.customer ? (order.customer.address || order.shipping_address) : ""}</span>
         </td>
         <td>
@@ -2726,16 +2729,16 @@ Warm regards,
           ${isPendingVerification ? `
             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
               <span class="status-badge" style="background: rgba(245, 158, 11, 0.18); color: var(--color-warning); border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 700;">
-                ⏳ PENDING_VERIFICATION
+                <span data-icon="clock" data-icon-size="12"></span> PENDING_VERIFICATION
               </span>
               ${upiRef ? `<span style="font-size: 0.7rem; font-family: monospace; color: var(--color-primary); font-weight: 700;">Ref: ${upiRef}</span>` : ""}
               <button class="btn btn-sm approve-pay-btn" data-order-id="${order.orderId}" style="background: #10B981; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); border: none; cursor: pointer; margin-top: 0.15rem;">
-                ✓ Approve Payment
+                <span data-icon="check" data-icon-size="12"></span> Approve Payment
               </button>
             </div>
           ` : isVerified ? `
             <span class="status-badge paid" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: 700; display: inline-block;">
-              ✓ VERIFIED
+              <span data-icon="check" data-icon-size="12"></span> VERIFIED
             </span>
             ${upiRef ? `<span style="display: block; font-size: 0.685rem; font-family: monospace; color: var(--text-muted); margin-top: 0.15rem;">Ref: ${upiRef}</span>` : ""}
             <span style="display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem;">${order.paymentMethod || "Direct UPI"}</span>
@@ -2755,7 +2758,7 @@ Warm regards,
         </td>
         <td>
           <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-            <button class="btn btn-outline btn-sm gen-invoice-btn" data-order-id="${order.orderId}" title="Print official GST Invoice PDF">🖨️ PDF Invoice</button>
+            <button class="btn btn-outline btn-sm gen-invoice-btn" data-order-id="${order.orderId}" title="Print official GST Invoice PDF"><span data-icon="printer" data-icon-size="14"></span> PDF Invoice</button>
           </div>
         </td>
       </tr>
@@ -2797,6 +2800,9 @@ Warm regards,
     const countBadge = document.getElementById("orderPdfCountBadge");
     if (countBadge) {
       countBadge.textContent = `${orders.length} Real-Time Orders Active`;
+    }
+    if (window.Icons && window.Icons.init) {
+      window.Icons.init(tbody);
     }
   }
 
@@ -3835,27 +3841,31 @@ Warm regards,
             <strong style="color: var(--text-heading);">${sub.customerName}</strong>
           </td>
           <td>
-            <div><strong>📱 ${sub.phone}</strong></div>
-            ${sub.email ? `<div style="font-size: 0.75rem; color: var(--text-muted);">✉️ ${sub.email}</div>` : ""}
+            <div><strong><span data-icon="phone" data-icon-size="12"></span> ${sub.phone}</strong></div>
+            ${sub.email ? `<div style="font-size: 0.75rem; color: var(--text-muted);"><span data-icon="fileText" data-icon-size="12"></span> ${sub.email}</div>` : ""}
           </td>
           <td>
             <button class="btn btn-sm" onclick="window.admin.handleSendWhatsAppRestock('${sub.id}', '${waLink}')" style="background: #25D366; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.75rem; border: none; cursor: pointer;">
-              💬 Send WhatsApp Alert
+              <span data-icon="whatsapp" data-icon-size="14"></span> Send WhatsApp Alert
             </button>
           </td>
           <td>
             <button class="status-badge" onclick="window.admin.toggleSubscriberStatus('${sub.id}')" style="cursor: pointer; border: 1.5px solid ${isAlerted ? '#10B981' : '#F59E0B'}; background: ${isAlerted ? 'rgba(16, 185, 129, 0.18)' : 'rgba(245, 158, 11, 0.18)'}; color: ${isAlerted ? '#10B981' : '#F59E0B'}; font-weight: 800; padding: 0.3rem 0.75rem; border-radius: var(--radius-full); transition: all var(--transition-fast);" title="Click to toggle status between Pending Alert and Alert Sent">
-              ${isAlerted ? '✅ Alert Sent' : '⏳ Pending Alert'}
+              ${isAlerted ? '<span data-icon="check" data-icon-size="12"></span> Alert Sent' : '<span data-icon="clock" data-icon-size="12"></span> Pending Alert'}
             </button>
           </td>
           <td>
             <button class="btn btn-outline btn-sm" onclick="window.admin.deleteSubscriber('${sub.id}')" title="Remove Request" style="color: var(--color-danger); border-color: rgba(185, 28, 28, 0.3); padding: 0.25rem 0.6rem;">
-              🗑️
+              <span data-icon="trash" data-icon-size="14"></span>
             </button>
           </td>
         </tr>
       `;
     }).join("");
+
+    if (window.Icons && window.Icons.init) {
+      window.Icons.init(tbody);
+    }
   }
 
   handleSendWhatsAppRestock(subId, waLink) {
@@ -3980,7 +3990,7 @@ Warm regards,
           </td>
           <td>
             <strong style="color: var(--text-heading); font-size: 0.9rem;">${fb.author || "Patron"}</strong>
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">📍 ${fb.location || "India"}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;"><span data-icon="mapPin" data-icon-size="12"></span> ${fb.location || "India"}</div>
           </td>
           <td>
             <span class="badge-dept" style="background: rgba(212, 175, 55, 0.12); color: var(--color-gold-dark); border: 1px solid rgba(212, 175, 55, 0.3); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; display: inline-block;">
@@ -3993,7 +4003,7 @@ Warm regards,
           </td>
           <td>
             <span class="badge-softness" style="background: rgba(34, 197, 94, 0.12); color: #059669; border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.2rem 0.5rem; border-radius: var(--radius-full); font-size: 0.725rem; font-weight: 700; display: inline-block;">
-              🪶 ${fb.softnessScore || "10/10"}
+              <span data-icon="softness" data-icon-size="12"></span> ${fb.softnessScore || "10/10"}
             </span>
           </td>
           <td style="max-width: 320px;">
@@ -4002,22 +4012,26 @@ Warm regards,
           </td>
           <td>
             <span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.7rem; padding: 0.25rem 0.6rem;">
-              ✓ ${fb.status || "Verified Patron"}
+              <span data-icon="check" data-icon-size="12"></span> ${fb.status || "Verified Patron"}
             </span>
           </td>
           <td>
             <div style="display: flex; gap: 0.4rem; align-items: center;">
               <button class="btn btn-outline-gold btn-sm" onclick="window.admin.copyFeedbackDetails('${fb.id}')" title="Copy Review Text" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;">
-                📋 Copy
+                <span data-icon="copy" data-icon-size="14"></span> Copy
               </button>
               <button class="btn btn-outline btn-sm" onclick="window.admin.deleteFeedback('${fb.id}')" title="Delete Review" style="color: var(--color-danger); border-color: rgba(239, 68, 68, 0.3); padding: 0.25rem 0.55rem; font-size: 0.75rem;">
-                🗑️
+                <span data-icon="trash" data-icon-size="14"></span>
               </button>
             </div>
           </td>
         </tr>
       `;
     }).join("");
+
+    if (window.Icons && window.Icons.init) {
+      window.Icons.init(tbody);
+    }
   }
 
   deleteFeedback(fbId) {

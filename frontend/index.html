@@ -195,36 +195,36 @@
 
             <!-- Customer Feedback & Feedback Trigger (Desktop) -->
             <button class="feedback-nav-btn" id="feedbackTriggerBtn" title="Share Your Feedback & Reviews">
-              <img src="icons/feedback.jpeg" alt="Feedback" class="feedback-btn-icon" /> Share Feedback
+              <span data-icon="feedback" class="feedback-btn-icon"></span> Share Feedback
             </button>
 
             <!-- Clean Predictive Search Trigger -->
             <button class="search-trigger-btn" id="searchTriggerBtn" title="Search Textiles">
-              <img src="icons/search.jpeg" alt="Search" class="st-icon-search" />
+              <span data-icon="search" class="st-icon-search"></span>
             </button>
 
             <!-- Favourites / Wishlist Trigger -->
             <button class="wishlist-btn favourites-trigger-btn" id="wishlistTriggerBtn" title="Saved Favourites"
               aria-label="Open Saved Favourites">
-              <img src="icons/favourite.jpeg" alt="Favourites" class="st-icon-favourite" />
+              <span data-icon="favourite" class="st-icon-favourite"></span>
               <span class="badge-count" id="headerWishlistBadge">0</span>
             </button>
 
             <!-- Slide-Over Cart Trigger -->
             <button class="cart-btn" id="cartTriggerBtn" title="Shopping Bag">
-              🛍️
+              <span data-icon="cart" class="st-icon-cart"></span>
               <span class="badge-count" id="headerCartBadge">0</span>
             </button>
 
             <!-- Dark / Light Mode Switcher -->
             <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Mode">
-              <span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>
+              <span class="theme-icon" data-icon="themeMoon"></span><span class="theme-label"> Dark</span>
             </button>
 
             <!-- Mobile 3-Lines (☰) Navigation & Departments Menu -->
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Departments Menu"
               title="Browse Departments &amp; Feedback">
-              ☰
+              <span data-icon="menu"></span>
             </button>
           </div>
         </div>
@@ -460,7 +460,7 @@
             <a href="https://wa.me/916381265149?text=Hello%20Srinivasa%20Textiles,%20I%20would%20like%20to%20book%20a%20Family%20Video%20Shopping%20Consultation."
               target="_blank" class="btn btn-outline-gold btn-lg"
               style="font-weight: 800; min-width: 240px; border-width: 2px; text-decoration: none; color: #FFF2B2; border-color: var(--color-gold);">
-              <img src="icons/video%20call.jpeg" alt="Video Call" class="btn-video-icon" /> Video Shopping Call
+              <span data-icon="videoCall" class="btn-video-icon"></span> Video Shopping Call
             </a>
           </div>
         </div>
@@ -476,24 +476,24 @@
             <p>Master Weavers &amp; Complete Family Textile Store Since 1978. Preserving the traditional art of Indian
               handloom weaving for all generations.</p>
             <div class="footer-certifications">
-              <span class="cert-pill">✨ SMOI Silk Mark</span>
-              <span class="cert-pill">🌿 GOTS Organic</span>
-              <span class="cert-pill">🛡️ Soft Lining Guarantee</span>
+              <span class="cert-pill"><span data-icon="sparkle" data-icon-size="14"></span> SMOI Silk Mark</span>
+              <span class="cert-pill"><span data-icon="leaf" data-icon-size="14"></span> GOTS Organic</span>
+              <span class="cert-pill"><span data-icon="shield" data-icon-size="14"></span> Soft Lining Guarantee</span>
             </div>
           </div>
 
           <div class="footer-col">
             <h4>Family Departments</h4>
             <ul class="footer-links">
-              <li><a href="#family-combos" onclick="window.storefront.navigateToPage('family')">Family Matching Sets</a>
+              <li><a href="#family-combos" onclick="window.storefront.navigateToPage('family')"><span data-icon="family" class="footer-dept-icon"></span> Family Matching Sets</a>
               </li>
-              <li><a href="#women" onclick="window.storefront.navigateToPage('women')"><img src="icons/ladies.jpeg" alt="Ladies" class="footer-dept-icon" /> Ladies' Silk Sarees</a></li>
-              <li><a href="#girls" onclick="window.storefront.navigateToPage('girls')"><img src="icons/kids.jpeg" alt="Kids" class="footer-dept-icon" /> Girls' Pattu Pavadai (2-14Y)</a>
+              <li><a href="#women" onclick="window.storefront.navigateToPage('women')"><span data-icon="ladies" class="footer-dept-icon"></span> Ladies' Silk Sarees</a></li>
+              <li><a href="#girls" onclick="window.storefront.navigateToPage('girls')"><span data-icon="kids" class="footer-dept-icon"></span> Girls' Pattu Pavadai (2-14Y)</a>
               </li>
-              <li><a href="#boys" onclick="window.storefront.navigateToPage('boys')"><img src="icons/kids.jpeg" alt="Kids" class="footer-dept-icon" /> Boys' Kurta Dhoti Sets (2-14Y)</a>
+              <li><a href="#boys" onclick="window.storefront.navigateToPage('boys')"><span data-icon="kids" class="footer-dept-icon"></span> Boys' Kurta Dhoti Sets (2-14Y)</a>
               </li>
-              <li><a href="#men" onclick="window.storefront.navigateToPage('men')"><img src="icons/mens.jpeg" alt="Men" class="footer-dept-icon" /> Men's Wedding Silk Shirts</a></li>
-              <li><a href="#infants" onclick="window.storefront.navigateToPage('infants')"><img src="icons/bourn%20babies.jpeg" alt="Born Babies" class="footer-dept-icon" /> Born Babies Muslin
+              <li><a href="#men" onclick="window.storefront.navigateToPage('men')"><span data-icon="mens" class="footer-dept-icon"></span> Men's Wedding Silk Shirts</a></li>
+              <li><a href="#infants" onclick="window.storefront.navigateToPage('infants')"><span data-icon="baby" class="footer-dept-icon"></span> Born Babies Muslin
                   (0-2Y)</a></li>
             </ul>
           </div>
@@ -502,9 +502,9 @@
             <h4>Customer Services</h4>
             <ul class="footer-links">
               <li><a href="javascript:void(0)"
-                  onclick="document.getElementById('feedbackModal').classList.add('active')"><img src="icons/feedback.jpeg" alt="Feedback" class="footer-link-icon" /> Customer Feedback &amp;
+                  onclick="document.getElementById('feedbackModal').classList.add('active')"><span data-icon="feedback" class="footer-link-icon"></span> Customer Feedback &amp;
                   Reviews</a></li>
-              <li><a href="https://wa.me/916381265149?text=Namaste%20Srinivasa%20Textiles%2C%20I%20would%20like%20to%20inquire%20about%20Wholesale%20and%20Bulk%20Orders%20for%20Handloom%20Silk%20Sarees%20and%20Family%20Combos." target="_blank"><img src="icons/feedback.jpeg" alt="Bulk Orders" class="footer-link-icon" style="filter: hue-rotate(90deg);" /> Wholesale &amp; Bulk Orders</a></li>
+              <li><a href="https://wa.me/916381265149?text=Namaste%20Srinivasa%20Textiles%2C%20I%20would%20like%20to%20inquire%20about%20Wholesale%20and%20Bulk%20Orders%20for%20Handloom%20Silk%20Sarees%20and%20Family%20Combos." target="_blank"><span data-icon="receipt" class="footer-link-icon"></span> Wholesale &amp; Bulk Orders</a></li>
               <li><a href="shop.html">Track Courier Dispatch</a></li>
             </ul>
           </div>
@@ -537,19 +537,19 @@
           <small>Handloom Master Weavers • Estd 1978</small>
         </div>
       </div>
-      <button class="pdp-close-btn" id="mobileNavCloseBtn" title="Close Menu">✕</button>
+      <button class="pdp-close-btn" id="mobileNavCloseBtn" title="Close Menu"><span data-icon="close"></span></button>
     </div>
 
     <div class="mobile-nav-body">
       <div class="mobile-nav-section-title">✨ BROWSE DEPARTMENTS</div>
       <ul class="mobile-dept-list">
-        <li><button class="mobile-dept-btn active" data-page="explore">🏠 All Collections (Explore)</button></li>
-        <li><button class="mobile-dept-btn highlight-combo" data-page="family">👨‍👩‍👧‍👦 Family Combos &amp; Matching Sets</button></li>
-        <li><button class="mobile-dept-btn" data-page="women"><img src="icons/ladies.jpeg" alt="Ladies" class="drawer-dept-icon" /> Ladies' Sarees &amp; Ethnic</button></li>
-        <li><button class="mobile-dept-btn" data-page="girls"><img src="icons/kids.jpeg" alt="Kids" class="drawer-dept-icon" /> Girls (Pattu Pavadai 2-14Y)</button></li>
-        <li><button class="mobile-dept-btn" data-page="boys"><img src="icons/kids.jpeg" alt="Kids" class="drawer-dept-icon" /> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
-        <li><button class="mobile-dept-btn" data-page="men"><img src="icons/mens.jpeg" alt="Men" class="drawer-dept-icon" /> Men's Silk &amp; Dhotis</button></li>
-        <li><button class="mobile-dept-btn" data-page="infants"><img src="icons/bourn%20babies.jpeg" alt="Born Babies" class="drawer-dept-icon" /> Born Babies &amp; Infants (0-2Y)</button></li>
+        <li><button class="mobile-dept-btn active" data-page="explore"><span data-icon="palace" class="drawer-dept-icon"></span> All Collections (Explore)</button></li>
+        <li><button class="mobile-dept-btn highlight-combo" data-page="family"><span data-icon="family" class="drawer-dept-icon"></span> Family Combos &amp; Matching Sets</button></li>
+        <li><button class="mobile-dept-btn" data-page="women"><span data-icon="ladies" class="drawer-dept-icon"></span> Ladies' Sarees &amp; Ethnic</button></li>
+        <li><button class="mobile-dept-btn" data-page="girls"><span data-icon="kids" class="drawer-dept-icon"></span> Girls (Pattu Pavadai 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="boys"><span data-icon="kids" class="drawer-dept-icon"></span> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="men"><span data-icon="mens" class="drawer-dept-icon"></span> Men's Silk &amp; Dhotis</button></li>
+        <li><button class="mobile-dept-btn" data-page="infants"><span data-icon="baby" class="drawer-dept-icon"></span> Born Babies &amp; Infants (0-2Y)</button></li>
       </ul>
 
       <div class="mobile-nav-divider"></div>
@@ -558,7 +558,7 @@
       <div class="mobile-nav-section-title">❤️ SAVED FAVOURITES</div>
       <button class="mobile-drawer-action-btn favourites-trigger-btn" id="mobileWishlistBtn" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
-          <img src="icons/favourite.jpeg" alt="Favourites" class="drawer-icon-img" /> My Saved Favourites
+          <span data-icon="favourite" class="drawer-icon-img"></span> My Saved Favourites
         </span>
         <span class="badge-count wishlist-count-badge" style="position: static; display: inline-flex;">0</span>
       </button>
@@ -569,7 +569,7 @@
       <div class="mobile-nav-section-title">🛍️ SHOPPING BAG</div>
       <button class="mobile-drawer-action-btn" id="mobileCartBtn" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
-          🛍️ My Shopping Bag
+          <span data-icon="cart" class="drawer-icon-img"></span> My Shopping Bag
         </span>
         <span class="badge-count cart-count-badge" id="mobileCartBadge" style="position: static; display: inline-flex;">0</span>
       </button>
@@ -579,20 +579,20 @@
       <!-- Customer Feedback Session inside Mobile Drawer -->
       <div class="mobile-nav-section-title">🌟 CUSTOMER REVIEWS &amp; FEEDBACK</div>
       <button class="mobile-drawer-action-btn mobile-feedback-trigger-btn" id="mobileFeedbackBtn">
-        <img src="icons/feedback.jpeg" alt="Feedback" class="drawer-icon-img" /> Share Your Review &amp; Feedback
+        <span data-icon="feedback" class="drawer-icon-img"></span> Share Your Review &amp; Feedback
       </button>
 
       <div class="mobile-nav-divider"></div>
 
       <div class="mobile-nav-section-title">📍 FLAGSHIP SHOWROOM &amp; SUPPORT</div>
       <div class="mobile-nav-info-card">
-        <strong>🏛️ Kanchipuram Showroom</strong>
+        <strong><span data-icon="palace" data-icon-size="16"></span> Kanchipuram Showroom</strong>
         <p>108 Raja Veedhi, Temple District, Kanchipuram - 631501</p>
         <div style="margin-top: 0.65rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-xs"
-            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📍 Directions</a>
+            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;"><span data-icon="mapPin" data-icon-size="12"></span> Directions</a>
           <a href="tel:+916381265149" class="btn btn-outline btn-xs"
-            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;">📞 Call Support</a>
+            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;"><span data-icon="phone" data-icon-size="12"></span> Call Support</a>
         </div>
       </div>
     </div>
@@ -652,11 +652,11 @@
   <!-- Interactive Customer Feedback & Review Session Modal -->
   <div class="feedback-modal" id="feedbackModal" role="dialog" aria-modal="true">
     <div class="feedback-box">
-      <button class="pdp-close-btn" id="feedbackCloseBtn" title="Close">✕</button>
+      <button class="pdp-close-btn" id="feedbackCloseBtn" title="Close"><span data-icon="close"></span></button>
 
       <div id="feedbackFormContainer">
         <div class="feedback-header">
-          <div class="feedback-header-icon"><img src="icons/feedback.jpeg" alt="Feedback" class="feedback-modal-icon-img" /></div>
+          <div class="feedback-header-icon" data-icon="feedback"></div>
           <h3>Customer Review &amp; Feedback</h3>
           <p>
             Your experience matters to our master weaving family. Share your feedback on fabric purity, skin softness,
@@ -865,14 +865,14 @@
   <aside class="wishlist-drawer" id="wishlistDrawer" aria-label="My Favourites">
     <div class="wishlist-drawer-header">
       <div style="display: flex; align-items: center; gap: 0.6rem;">
-        <img src="icons/favourite.jpeg" alt="Favourites" class="drawer-header-icon" />
+        <span data-icon="favourite" class="drawer-header-icon"></span>
         <div>
           <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-heading);">My Favourites (<span
               id="wishlistDrawerCount">0</span>)</h3>
           <span style="font-size: 0.725rem; color: var(--text-muted);">Saved Heirloom &amp; Family Garments</span>
         </div>
       </div>
-      <button class="wishlist-close-btn" id="wishlistCloseBtn" title="Close Favourites">✕</button>
+      <button class="wishlist-close-btn" id="wishlistCloseBtn" title="Close Favourites"><span data-icon="close"></span></button>
     </div>
 
     <div class="wishlist-items-body" id="wishlistItemsBody"></div>
@@ -880,7 +880,7 @@
     <div class="wishlist-drawer-footer" id="wishlistDrawerFooter">
       <button class="btn btn-gold btn-sm" id="wishlistMoveAllToCartBtn"
         style="width: 100%; margin-bottom: 0.6rem; font-weight: 700;">
-        🛍️ Move All Favourites to Bag
+        <span data-icon="cart"></span> Move All Favourites to Bag
       </button>
       <button class="btn btn-outline btn-sm" id="wishlistClearBtn" style="width: 100%;">
         Clear All Favourites
@@ -892,8 +892,8 @@
   <div class="cart-drawer-overlay" id="cartDrawerOverlay"></div>
   <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping Bag">
     <div class="cart-drawer-header">
-      <h3><span>🛍️</span> Shopping Bag (<span id="drawerItemCount">0</span>)</h3>
-      <button class="cart-close-btn" id="cartCloseBtn">✕</button>
+      <h3><span data-icon="cart"></span> Shopping Bag (<span id="drawerItemCount">0</span>)</h3>
+      <button class="cart-close-btn" id="cartCloseBtn"><span data-icon="close"></span></button>
     </div>
 
     <div class="free-shipping-bar">

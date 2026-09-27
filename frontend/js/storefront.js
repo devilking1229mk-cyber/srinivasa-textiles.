@@ -219,13 +219,13 @@ class StorefrontController {
       const iconSpan = btn.querySelector(".theme-icon");
       const labelSpan = btn.querySelector(".theme-label");
 
+      const iconSvg = window.Icons ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 }) : (isDark ? "☀️" : "🌙");
+
       if (iconSpan && labelSpan) {
-        iconSpan.textContent = isDark ? "☀️" : "🌙";
+        iconSpan.innerHTML = iconSvg;
         labelSpan.textContent = isDark ? " Light" : " Dark";
       } else {
-        btn.innerHTML = isDark
-          ? '<span class="theme-icon">☀️</span><span class="theme-label"> Light</span>'
-          : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
+        btn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${isDark ? " Light" : " Dark"}</span>`;
       }
       btn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
       btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");

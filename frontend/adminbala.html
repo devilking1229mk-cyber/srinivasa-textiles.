@@ -212,10 +212,10 @@
         <button id="adminMobileMenuBtn" class="admin-mobile-menu-btn" aria-label="Toggle Admin Tabs Menu"
           title="Browse Navigation Tabs"
           onclick="document.getElementById('adminMobileNavDrawer')?.classList.add('active'); document.getElementById('adminMobileNavOverlay')?.classList.add('active'); document.body.classList.add('admin-sidebar-open');">
-          ☰
+          <span data-icon="menu"></span>
         </button>
         <div class="admin-brand">
-          <div class="admin-brand-icon">👑</div>
+          <div class="admin-brand-icon" data-icon="crown"></div>
           <div>
             <h2>SRINIVASA TEXTILES</h2>
             <span class="admin-brand-tagline">Store Owner Management &amp; Logistics Command Hub</span>
@@ -229,7 +229,7 @@
 
       <div class="admin-nav-actions">
         <div class="admin-time-pill" id="adminLiveClock">
-          🕒 IST Real-Time
+          <span data-icon="clock" data-icon-size="14"></span> IST Real-Time
         </div>
 
         <a href="index.html" class="admin-nav-btn admin-nav-btn-store" title="View Customer Storefront" target="_blank">
@@ -237,7 +237,7 @@
         </a>
 
         <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Toggle Light / Dark Theme">
-          <span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>
+          <span class="theme-icon" data-icon="themeMoon"></span><span class="theme-label"> Dark</span>
         </button>
 
         <button id="exitAdminBtn" class="exit-admin-btn">
@@ -252,10 +252,10 @@
       <aside class="admin-sidebar" aria-label="Admin Sidebar">
         <div class="admin-sidebar-mobile-header">
           <div class="admin-sidebar-mobile-title">
-            <span>👑</span> Admin Tabs
+            <span data-icon="crown" data-icon-size="18"></span> Admin Tabs
           </div>
           <button id="adminSidebarCloseBtn" class="admin-sidebar-close-btn" aria-label="Close Navigation Tabs"
-            onclick="if(window.admin && window.admin.closeMobileSidebar){window.admin.closeMobileSidebar()}else if(window.closeAdminMobileMenu){window.closeAdminMobileMenu()}">✕</button>
+            onclick="if(window.admin && window.admin.closeMobileSidebar){window.admin.closeMobileSidebar()}else if(window.closeAdminMobileMenu){window.closeAdminMobileMenu()}"><span data-icon="close"></span></button>
         </div>
         <div class="admin-sidebar-nav">
 
@@ -306,7 +306,7 @@
               <li class="admin-menu-item" data-tab="family-combos"
                 onclick="window.admin && window.admin.switchTab('family-combos')">
                 <div class="admin-menu-item-left">
-                  <span style="font-size: 1.15rem; line-height: 1;">👨‍👩‍👧‍👦</span>
+                  <span class="menu-icon" data-icon="family"></span>
                   <span>Family Combos &amp; Sets</span>
                 </div>
                 <span class="admin-menu-badge" id="sidebarFamilyCombosBadge"
@@ -393,14 +393,14 @@
         <!-- SIDEBAR FOOTER PROFILE & CERTIFICATION -->
         <div class="admin-sidebar-footer">
           <div class="admin-owner-card">
-            <div class="admin-owner-avatar">👑</div>
+            <div class="admin-owner-avatar" data-icon="crown"></div>
             <div class="admin-owner-info">
               <h4 class="admin-owner-name">Master Weaver (Owner)</h4>
               <p class="admin-owner-role">Kanchipuram Heritage</p>
             </div>
           </div>
           <div class="admin-silkmark-widget">
-            <span style="font-size: 1.1rem; display: block; margin-bottom: 2px;">🏛️</span>
+            <span data-icon="palace" data-icon-size="20"></span>
             <strong style="font-size: 0.775rem; color: var(--color-gold); display: block;">Silk Mark SMOI
               Certified</strong>
             <span style="font-size: 0.685rem; color: var(--text-muted); display: block;">Central Silk Board ID:
@@ -489,7 +489,7 @@
 
                 <a href="shop.html#familyCombosSection" target="_blank" class="btn btn-gold btn-sm"
                   style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
-                  <span>👁️</span> View on Website
+                  <span data-icon="eye"></span> View on Website
                 </a>
               </div>
             </div>
@@ -498,7 +498,7 @@
           <!-- KPI STATS CARDS -->
           <div class="kpi-grid">
             <div class="kpi-card">
-              <div class="kpi-icon revenue">💰</div>
+              <div class="kpi-icon revenue" data-icon="revenue"></div>
               <div class="kpi-info">
                 <h3 id="kpiTotalRevenue">₹98,400</h3>
                 <p>Total Net Sales</p>
@@ -507,7 +507,7 @@
             </div>
 
             <div class="kpi-card" style="cursor: pointer;" onclick="window.admin.switchTab('orders')">
-              <div class="kpi-icon orders">📦</div>
+              <div class="kpi-icon orders" data-icon="box"></div>
               <div class="kpi-info">
                 <h3 id="kpiActiveOrders">2</h3>
                 <p>Active Orders</p>
@@ -516,7 +516,7 @@
             </div>
 
             <div class="kpi-card" style="cursor: pointer;" onclick="window.admin.switchTab('inventory')">
-              <div class="kpi-icon lowstock">🔥</div>
+              <div class="kpi-icon lowstock" data-icon="flame"></div>
               <div class="kpi-info">
                 <h3 id="kpiLowStock">3</h3>
                 <p>Low Stock Alerts</p>
@@ -525,7 +525,7 @@
             </div>
 
             <div class="kpi-card" style="cursor: pointer;" onclick="window.admin.switchTab('inventory')">
-              <div class="kpi-icon skus">🧵</div>
+              <div class="kpi-icon skus" data-icon="thread"></div>
               <div class="kpi-info">
                 <h3 id="kpiTotalSKUs">12</h3>
                 <p>Family SKUs</p>
@@ -534,9 +534,9 @@
             </div>
 
             <div class="kpi-card" style="cursor: pointer;" onclick="window.admin.switchTab('feedbacks')">
-              <div class="kpi-icon rating"
+              <div class="kpi-icon rating" data-icon="star"
                 style="background: rgba(212, 175, 55, 0.15); color: #F59E0B; border: 1px solid rgba(212, 175, 55, 0.4);">
-                🌟</div>
+              </div>
               <div class="kpi-info">
                 <h3 id="kpiAvgRating">5.0 ★</h3>
                 <p>Customer Feedback (<span id="kpiTotalFeedbacks">3</span>)</p>
@@ -552,12 +552,12 @@
             <div>
               <div class="admin-card">
                 <div class="admin-card-header">
-                  <h3><span>⚡</span> Quick Management Shortcuts</h3>
+                  <h3><span data-icon="sparkle"></span> Quick Management Shortcuts</h3>
                   <span style="font-size: 0.8rem; color: var(--text-muted);">One-click operational triggers</span>
                 </div>
                 <div class="admin-shortcuts-grid">
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('uploader')">
-                    <div class="admin-shortcut-icon">📸</div>
+                    <div class="admin-shortcut-icon" data-icon="camera"></div>
                     <div class="admin-shortcut-info">
                       <h4>Add New SKU</h4>
                       <span>Upload garment &amp; media</span>
@@ -565,7 +565,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('orders')">
-                    <div class="admin-shortcut-icon">🧾</div>
+                    <div class="admin-shortcut-icon" data-icon="receipt"></div>
                     <div class="admin-shortcut-info">
                       <h4>GST Invoices</h4>
                       <span>Generate 1-click Tax PDF</span>
@@ -573,7 +573,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('inventory')">
-                    <div class="admin-shortcut-icon">📦</div>
+                    <div class="admin-shortcut-icon" data-icon="box"></div>
                     <div class="admin-shortcut-info">
                       <h4>Stock Control</h4>
                       <span>Real-time variant units</span>
@@ -581,7 +581,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('bulk-products')">
-                    <div class="admin-shortcut-icon">📦</div>
+                    <div class="admin-shortcut-icon" data-icon="box"></div>
                     <div class="admin-shortcut-info">
                       <h4>Add Bulk Products</h4>
                       <span>Wholesale Catalog &amp; SKU</span>
@@ -589,7 +589,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('bulk-orders')">
-                    <div class="admin-shortcut-icon">📑</div>
+                    <div class="admin-shortcut-icon" data-icon="receipt"></div>
                     <div class="admin-shortcut-info">
                       <h4>Customer Bulk Orders</h4>
                       <span>B2B Inquiries &amp; Orders</span>
@@ -597,7 +597,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('family-combos')">
-                    <div class="admin-shortcut-icon">👨‍👩‍👧‍👦</div>
+                    <div class="admin-shortcut-icon" data-icon="family"></div>
                     <div class="admin-shortcut-info">
                       <h4>Family Combos</h4>
                       <span>Big Posters &amp; Orders</span>
@@ -605,7 +605,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('coupons')">
-                    <div class="admin-shortcut-icon">🏷️</div>
+                    <div class="admin-shortcut-icon" data-icon="tag"></div>
                     <div class="admin-shortcut-info">
                       <h4>Coupons &amp; Offers</h4>
                       <span>Create, Alter &amp; Sync Codes</span>
@@ -613,7 +613,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('subscribers')">
-                    <div class="admin-shortcut-icon">🔔</div>
+                    <div class="admin-shortcut-icon" data-icon="bell"></div>
                     <div class="admin-shortcut-info">
                       <h4>Restock Alerts</h4>
                       <span>1-Click WhatsApp Notify</span>
@@ -621,7 +621,7 @@
                   </div>
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('feedbacks')">
-                    <div class="admin-shortcut-icon">🌟</div>
+                    <div class="admin-shortcut-icon" data-icon="star"></div>
                     <div class="admin-shortcut-info">
                       <h4>Customer Reviews</h4>
                       <span>Fabric softness &amp; ratings</span>
@@ -630,7 +630,7 @@
 
                   <div class="admin-shortcut-card" onclick="window.admin.switchTab('festive')"
                     style="border-color: rgba(212, 175, 55, 0.4); background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(245, 158, 11, 0.05));">
-                    <div class="admin-shortcut-icon">🎉</div>
+                    <div class="admin-shortcut-icon" data-icon="party"></div>
                     <div class="admin-shortcut-info">
                       <h4>Festive Special 2026</h4>
                       <span id="dashFestiveStatusSub">Active Campaign &amp; Offers</span>
@@ -3080,12 +3080,12 @@
   <!-- OWNER AUTHENTICATION LOCK SCREEN (PROTECTED GATE - ALWAYS ACTIVE ON REFRESH) -->
   <div class="admin-lock-overlay active" id="adminLockOverlay">
     <div class="admin-lock-card">
-      <div class="lock-brand-icon">👑</div>
+      <div class="lock-brand-icon" data-icon="crown"></div>
       <h2 class="lock-title">Srinivasa Textiles</h2>
       <p class="lock-subtitle">Store Owner Security Portal</p>
 
       <div class="lock-info-box">
-        <span class="lock-info-header">🔒 Restricted Owner Access</span>
+        <span class="lock-info-header"><span data-icon="lock" data-icon-size="14"></span> Restricted Owner Access</span>
         <span class="lock-info-desc">
           Patron feedback, real-time inventory, sales, and GST invoicing are strictly protected for the Store Owner.
         </span>
@@ -3106,7 +3106,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
             <label for="adminLockPassInput" style="margin: 0;">Security Passcode</label>
             <button type="button" id="toggleAdminLockPassBtn" class="pass-toggle-btn">
-              👁️ Show
+              <span data-icon="eye" data-icon-size="14"></span> Show
             </button>
           </div>
           <input type="password" id="adminLockPassInput" class="form-control" placeholder="Enter owner passcode"
@@ -3115,7 +3115,7 @@
 
         <button type="submit" class="btn btn-gold btn-lg"
           style="width: 100%; font-weight: 800; box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45); letter-spacing: 0.04em;">
-          <span>🔓</span> Unlock Owner Console
+          <span data-icon="unlock" data-icon-size="16"></span> Unlock Owner Console
         </button>
       </form>
 
@@ -3651,7 +3651,8 @@
         togglePassBtn.addEventListener("click", () => {
           const type = lockPass.getAttribute("type") === "password" ? "text" : "password";
           lockPass.setAttribute("type", type);
-          togglePassBtn.textContent = type === "password" ? "👁️ Show" : "🙈 Hide";
+          const eyeSvg = window.Icons ? window.Icons.get(type === "password" ? "eye" : "eye", { size: 14 }) : (type === "password" ? "👁️" : "🙈");
+          togglePassBtn.innerHTML = `${eyeSvg} ${type === "password" ? "Show" : "Hide"}`;
         });
       }
 
@@ -3686,7 +3687,8 @@
       if (clock) {
         const updateClock = () => {
           const now = new Date();
-          clock.textContent = "🕒 " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " IST";
+          const clockSvg = window.Icons ? window.Icons.get("clock", { size: 14 }) : "🕒";
+          clock.innerHTML = `${clockSvg} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} IST`;
         };
         updateClock();
         setInterval(updateClock, 1000);
@@ -3697,9 +3699,8 @@
       if (themeBtn) {
         const updateAdminThemeBtn = (theme) => {
           const isDark = theme === "dark";
-          themeBtn.innerHTML = isDark
-            ? '<span class="theme-icon">☀️</span><span class="theme-label"> Light</span>'
-            : '<span class="theme-icon">🌙</span><span class="theme-label"> Dark</span>';
+          const iconSvg = window.Icons ? window.Icons.get(isDark ? "themeSun" : "themeMoon", { size: 16 }) : (isDark ? "☀️" : "🌙");
+          themeBtn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${isDark ? " Light" : " Dark"}</span>`;
           themeBtn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
         };
 

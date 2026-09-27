@@ -3031,3 +3031,72 @@
   border-color: rgba(212, 175, 55, 0.4) !important;
 }
 
+/* ==========================================================================
+   ADMIN SVG VECTOR ICONS ENGINE
+   ========================================================================== */
+.admin-brand-icon svg,
+.admin-owner-avatar svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-gold);
+  display: block;
+}
+
+.lock-brand-icon svg {
+  width: 36px;
+  height: 36px;
+  color: var(--color-gold);
+  display: block;
+  margin: 0 auto;
+}
+
+.kpi-icon svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.admin-shortcut-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-gold);
+  display: block;
+}
+
+.admin-time-pill svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  margin-right: 4px;
+  color: var(--color-gold);
+}
+
+.admin-sidebar-mobile-title svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-gold);
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+.media-uploader-icon svg {
+  width: 38px;
+  height: 38px;
+  color: var(--color-gold);
+  margin-bottom: 0.5rem;
+}
+
+.admin-silkmark-widget svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-gold);
+  margin-bottom: 2px;
+}
+
+.table-action-btn svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
