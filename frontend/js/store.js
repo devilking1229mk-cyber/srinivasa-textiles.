@@ -1,4 +1,4 @@
-﻿// Central Store & State Management with LocalStorage Persistence & Owner Security
+// Central Store & State Management with LocalStorage Persistence & Owner Security
 // Srinivasa Textiles - Multi-Gender Family Architecture
 
 const STORE_KEYS = {
@@ -8,8 +8,8 @@ const STORE_KEYS = {
   WISHLIST: "st_wishlist_data_v4",
   SUBSCRIBERS: "st_subscribers_data_v2",
   CURRENCY: "st_active_currency_v2",
-  THEME: "st_active_theme_v3",
-  THEME_CHOSEN: "st_user_theme_chosen",
+  THEME: "st_active_theme_v4",
+  THEME_CHOSEN: "st_user_theme_chosen_v4",
   SETTINGS: "st_store_settings_v2",
   DYNAMIC_RULES: "st_dynamic_rules_v2",
   OWNER_AUTH: "st_owner_auth_session_v2",
@@ -469,6 +469,15 @@ class TextileStore {
 
     this.lastUnavailableCoupon = null;
     this.activeCurrency = this.load(STORE_KEYS.CURRENCY, "INR");
+
+    // Purge legacy dark theme remnants from v3 so default is strictly light mode
+    try {
+      if (localStorage.getItem("st_active_theme_v3") === "dark" || localStorage.getItem("st_user_theme_chosen") === "true") {
+        localStorage.removeItem("st_active_theme_v3");
+        localStorage.removeItem("st_user_theme_chosen");
+      }
+    } catch (e) {}
+
     const hasChosenTheme = localStorage.getItem(STORE_KEYS.THEME_CHOSEN) === "true";
     const storedTheme = this.load(STORE_KEYS.THEME, "light");
     this.activeTheme = (hasChosenTheme && storedTheme === "dark") ? "dark" : "light";
@@ -516,6 +525,8 @@ class TextileStore {
             window.dispatchEvent(new CustomEvent("familyCombosUpdated", { detail: data }));
           } else if (data && data.type === "FAMILY_COMBO_ORDERS_UPDATED") {
             window.dispatchEvent(new CustomEvent("familyComboOrdersUpdated", { detail: data }));
+          } else if (data && data.type === "FAMILY_COMBO_SETTINGS_UPDATED") {
+            window.dispatchEvent(new CustomEvent("familyComboSettingsUpdated", { detail: { settings: data.settings || this.getFamilyComboSettings() } }));
           }
         };
       } catch (e) {

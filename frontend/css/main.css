@@ -161,89 +161,21 @@ body {
 body,
 .main-header,
 .site-header,
-.nav-inner,
 .announcement-bar,
 .site-footer,
 .department-nav-bar,
-.dept-page-banner,
-.dept-menu,
-.dept-link,
-.dept-nav-arrow,
 .section,
-.section-tag,
-.section-title,
-.section-subtitle,
 .product-card,
-.product-card-body,
-.product-details,
-.product-bottom-row,
-.product-title,
-.product-subtitle,
 .feature-card,
-.gender-gateway-card,
-.gender-gateway-overlay,
-.festive-voucher-card,
-.festive-voucher-content,
-.festive-code-row,
 .festive-deal-card,
-.festive-deal-body,
-.festive-offers-section,
-.bulk-orders-section,
-.bulk-package-card,
-.video-shopping-banner,
-.video-shopping-info,
-.occasions-grid,
-.occasion-card,
-.occasion-overlay,
-.catalog-toolbar,
-.catalog-toolbar select,
-.form-control,
-.modal-content,
-.drawer,
-.cart-drawer,
-.wishlist-drawer,
-.drawer-content,
-.filter-sidebar,
-.theme-toggle-btn,
-.search-trigger-btn,
-.wishlist-btn,
-.cart-btn,
-.mobile-nav-drawer,
-.mobile-dept-btn,
 .admin-workspace,
 .admin-navbar,
-.admin-header,
-.admin-brand,
-.admin-session-pill,
-.admin-time-pill,
-.admin-nav-actions,
-.admin-nav-btn,
 .admin-sidebar,
-.admin-sidebar-nav,
-.admin-menu-item,
-.admin-nav-group-title,
-.admin-main,
-.admin-section,
-.admin-panel,
-.admin-welcome-hero,
 .admin-card,
-.kpi-card,
-.stat-card,
-.admin-table,
-.admin-lock-card,
-.admin-lock-screen,
-.admin-modal,
-.admin-modal-content,
-.bulk-subtab-btn,
-.timer-box,
-.exit-admin-btn,
-h1, h2, h3, h4, h5, h6,
-p, span, a, label,
-button, input, select, textarea {
-  transition: background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-    color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-    border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-    box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+.admin-panel {
+  transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Ensure all wordings, headings, and labels maintain standard arrow cursor */
@@ -733,14 +665,6 @@ textarea {
   color: var(--color-primary-light);
 }
 
-[data-theme="dark"] .brand-text h1 {
-  color: var(--color-gold);
-}
-
-[data-theme="dark"] .brand-logo:hover .brand-text h1 {
-  color: #FFF5CF;
-}
-
 .brand-text span {
   font-size: 0.775rem;
   font-weight: 800;
@@ -751,8 +675,50 @@ textarea {
   margin-top: 0.25rem;
 }
 
+/* ==========================================================================
+   HIGH-CONTRAST ROYAL HERITAGE LOGO IN DARK MODE
+   Guarantees deep maroon jewel gradient + 24K luminous gold framing
+   Never washed out, never neon pink
+   ========================================================================== */
+[data-theme="dark"] .brand-symbol {
+  background: linear-gradient(135deg, #480518 0%, #200109 100%) !important;
+  border: 2.5px solid #F5D061 !important;
+  color: #F5D061 !important;
+  box-shadow: 0 0 20px rgba(245, 208, 97, 0.35), inset 0 0 8px rgba(245, 208, 97, 0.2) !important;
+}
+
+[data-theme="dark"] .brand-symbol svg {
+  color: #F5D061 !important;
+  filter: drop-shadow(0 0 4px rgba(245, 208, 97, 0.5));
+}
+
+[data-theme="dark"] .brand-logo:hover .brand-symbol {
+  background: linear-gradient(135deg, #680826 0%, #30020E 100%) !important;
+  border-color: #FFF5CF !important;
+  color: #FFF5CF !important;
+  box-shadow: 0 0 28px rgba(245, 208, 97, 0.65), inset 0 0 12px rgba(255, 245, 207, 0.3) !important;
+}
+
+[data-theme="dark"] .brand-logo:hover .brand-symbol svg {
+  color: #FFF5CF !important;
+  filter: drop-shadow(0 0 8px rgba(255, 245, 207, 0.8));
+}
+
+[data-theme="dark"] .brand-text h1 {
+  color: #FFF5CF !important;
+  text-shadow: 0 2px 14px rgba(245, 208, 97, 0.35) !important;
+}
+
+[data-theme="dark"] .brand-logo:hover .brand-text h1 {
+  color: #FFFFFF !important;
+  text-shadow: 0 0 20px rgba(245, 208, 97, 0.6) !important;
+}
+
 [data-theme="dark"] .brand-text span {
-  color: #FDE68A;
+  color: #F5D061 !important;
+  letter-spacing: 0.18em !important;
+  opacity: 0.95 !important;
+  text-shadow: 0 1px 6px rgba(245, 208, 97, 0.25) !important;
 }
 
 /* Dedicated Multi-Gender Department Bar with Corner Scroll Arrows */
@@ -1333,6 +1299,45 @@ textarea {
   color: var(--color-gold);
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.footer-brand-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--color-primary);
+  border: 1.5px solid var(--color-gold);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+  flex-shrink: 0;
+}
+
+.footer-brand-logo-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+[data-theme="dark"] .footer-brand h3 {
+  color: #FFF5CF !important;
+  text-shadow: 0 0 16px rgba(245, 208, 97, 0.45) !important;
+}
+
+[data-theme="dark"] .footer-brand-logo-icon {
+  background: linear-gradient(135deg, #480518 0%, #200109 100%) !important;
+  border-color: #F5D061 !important;
+  color: #F5D061 !important;
+  box-shadow: 0 0 16px rgba(245, 208, 97, 0.4) !important;
+}
+
+[data-theme="dark"] .footer-brand-logo-icon svg {
+  color: #F5D061 !important;
+  filter: drop-shadow(0 0 4px rgba(245, 208, 97, 0.6));
 }
 
 .footer-brand p {

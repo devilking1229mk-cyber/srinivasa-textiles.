@@ -3,9 +3,9 @@
    Silky 60fps GPU-Accelerated Micro-Animations for Mobile & Desktop
    ========================================================================== */
 
-/* 1. Global Smooth Scroll */
+/* 1. Global Scrolling - Native 120fps hardware response */
 html {
-  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 2. Top Luxury Gold Reading Progress Indicator */
@@ -14,7 +14,7 @@ html {
   top: 0;
   left: 0;
   width: 100%;
-  height: 3.5px;
+  height: 3px;
   background: transparent;
   z-index: 10005;
   pointer-events: none;
@@ -24,25 +24,16 @@ html {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #D4AF37 0%, #FFF2B2 45%, #9E163E 75%, #D4AF37 100%);
-  background-size: 250% 100%;
-  animation: goldShimmerBar 4s linear infinite;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.7), 0 0 4px rgba(255, 242, 178, 0.9);
-  transition: width 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
   border-radius: 0 4px 4px 0;
 }
 
-@keyframes goldShimmerBar {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
-
-/* 3. Base Reveal States */
+/* 3. Base Reveal States - Lightweight Transitions */
 .reveal-on-scroll {
   opacity: 0;
-  transform: translate3d(0, 36px, 0);
-  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-on-scroll.revealed {
@@ -53,10 +44,9 @@ html {
 /* Directional & Scale Variants */
 .reveal-fade-left {
   opacity: 0;
-  transform: translate3d(-40px, 0, 0);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(-24px, 0, 0);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-fade-left.revealed {
@@ -66,10 +56,9 @@ html {
 
 .reveal-fade-right {
   opacity: 0;
-  transform: translate3d(40px, 0, 0);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(24px, 0, 0);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-fade-right.revealed {
@@ -79,10 +68,9 @@ html {
 
 .reveal-zoom-in {
   opacity: 0;
-  transform: scale(0.92) translate3d(0, 20px, 0);
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: scale(0.96) translate3d(0, 16px, 0);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-zoom-in.revealed {
@@ -93,10 +81,9 @@ html {
 /* 4. Staggered Cascading Reveals for Grids and Rows */
 .stagger-reveal > * {
   opacity: 0;
-  transform: translate3d(0, 30px, 0);
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(0, 20px, 0);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .stagger-reveal.revealed > * {

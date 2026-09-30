@@ -36,6 +36,7 @@ class StorefrontController {
     this.setupNotifyModal();
     this.setupDepartmentNavScroll();
     this.initScrollLockEngine();
+    this.renderCollection01Section();
   }
 
   // ==========================================
@@ -46,59 +47,8 @@ class StorefrontController {
   // UNIVERSAL BACKGROUND SCROLL LOCK ENGINE
   // Prevents background webpage from scrolling when modals/drawers are open
   // (Favourite, Shopping Bag, Feedback, Product Details, Combos, etc.)
-  // ==========================================
   initScrollLockEngine() {
     this.syncBodyScrollLock();
-
-    // Observe active modals/drawers via MutationObserver
-    if (typeof window !== "undefined" && window.MutationObserver) {
-      const observer = new MutationObserver(() => {
-        this.syncBodyScrollLock();
-      });
-      if (document.body) {
-        observer.observe(document.body, {
-          attributes: true,
-          subtree: true,
-          attributeFilter: ["class", "style"]
-        });
-      }
-    }
-
-    // Desktop mousewheel guard: strictly prevent background scrolling when wheeling outside scrollable containers
-    window.addEventListener("wheel", (e) => {
-      if (document.body.classList.contains("modal-open")) {
-        const scrollable = e.target.closest(
-          ".pdp-modal-content, .cart-items-body, .wishlist-items-body, .feedback-box, .feedback-modal, .checkout-modal-content, .bulk-inquiry-modal, .family-combo-modal-content, #familyComboBookingModal > div, .drawer-body"
-        );
-        if (!scrollable) {
-          e.preventDefault();
-          return;
-        }
-        // Prevent scroll chaining to the background when container reaches boundaries
-        const isScrollable = scrollable.scrollHeight > scrollable.clientHeight;
-        if (isScrollable) {
-          const atTop = e.deltaY < 0 && scrollable.scrollTop <= 0;
-          const atBottom = e.deltaY > 0 && (scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 1);
-          if (atTop || atBottom) {
-            e.preventDefault();
-          }
-        } else {
-          e.preventDefault();
-        }
-      }
-    }, { passive: false });
-
-    // Touch event guard for mobile devices (prevents rubber-band / background scroll)
-    document.addEventListener("touchmove", (e) => {
-      if (document.body.classList.contains("modal-open")) {
-        const scrollable = e.target.closest(
-          ".pdp-modal-content, .cart-items-body, .wishlist-items-body, .feedback-box, .feedback-modal, .checkout-modal-content, .bulk-inquiry-modal, .family-combo-modal-content, #familyComboBookingModal > div, .drawer-body"
-        );
-        if (!scrollable) {
-          e.preventDefault();
-        }
-      }
-    }, { passive: false });
 
     // Global ESC key listener to close active modals & restore background scroll
     document.addEventListener("keydown", (e) => {
@@ -183,8 +133,16 @@ class StorefrontController {
 
   // Theme Management (Light & Dark Mode - Strict Light Default)
   initTheme() {
-    const hasChosen = localStorage.getItem("st_user_theme_chosen") === "true";
-    const saved = (window.store && window.store.activeTheme) || localStorage.getItem("st_active_theme_v3");
+    // Purge legacy dark theme remnants so entire website strictly defaults to light mode
+    try {
+      if (localStorage.getItem("st_active_theme_v3") === "dark" || localStorage.getItem("st_user_theme_chosen") === "true") {
+        localStorage.removeItem("st_active_theme_v3");
+        localStorage.removeItem("st_user_theme_chosen");
+      }
+    } catch (e) {}
+
+    const hasChosen = localStorage.getItem("st_user_theme_chosen_v4") === "true";
+    const saved = (window.store && window.store.activeTheme) || localStorage.getItem("st_active_theme_v4");
     const activeTheme = (hasChosen && saved === "dark") ? "dark" : "light";
 
     document.documentElement.setAttribute("data-theme", activeTheme);
@@ -236,8 +194,8 @@ class StorefrontController {
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
     </svg>`;
 
-    const iconSvg = isDark ? sunSvg : moonSvg;
-    const labelText = isDark ? " Light" : " Dark";
+    const iconSvg = isDark ? moonSvg : sunSvg;
+    const labelText = isDark ? " Dark" : " Light";
 
     // Smooth icon-swap animation
     btn.style.transition = "transform 0.18s cubic-bezier(0.34,1.56,0.64,1)";
@@ -253,7 +211,7 @@ class StorefrontController {
       labelSpan.textContent = labelText;
     }
 
-    btn.setAttribute("title", isDark ? "Switch to Light Mode ☀️" : "Switch to Dark Mode 🌙");
+    btn.setAttribute("title", isDark ? "Current: Dark Mode (Click for Light Mode ☀️)" : "Current: Light Mode (Click for Dark Mode 🌙)");
     btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
 
     // Bounce back
@@ -668,7 +626,7 @@ class StorefrontController {
           const data = event.data;
           if (data && (data.type === "STOCK_UPDATED" || data.type === "CATALOG_UPDATED")) {
             refreshStorefrontStockUI(data);
-          } else if (data && data.type === "FAMILY_COMBOS_UPDATED") {
+          } else if (data && (data.type === "FAMILY_COMBOS_UPDATED" || data.type === "FAMILY_COMBO_SETTINGS_UPDATED" || data.type === "COLLECTION01_UPDATED")) {
             this.renderCollection01Section();
           }
         };
@@ -681,7 +639,7 @@ class StorefrontController {
     window.addEventListener("storage", (e) => {
       if (e.key === "st_catalog_data_v2" || e.key === "st_products_data_v2" || e.key === "st_subscribers_data_v2") {
         refreshStorefrontStockUI();
-      } else if (e.key === "st_family_combos_v1") {
+      } else if (e.key === "st_family_combos_v1" || e.key === "st_family_combo_settings_v1" || e.key === "st_collection01_enabled_v2") {
         this.renderCollection01Section();
       }
     });
@@ -3515,44 +3473,39 @@ class StorefrontController {
   // ==========================================
   renderCollection01Section() {
     const isLive = !window.store || typeof window.store.isCollection01Enabled !== "function" || window.store.isCollection01Enabled();
-    const section = document.getElementById("familyCombosSection");
-    const homeSection = document.getElementById("familyCombosHomeSection");
-
-    // Hide any residual home section if found
-    if (homeSection) {
-      homeSection.style.display = "none";
-    }
-
-    // Family combos should only display on shop.html
-    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
-    const isVisiblePage = isShopPage && (this.currentPage === "explore" || this.currentPage === "family");
-
-    if (section) {
-      if (!isLive || !isVisiblePage) {
-        section.style.display = "none";
-      } else {
-        section.style.display = "block";
-      }
-    }
-
-    if (!isLive || !isShopPage || !isVisiblePage) return;
-
-    const container = document.getElementById("familyCombosContainer");
-    if (!container || !window.store || typeof window.store.getFamilyCombos !== "function") return;
-
-    const combos = window.store.getFamilyCombos();
+    const combos = (window.store && typeof window.store.getFamilyCombos === "function") ? window.store.getFamilyCombos() : [];
     const activeCombos = combos.filter(c => c.isActive !== false);
-
-    if (activeCombos.length === 0) {
-      if (section) section.style.display = "none";
-      return;
-    }
 
     const settings = typeof window.store.getFamilyComboSettings === "function"
       ? window.store.getFamilyComboSettings()
       : { autoRotate: true, intervalSeconds: 5, pauseOnHover: true };
 
-    this.buildFamilyComboCarousel(container, activeCombos, settings);
+    // 1. Home Page Showcase (index.html)
+    const homeSection = document.getElementById("familyCombosHomeSection");
+    const homeContainer = document.getElementById("familyCombosHomeContainer");
+    if (homeSection && homeContainer) {
+      if (!isLive || activeCombos.length === 0) {
+        homeSection.style.display = "none";
+      } else {
+        homeSection.style.display = "block";
+        this.buildFamilyComboCarousel(homeContainer, activeCombos, settings);
+      }
+    }
+
+    // 2. Shop Page Showcase (shop.html)
+    const shopSection = document.getElementById("familyCombosSection");
+    const shopContainer = document.getElementById("familyCombosContainer");
+    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+    const isVisibleShopPage = isShopPage && (this.currentPage === "explore" || this.currentPage === "family");
+
+    if (shopSection && shopContainer) {
+      if (!isLive || !isVisibleShopPage || activeCombos.length === 0) {
+        shopSection.style.display = "none";
+      } else {
+        shopSection.style.display = "block";
+        this.buildFamilyComboCarousel(shopContainer, activeCombos, settings);
+      }
+    }
   }
 
   buildFamilyComboCarousel(container, activeCombos, settings) {
@@ -3587,30 +3540,26 @@ class StorefrontController {
 
     container.innerHTML = `
       <div class="family-combo-carousel-wrap" id="famCarouselWrap-${container.id}">
-        <!-- Top Animated Micro Progress Bar for Auto-Rotation -->
-        <div class="combo-timer-bar-wrap">
+        <!-- Top Animated Micro Progress Bar for Auto-Rotation (hidden when paused) -->
+        <div class="combo-timer-bar-wrap" style="${isAutoRotate ? '' : 'display: none !important;'}">
           <div class="combo-timer-bar-progress" id="famProgress-${container.id}"></div>
         </div>
 
         <!-- Sleek Floating Combo Counter (Zero height impact on banner) -->
         <div class="combo-floating-badge" id="famCounter-${container.id}">
           <span>👨‍👩‍👧‍👦</span> <span id="famCounterText-${container.id}">Combo ${this.activeComboIndex + 1} of ${activeCombos.length}</span>
+          ${!isAutoRotate ? '<span style="margin-left: 5px; color: #F59E0B; font-weight: 700; font-size: 0.65rem;">⏸️ Paused</span>' : `<span style="margin-left: 5px; color: #10B981; font-weight: 700; font-size: 0.65rem;">⚡ ${intervalSecs}s</span>`}
         </div>
 
-        <!-- Slides Viewport & Track -->
-        <div class="family-combo-slides-viewport">
+        <!-- Slides Viewport & Track (arrows inside so they center on the image area) -->
+        <div class="family-combo-slides-viewport" style="position: relative;">
           <div class="combo-slides-track" id="famTrack-${container.id}" style="transform: translateX(-${this.activeComboIndex * 100}%);">
             ${slidesHTML}
           </div>
+          <!-- Navigation Arrows inside viewport for stable centering -->
+          <button type="button" class="combo-carousel-arrow combo-arrow-prev" id="famPrevBtn-${container.id}" aria-label="Previous Combo">&#10094;</button>
+          <button type="button" class="combo-carousel-arrow combo-arrow-next" id="famNextBtn-${container.id}" aria-label="Next Combo">&#10095;</button>
         </div>
-
-        <!-- Navigation Arrows -->
-        <button type="button" class="combo-carousel-arrow combo-arrow-prev" id="famPrevBtn-${container.id}" aria-label="Previous Combo">
-          ❮
-        </button>
-        <button type="button" class="combo-carousel-arrow combo-arrow-next" id="famNextBtn-${container.id}" aria-label="Next Combo">
-          ❯
-        </button>
 
         <!-- Bottom Dots -->
         <div class="combo-carousel-dots" id="famDots-${container.id}">
@@ -3764,36 +3713,15 @@ class StorefrontController {
 
     const animateProgress = () => {
       resetProgress();
-      if (!state.isAutoRotate || state.isHovered) return;
-
-      const duration = state.intervalSecs * 1000;
-      let start = null;
-
-      const step = (timestamp) => {
-        if (!start) start = timestamp;
-        if (state.isHovered || !state.isAutoRotate) {
-          return;
-        }
-
-        const elapsed = timestamp - start;
-        const pct = Math.min(100, (elapsed / duration) * 100);
-        if (progress) {
-          progress.style.transition = "width 0.1s linear";
-          progress.style.width = `${pct}%`;
-        }
-
-        if (elapsed < duration) {
-          state.raf = requestAnimationFrame(step);
-        }
-      };
-
-      cancelAnimationFrame(state.raf);
-      state.raf = requestAnimationFrame(step);
+      if (!state.isAutoRotate || state.isHovered || !progress) return;
+      // Force repaint to start CSS transition from 0%
+      void progress.offsetWidth;
+      progress.style.transition = `width ${state.intervalSecs}s linear`;
+      progress.style.width = "100%";
     };
 
     const startTimer = () => {
       clearInterval(state.timer);
-      cancelAnimationFrame(state.raf);
 
       if (!state.isAutoRotate || state.isHovered) {
         resetProgress();
@@ -3841,7 +3769,8 @@ class StorefrontController {
     if (settings.pauseOnHover !== false) {
       wrap.onmouseenter = () => {
         state.isHovered = true;
-        cancelAnimationFrame(state.raf);
+        clearInterval(state.timer);
+        resetProgress();
       };
 
       wrap.onmouseleave = () => {

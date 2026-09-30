@@ -1425,6 +1425,12 @@
   margin-bottom: 2.5rem;
 }
 
+/* Inner clip layer so rounded corners still apply */
+.family-combo-carousel-wrap > .family-combo-slides-viewport {
+  border-radius: inherit;
+  overflow: hidden;
+}
+
 /* Micro Timer Bar embedded directly on the top border (takes 0 layout height) */
 .combo-timer-bar-wrap {
   position: absolute;
@@ -1472,6 +1478,7 @@
   position: relative;
   width: 100%;
   transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: inherit;
 }
 
 .combo-slides-track {
@@ -1575,16 +1582,18 @@
   color: var(--text-main);
 }
 
-/* Navigation Arrow Buttons */
+/* Navigation Arrow Buttons — stable inside the slides viewport */
 .combo-carousel-arrow {
   position: absolute;
+  /* Centered vertically in the viewport (image area) */
   top: 50%;
   transform: translateY(-50%);
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(18, 4, 10, 0.75);
+  background: rgba(18, 4, 10, 0.82);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1.5px solid var(--color-gold, #D4AF37);
   color: var(--color-gold, #D4AF37);
   font-size: 1.25rem;
@@ -1593,17 +1602,19 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 12;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  /* Only transition color/background — NOT transform — to prevent positional jumps */
+  transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
   user-select: none;
+  flex-shrink: 0;
 }
 
 .combo-carousel-arrow:hover {
   background: var(--color-gold, #D4AF37);
   color: #3b0512;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 0 16px rgba(212, 175, 55, 0.7);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.75);
 }
 
 .combo-arrow-prev {
@@ -1683,12 +1694,15 @@
     padding: 1.5rem !important;
   }
   .combo-carousel-arrow {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     font-size: 1rem;
+    /* On mobile, keep arrows inside the card */
+    left: auto;
+    right: auto;
   }
-  .combo-arrow-prev { left: 6px; }
-  .combo-arrow-next { right: 6px; }
+  .combo-arrow-prev { left: 8px !important; }
+  .combo-arrow-next { right: 8px !important; }
 }
 
 

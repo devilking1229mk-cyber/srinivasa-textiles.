@@ -71,6 +71,13 @@ function initOpeningLogoAnimation(forceReplay = false) {
     }, step.time);
   });
 
+  // Auto-reveal the light-themed storefront smoothly once weave completes
+  setTimeout(() => {
+    if (!isDismissed) {
+      dismissPreloader();
+    }
+  }, 1900);
+
   // ENTER STORE on button click
   if (enterBtn) {
     enterBtn.addEventListener("click", (e) => {

@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Immediate Theme Engine: Guaranteed Default Light Theme for all first-time visitors -->
+  <!-- Immediate Theme Engine: Guaranteed Default Light Theme across entire website -->
   <script>
     (function () {
       try {
-        var userChosen = localStorage.getItem("st_user_theme_chosen");
-        var savedTheme = localStorage.getItem("st_active_theme_v3");
-        var theme = (userChosen === "true" && savedTheme === "dark") ? "dark" : "light";
+        // Purge legacy dark theme remnants so entire website strictly defaults to light mode
+        if (localStorage.getItem("st_active_theme_v3") === "dark" || localStorage.getItem("st_user_theme_chosen") === "true") {
+          localStorage.removeItem("st_active_theme_v3");
+          localStorage.removeItem("st_user_theme_chosen");
+        }
+        var hasChosen = localStorage.getItem("st_user_theme_chosen_v4");
+        var savedTheme = localStorage.getItem("st_active_theme_v4");
+        var theme = (hasChosen === "true" && savedTheme === "dark") ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
       } catch (e) {
         document.documentElement.setAttribute("data-theme", "light");
@@ -236,8 +241,8 @@
           <span data-icon="cart" data-icon-size="16"></span> Public Store
         </a>
 
-        <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Toggle Light / Dark Theme">
-          <span class="theme-icon" data-icon="themeMoon"></span><span class="theme-label"> Dark</span>
+        <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Current: Light Mode (Click for Dark Mode 🌙)">
+          <span class="theme-icon" data-icon="themeSun"></span><span class="theme-label"> Light</span>
         </button>
 
         <button id="exitAdminBtn" class="exit-admin-btn">
@@ -1721,7 +1726,8 @@
                     <input type="number" id="famRotationSecondsInput" class="admin-input" min="2" max="60" step="1"
                       value="5"
                       style="width: 85px; text-align: center; font-size: 1.2rem; font-weight: 800; color: var(--color-gold); padding: 0.4rem;"
-                      oninput="window.admin && window.admin.handleRotationSecondsChange(this.value)" />
+                      oninput="window.admin && window.admin.handleRotationSecondsChange(this.value)"
+                      onchange="window.admin && window.admin.handleSaveFamilyComboSettings()" />
                     <span style="font-size: 0.875rem; font-weight: 700; color: var(--text-muted);">
                       seconds per combo
                     </span>
@@ -3682,13 +3688,21 @@
         });
       }
 
-      // Live clock
+      // Live clock (lightweight textContent update)
       const clock = document.getElementById("adminLiveClock");
       if (clock) {
+        const clockSvg = window.Icons ? window.Icons.get("clock", { size: 14 }) : "🕒";
+        const iconSpan = document.createElement("span");
+        iconSpan.innerHTML = clockSvg;
+        const textSpan = document.createElement("span");
+        clock.textContent = "";
+        clock.appendChild(iconSpan);
+        clock.appendChild(document.createTextNode(" "));
+        clock.appendChild(textSpan);
+
         const updateClock = () => {
           const now = new Date();
-          const clockSvg = window.Icons ? window.Icons.get("clock", { size: 14 }) : "🕒";
-          clock.innerHTML = `${clockSvg} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} IST`;
+          textSpan.textContent = `${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} IST`;
         };
         updateClock();
         setInterval(updateClock, 1000);
@@ -3702,16 +3716,16 @@
 
         const updateAdminThemeBtn = (theme) => {
           const isDark = theme === "dark";
-          const iconSvg = isDark ? sunSvg : moonSvg;
-          const labelText = isDark ? " Light" : " Dark";
+          const iconSvg = isDark ? moonSvg : sunSvg;
+          const labelText = isDark ? " Dark" : " Light";
 
           themeBtn.style.transform = "scale(0.88)";
           themeBtn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${labelText}</span>`;
-          themeBtn.setAttribute("title", isDark ? "Switch to Light Mode ☀️" : "Switch to Dark Mode 🌙");
+          themeBtn.setAttribute("title", isDark ? "Current: Dark Mode (Click for Light Mode ☀️)" : "Current: Light Mode (Click for Dark Mode 🌙)");
           setTimeout(() => { themeBtn.style.transform = "scale(1)"; }, 180);
         };
 
-        const initialTheme = document.documentElement.getAttribute("data-theme") || (window.store && window.store.activeTheme) || "dark";
+        const initialTheme = document.documentElement.getAttribute("data-theme") || (window.store && window.store.activeTheme) || "light";
         updateAdminThemeBtn(initialTheme);
 
         themeBtn.addEventListener("click", () => {
@@ -3721,8 +3735,8 @@
             window.store.setTheme(newTheme);
           } else {
             document.documentElement.setAttribute("data-theme", newTheme);
-            localStorage.setItem("st_user_theme_chosen", "true");
-            localStorage.setItem("st_active_theme_v3", newTheme);
+            localStorage.setItem("st_user_theme_chosen_v4", "true");
+            localStorage.setItem("st_active_theme_v4", newTheme);
           }
           updateAdminThemeBtn(newTheme);
         });

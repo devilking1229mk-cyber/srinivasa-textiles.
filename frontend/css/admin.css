@@ -49,49 +49,20 @@
 .admin-workspace,
 .admin-navbar,
 .admin-header,
-.admin-brand,
-.admin-brand *,
-.admin-session-pill,
-.admin-time-pill,
-.admin-nav-actions,
-.admin-nav-btn,
-.admin-container,
 .admin-sidebar,
 .admin-sidebar-nav,
-.admin-menu-item,
-.admin-menu-item *,
-.admin-nav-group-title,
 .admin-main,
-.admin-main-content,
 .admin-section,
 .admin-panel,
-.admin-welcome-hero,
 .admin-card,
-.admin-card *,
 .kpi-card,
-.kpi-card *,
 .stat-card,
-.admin-table,
-.admin-table *,
-.admin-table th,
-.admin-table td,
 .admin-table-wrapper,
 .admin-lock-card,
-.admin-lock-card *,
-.admin-lock-screen,
-.admin-modal,
-.admin-modal-content,
-.bulk-subtab-btn,
-.timer-box,
-.exit-admin-btn,
-.form-section-card,
-.form-control,
-.form-select,
-.form-input {
-  transition: background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-    color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-    border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-    box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+.admin-modal-content {
+  transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* ==========================================================================
@@ -156,6 +127,27 @@
   letter-spacing: 0.06em;
   font-weight: 600;
   margin-top: 2px;
+}
+
+[data-theme="dark"] .admin-brand-icon {
+  background: linear-gradient(135deg, rgba(245, 208, 97, 0.3) 0%, rgba(77, 5, 27, 0.95) 100%) !important;
+  border: 1.5px solid #F5D061 !important;
+  box-shadow: 0 0 22px rgba(245, 208, 97, 0.4), inset 0 0 8px rgba(245, 208, 97, 0.2) !important;
+}
+
+[data-theme="dark"] .admin-brand-icon svg {
+  color: #FFF5CF !important;
+  filter: drop-shadow(0 0 6px rgba(245, 208, 97, 0.7)) !important;
+}
+
+[data-theme="dark"] .admin-brand h2 {
+  color: #FFF5CF !important;
+  text-shadow: 0 0 16px rgba(245, 208, 97, 0.45) !important;
+}
+
+[data-theme="dark"] .admin-brand-tagline {
+  color: #F5D061 !important;
+  opacity: 0.95 !important;
 }
 
 .admin-session-pill {
@@ -1560,6 +1552,17 @@
   box-shadow: 0 0 24px rgba(212, 175, 55, 0.45);
 }
 
+[data-theme="dark"] .lock-brand-icon {
+  background: linear-gradient(135deg, rgba(245, 208, 97, 0.35) 0%, rgba(77, 5, 27, 0.95) 100%) !important;
+  border-color: #F5D061 !important;
+  box-shadow: 0 0 32px rgba(245, 208, 97, 0.5), inset 0 0 12px rgba(245, 208, 97, 0.25) !important;
+}
+
+[data-theme="dark"] .lock-brand-icon svg {
+  color: #FFF5CF !important;
+  filter: drop-shadow(0 0 8px rgba(245, 208, 97, 0.8)) !important;
+}
+
 .admin-lock-card .lock-title {
   font-family: var(--font-serif-display);
   color: #7A0C2E;
@@ -1570,7 +1573,8 @@
 }
 
 [data-theme="dark"] .admin-lock-card .lock-title {
-  color: #FFF2B2;
+  color: #FFF5CF !important;
+  text-shadow: 0 0 18px rgba(245, 208, 97, 0.45) !important;
 }
 
 .admin-lock-card .lock-subtitle {

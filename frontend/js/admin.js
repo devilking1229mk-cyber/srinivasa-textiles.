@@ -1,4 +1,4 @@
-﻿// Owner Admin Panel Controller & Multi-Category Family Management System
+// Owner Admin Panel Controller & Multi-Category Family Management System
 // Compliant with Complete_Family_Textile_Website_Blueprint.md
 
 class AdminController {
@@ -1306,7 +1306,14 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
 
     window.store.saveFamilyComboSettings({ autoRotate, intervalSeconds, pauseOnHover });
     this.renderFamilyComboSettings();
-    this.showToast(`Auto-rotation settings saved! Combos change every ${intervalSeconds}s on website.`, "success");
+
+    // Direct same-window update if storefront is mounted
+    if (window.storefront && typeof window.storefront.renderCollection01Section === "function") {
+      window.storefront.renderCollection01Section();
+    }
+
+    const stateDesc = autoRotate ? `Auto-rotating every ${intervalSeconds}s` : `Slideshow paused (Manual arrows only)`;
+    this.showToast(`✅ Slideshow updated live! ${stateDesc}.`, "success");
   }
 
   setRotationInterval(seconds) {

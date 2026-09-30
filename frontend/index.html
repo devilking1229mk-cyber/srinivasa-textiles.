@@ -1,17 +1,22 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Immediate Theme Engine: Guaranteed Default Light Theme for all first-time visitors -->
+  <!-- Immediate Theme Engine: Guaranteed Default Light Theme across entire website -->
   <script>
     (function () {
       try {
-        var userChosen = localStorage.getItem("st_user_theme_chosen");
-        var savedTheme = localStorage.getItem("st_active_theme_v3");
-        var theme = (userChosen === "true" && savedTheme === "dark") ? "dark" : "light";
+        // Purge legacy dark theme remnants so entire website strictly defaults to light mode
+        if (localStorage.getItem("st_active_theme_v3") === "dark" || localStorage.getItem("st_user_theme_chosen") === "true") {
+          localStorage.removeItem("st_active_theme_v3");
+          localStorage.removeItem("st_user_theme_chosen");
+        }
+        var hasChosen = localStorage.getItem("st_user_theme_chosen_v4");
+        var savedTheme = localStorage.getItem("st_active_theme_v4");
+        var theme = (hasChosen === "true" && savedTheme === "dark") ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
       } catch (e) {
         document.documentElement.setAttribute("data-theme", "light");
@@ -217,8 +222,8 @@
             </button>
 
             <!-- Dark / Light Mode Switcher -->
-            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark / Light Mode">
-              <span class="theme-icon" data-icon="themeMoon"></span><span class="theme-label"> Dark</span>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Current: Light Mode (Click for Dark Mode 🌙)">
+              <span class="theme-icon" data-icon="themeSun"></span><span class="theme-label"> Light</span>
             </button>
 
             <!-- Mobile 3-Lines (☰) Navigation & Departments Menu -->
@@ -244,7 +249,8 @@
 
           <h2 class="hero-title">
             SRINIVASA TEXTILES<br>
-            <span class="gold-text" style="font-size: 0.7em; display: block; margin-top: 0.5rem;">Authentic Handlooms for
+            <span class="gold-text" style="font-size: 0.7em; display: block; margin-top: 0.5rem;">Authentic Handlooms
+              for
               the Entire Family</span>
           </h2>
 
@@ -276,6 +282,23 @@
       </div>
     </section>
 
+    <!-- ==========================================================================
+         HOME SECTION 1.5: GRAND HARMONIZED FAMILY COMBOS & SETS (Collection 01)
+         ========================================================================== -->
+    <section class="section home-only-section" id="familyCombosHomeSection"
+      style="background: var(--bg-surface); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding-top: 2.5rem; padding-bottom: 3rem;">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Grand Family Ensembles</span>
+          <h2 class="section-title">Harmonized Family Sets &amp; Combos</h2>
+          <p class="section-subtitle">Single-batch ritual dye baths guaranteeing 100% color and zari harmony across Father, Mother, Daughter &amp; Son ensembles.</p>
+          <div class="section-divider"><span class="section-divider-motif">✦</span></div>
+        </div>
+        <div id="familyCombosHomeContainer" style="display: flex; flex-direction: column; gap: 2.5rem;">
+          <!-- Dynamically Rendered by StorefrontController with live auto-rotation timer -->
+        </div>
+      </div>
+    </section>
 
     <!-- ==========================================================================
          HOME SECTION 2: TEXTILE'S BUILDING & SHOWROOM ARCHITECTURE
@@ -442,7 +465,8 @@
       <div class="container">
         <div class="explore-cta-card">
           <span class="section-tag"
-            style="background: rgba(255,255,255,0.15); color: #FFF2B2; border-color: var(--color-gold);">✨ Master Weavers
+            style="background: rgba(255,255,255,0.15); color: #FFF2B2; border-color: var(--color-gold);">✨ Master
+            Weavers
             Heritage Showroom</span>
           <h2>Ready to Discover Our Complete Family Handloom Collections?</h2>
           <p>
@@ -472,7 +496,18 @@
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <h3>SRINIVASA TEXTILES</h3>
+            <h3>
+              <span class="footer-brand-logo-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 3v18"></path>
+                  <path d="M3 12h18"></path>
+                  <path d="m7 7 10 10"></path>
+                  <path d="m17 7-10 10"></path>
+                </svg>
+              </span>
+              SRINIVASA TEXTILES
+            </h3>
             <p>Master Weavers &amp; Complete Family Textile Store Since 1978. Preserving the traditional art of Indian
               handloom weaving for all generations.</p>
             <div class="footer-certifications">
@@ -485,15 +520,21 @@
           <div class="footer-col">
             <h4>Family Departments</h4>
             <ul class="footer-links">
-              <li><a href="#family-combos" onclick="window.storefront.navigateToPage('family')"><span data-icon="family" class="footer-dept-icon"></span> Family Matching Sets</a>
+              <li><a href="#family-combos" onclick="window.storefront.navigateToPage('family')"><span data-icon="family"
+                    class="footer-dept-icon"></span> Family Matching Sets</a>
               </li>
-              <li><a href="#women" onclick="window.storefront.navigateToPage('women')"><span data-icon="ladies" class="footer-dept-icon"></span> Ladies' Silk Sarees</a></li>
-              <li><a href="#girls" onclick="window.storefront.navigateToPage('girls')"><span data-icon="kids" class="footer-dept-icon"></span> Girls' Pattu Pavadai (2-14Y)</a>
+              <li><a href="#women" onclick="window.storefront.navigateToPage('women')"><span data-icon="ladies"
+                    class="footer-dept-icon"></span> Ladies' Silk Sarees</a></li>
+              <li><a href="#girls" onclick="window.storefront.navigateToPage('girls')"><span data-icon="kids"
+                    class="footer-dept-icon"></span> Girls' Pattu Pavadai (2-14Y)</a>
               </li>
-              <li><a href="#boys" onclick="window.storefront.navigateToPage('boys')"><span data-icon="kids" class="footer-dept-icon"></span> Boys' Kurta Dhoti Sets (2-14Y)</a>
+              <li><a href="#boys" onclick="window.storefront.navigateToPage('boys')"><span data-icon="kids"
+                    class="footer-dept-icon"></span> Boys' Kurta Dhoti Sets (2-14Y)</a>
               </li>
-              <li><a href="#men" onclick="window.storefront.navigateToPage('men')"><span data-icon="mens" class="footer-dept-icon"></span> Men's Wedding Silk Shirts</a></li>
-              <li><a href="#infants" onclick="window.storefront.navigateToPage('infants')"><span data-icon="baby" class="footer-dept-icon"></span> Born Babies Muslin
+              <li><a href="#men" onclick="window.storefront.navigateToPage('men')"><span data-icon="mens"
+                    class="footer-dept-icon"></span> Men's Wedding Silk Shirts</a></li>
+              <li><a href="#infants" onclick="window.storefront.navigateToPage('infants')"><span data-icon="baby"
+                    class="footer-dept-icon"></span> Born Babies Muslin
                   (0-2Y)</a></li>
             </ul>
           </div>
@@ -502,9 +543,13 @@
             <h4>Customer Services</h4>
             <ul class="footer-links">
               <li><a href="javascript:void(0)"
-                  onclick="document.getElementById('feedbackModal').classList.add('active')"><span data-icon="feedback" class="footer-link-icon"></span> Customer Feedback &amp;
+                  onclick="document.getElementById('feedbackModal').classList.add('active')"><span data-icon="feedback"
+                    class="footer-link-icon"></span> Customer Feedback &amp;
                   Reviews</a></li>
-              <li><a href="https://wa.me/918778503021?text=Namaste%20Srinivasa%20Textiles%2C%20I%20would%20like%20to%20inquire%20about%20Wholesale%20and%20Bulk%20Orders%20for%20Handloom%20Silk%20Sarees%20and%20Family%20Combos." target="_blank"><span data-icon="receipt" class="footer-link-icon"></span> Wholesale &amp; Bulk Orders</a></li>
+              <li><a
+                  href="https://wa.me/918778503021?text=Namaste%20Srinivasa%20Textiles%2C%20I%20would%20like%20to%20inquire%20about%20Wholesale%20and%20Bulk%20Orders%20for%20Handloom%20Silk%20Sarees%20and%20Family%20Combos."
+                  target="_blank"><span data-icon="receipt" class="footer-link-icon"></span> Wholesale &amp; Bulk
+                  Orders</a></li>
               <li><a href="shop.html">Track Courier Dispatch</a></li>
             </ul>
           </div>
@@ -514,7 +559,8 @@
         <div class="footer-bottom">
           <div>
             <p>© 2026 Srinivasa Textiles. All Rights Reserved. Master Weavers Since 1978.</p>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">GSTIN: 33AABCS9876C1ZT | 108 Raja Veedhi,
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">GSTIN: 33AABCS9876C1ZT | 108
+              Raja Veedhi,
               Kanchipuram, Tamil Nadu - 631501</p>
           </div>
         </div>
@@ -531,7 +577,15 @@
   <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
     <div class="mobile-nav-header">
       <div class="mobile-nav-title">
-        <span style="font-size: 1.3rem;">🏛️</span>
+        <div class="brand-symbol mobile-nav-symbol">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3v18"></path>
+            <path d="M3 12h18"></path>
+            <path d="m7 7 10 10"></path>
+            <path d="m17 7-10 10"></path>
+          </svg>
+        </div>
         <div>
           <h3>Srinivasa Textiles</h3>
           <small>Handloom Master Weavers • Estd 1978</small>
@@ -543,20 +597,28 @@
     <div class="mobile-nav-body">
       <div class="mobile-nav-section-title">✨ BROWSE DEPARTMENTS</div>
       <ul class="mobile-dept-list">
-        <li><button class="mobile-dept-btn active" data-page="explore"><span data-icon="palace" class="drawer-dept-icon"></span> All Collections (Explore)</button></li>
-        <li><button class="mobile-dept-btn highlight-combo" data-page="family"><span data-icon="family" class="drawer-dept-icon"></span> Family Combos &amp; Matching Sets</button></li>
-        <li><button class="mobile-dept-btn" data-page="women"><span data-icon="ladies" class="drawer-dept-icon"></span> Ladies' Sarees &amp; Ethnic</button></li>
-        <li><button class="mobile-dept-btn" data-page="girls"><span data-icon="kids" class="drawer-dept-icon"></span> Girls (Pattu Pavadai 2-14Y)</button></li>
-        <li><button class="mobile-dept-btn" data-page="boys"><span data-icon="kids" class="drawer-dept-icon"></span> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
-        <li><button class="mobile-dept-btn" data-page="men"><span data-icon="mens" class="drawer-dept-icon"></span> Men's Silk &amp; Dhotis</button></li>
-        <li><button class="mobile-dept-btn" data-page="infants"><span data-icon="baby" class="drawer-dept-icon"></span> Born Babies &amp; Infants (0-2Y)</button></li>
+        <li><button class="mobile-dept-btn active" data-page="explore"><span data-icon="palace"
+              class="drawer-dept-icon"></span> All Collections (Explore)</button></li>
+        <li><button class="mobile-dept-btn highlight-combo" data-page="family"><span data-icon="family"
+              class="drawer-dept-icon"></span> Family Combos &amp; Matching Sets</button></li>
+        <li><button class="mobile-dept-btn" data-page="women"><span data-icon="ladies" class="drawer-dept-icon"></span>
+            Ladies' Sarees &amp; Ethnic</button></li>
+        <li><button class="mobile-dept-btn" data-page="girls"><span data-icon="kids" class="drawer-dept-icon"></span>
+            Girls (Pattu Pavadai 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="boys"><span data-icon="kids" class="drawer-dept-icon"></span>
+            Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="men"><span data-icon="mens" class="drawer-dept-icon"></span>
+            Men's Silk &amp; Dhotis</button></li>
+        <li><button class="mobile-dept-btn" data-page="infants"><span data-icon="baby" class="drawer-dept-icon"></span>
+            Born Babies &amp; Infants (0-2Y)</button></li>
       </ul>
 
       <div class="mobile-nav-divider"></div>
 
       <!-- Saved Favourites Session inside Mobile Drawer -->
       <div class="mobile-nav-section-title">❤️ SAVED FAVOURITES</div>
-      <button class="mobile-drawer-action-btn favourites-trigger-btn" id="mobileWishlistBtn" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <button class="mobile-drawer-action-btn favourites-trigger-btn" id="mobileWishlistBtn"
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
           <span data-icon="favourite" class="drawer-icon-img"></span> My Saved Favourites
         </span>
@@ -567,11 +629,13 @@
 
       <!-- Shopping Bag Session inside Mobile Drawer -->
       <div class="mobile-nav-section-title">🛍️ SHOPPING BAG</div>
-      <button class="mobile-drawer-action-btn" id="mobileCartBtn" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <button class="mobile-drawer-action-btn" id="mobileCartBtn"
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
           <span data-icon="cart" class="drawer-icon-img"></span> My Shopping Bag
         </span>
-        <span class="badge-count cart-count-badge" id="mobileCartBadge" style="position: static; display: inline-flex;">0</span>
+        <span class="badge-count cart-count-badge" id="mobileCartBadge"
+          style="position: static; display: inline-flex;">0</span>
       </button>
 
       <div class="mobile-nav-divider"></div>
@@ -590,9 +654,11 @@
         <p>108 Raja Veedhi, Temple District, Kanchipuram - 631501</p>
         <div style="margin-top: 0.65rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-xs"
-            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;"><span data-icon="mapPin" data-icon-size="12"></span> Directions</a>
+            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;"><span
+              data-icon="mapPin" data-icon-size="12"></span> Directions</a>
           <a href="tel:+918778503021" class="btn btn-outline btn-xs"
-            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;"><span data-icon="phone" data-icon-size="12"></span> Call Support</a>
+            style="text-decoration: none !important; padding: 0.35rem 0.65rem; font-size: 0.72rem;"><span
+              data-icon="phone" data-icon-size="12"></span> Call Support</a>
         </div>
       </div>
     </div>
@@ -728,7 +794,8 @@
             <p>Srinivasa Textiles Master Weaver Direct Wholesale &amp; Wedding Troupe Quotation</p>
           </div>
         </div>
-        <button type="button" class="pdp-close-btn bulk-inquiry-close-btn" id="closeBulkInquiryModalBtn" title="Close Inquiry Modal">✕</button>
+        <button type="button" class="pdp-close-btn bulk-inquiry-close-btn" id="closeBulkInquiryModalBtn"
+          title="Close Inquiry Modal">✕</button>
       </div>
 
       <!-- Selected Package Banner if triggered from a specific card -->
@@ -748,7 +815,8 @@
             <label for="bulkCustName" class="bulk-form-label">
               <span>👤</span> Full Name / Contact Person *
             </label>
-            <input type="text" id="bulkCustName" required class="bulk-form-input" placeholder="e.g. S. Vijayaraghavan" />
+            <input type="text" id="bulkCustName" required class="bulk-form-input"
+              placeholder="e.g. S. Vijayaraghavan" />
           </div>
           <div class="bulk-form-field">
             <label for="bulkCustPhone" class="bulk-form-label">
@@ -769,7 +837,8 @@
             <label for="bulkCustCompany" class="bulk-form-label">
               <span>🏛️</span> Company / Family / Occasion Name *
             </label>
-            <input type="text" id="bulkCustCompany" required class="bulk-form-input" placeholder="e.g. Raghavan Wedding Troupe or Boutique" />
+            <input type="text" id="bulkCustCompany" required class="bulk-form-input"
+              placeholder="e.g. Raghavan Wedding Troupe or Boutique" />
           </div>
         </div>
 
@@ -805,13 +874,15 @@
             <label for="bulkCustCity" class="bulk-form-label">
               <span>📍</span> Delivery City / State *
             </label>
-            <input type="text" id="bulkCustCity" required class="bulk-form-input" placeholder="e.g. Chennai, Tamil Nadu" />
+            <input type="text" id="bulkCustCity" required class="bulk-form-input"
+              placeholder="e.g. Chennai, Tamil Nadu" />
           </div>
           <div class="bulk-form-field">
             <label for="bulkCustGstin" class="bulk-form-label">
               <span>💼</span> GSTIN (If Business / Optional)
             </label>
-            <input type="text" id="bulkCustGstin" class="bulk-form-input" placeholder="33AAAC1234F1Z5 or Unregistered" />
+            <input type="text" id="bulkCustGstin" class="bulk-form-input"
+              placeholder="33AAAC1234F1Z5 or Unregistered" />
           </div>
         </div>
 
@@ -819,12 +890,15 @@
           <label for="bulkCustNotes" class="bulk-form-label">
             <span>📝</span> Specific Customization, Color Schemes, or Weaver Notes:
           </label>
-          <textarea id="bulkCustNotes" rows="3" class="bulk-form-textarea" placeholder="e.g. Need 15 sarees in Crimson &amp; Mustard with Korvai borders, plus matching raw silk unstitched blouse material..."></textarea>
+          <textarea id="bulkCustNotes" rows="3" class="bulk-form-textarea"
+            placeholder="e.g. Need 15 sarees in Crimson &amp; Mustard with Korvai borders, plus matching raw silk unstitched blouse material..."></textarea>
         </div>
 
         <div class="bulk-form-actions">
-          <button type="button" class="btn btn-outline btn-md" id="cancelBulkInquiryBtn" style="padding: 0.65rem 1.4rem;">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-md" id="submitBulkInquiryBtn" style="font-weight: 800; padding: 0.65rem 1.75rem;">
+          <button type="button" class="btn btn-outline btn-md" id="cancelBulkInquiryBtn"
+            style="padding: 0.65rem 1.4rem;">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-md" id="submitBulkInquiryBtn"
+            style="font-weight: 800; padding: 0.65rem 1.75rem;">
             <span>📨</span> Submit Bulk Inquiry
           </button>
         </div>
@@ -833,15 +907,20 @@
       <!-- Confirmation Screen -->
       <div id="bulkInquirySuccessContainer" style="display: none; text-align: center; padding: 2rem 1rem;">
         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🎉</div>
-        <h3 style="font-family: var(--font-serif-display); color: var(--color-primary); margin-bottom: 0.5rem; font-size: 1.4rem;">
+        <h3
+          style="font-family: var(--font-serif-display); color: var(--color-primary); margin-bottom: 0.5rem; font-size: 1.4rem;">
           Bulk Inquiry Received with Reverence!
         </h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto 1.5rem; line-height: 1.55;">
-          Your inquiry <strong id="bulkInquiryConfirmId" style="color: var(--color-gold);"></strong> has been dispatched directly to our master weavers console. Our wholesale executive will contact you via WhatsApp with a detailed quotation and fabric swatches within 2-4 business hours.
+        <p
+          style="color: var(--text-muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto 1.5rem; line-height: 1.55;">
+          Your inquiry <strong id="bulkInquiryConfirmId" style="color: var(--color-gold);"></strong> has been dispatched
+          directly to our master weavers console. Our wholesale executive will contact you via WhatsApp with a detailed
+          quotation and fabric swatches within 2-4 business hours.
         </p>
 
         <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
-          <a id="bulkInquiryWhatsAppChatBtn" href="#" target="_blank" class="btn btn-gold btn-md" style="font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;">
+          <a id="bulkInquiryWhatsAppChatBtn" href="#" target="_blank" class="btn btn-gold btn-md"
+            style="font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;">
             <span>💬</span> Connect on WhatsApp Now
           </a>
           <button type="button" class="btn btn-outline btn-md" id="bulkInquiryCloseSuccessBtn">
@@ -856,7 +935,8 @@
   <div class="lightbox-modal" id="lightboxModal">
     <div class="lightbox-content">
       <span class="lightbox-close-btn" id="lightboxCloseBtn">✕</span>
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt="Fullscreen High-Res View" class="lightbox-main-img" id="lightboxMainImg" />
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
+        alt="Fullscreen High-Res View" class="lightbox-main-img" id="lightboxMainImg" />
     </div>
   </div>
 
@@ -872,7 +952,8 @@
           <span style="font-size: 0.725rem; color: var(--text-muted);">Saved Heirloom &amp; Family Garments</span>
         </div>
       </div>
-      <button class="wishlist-close-btn" id="wishlistCloseBtn" title="Close Favourites"><span data-icon="close"></span></button>
+      <button class="wishlist-close-btn" id="wishlistCloseBtn" title="Close Favourites"><span
+          data-icon="close"></span></button>
     </div>
 
     <div class="wishlist-items-body" id="wishlistItemsBody"></div>
@@ -1167,9 +1248,11 @@
   <!-- ==========================================================================
        FAMILY COMBO BOOKING MODAL (DIRECT ORDERING WITH SIZES)
        ========================================================================== -->
-  <div class="pdp-modal" id="familyComboBookingModal" role="dialog" aria-modal="true" style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.8); z-index: 9999;">
-    <div style="background: var(--bg-surface, #1A050D); border: 2px solid var(--color-gold, #D4AF37); border-radius: var(--radius-lg, 12px); max-width: 650px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); color: var(--text-main, #FFF);">
-      
+  <div class="pdp-modal" id="familyComboBookingModal" role="dialog" aria-modal="true"
+    style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.8); z-index: 9999;">
+    <div
+      style="background: var(--bg-surface, #1A050D); border: 2px solid var(--color-gold, #D4AF37); border-radius: var(--radius-lg, 12px); max-width: 650px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); color: var(--text-main, #FFF);">
+
       <!-- Close Button -->
       <button type="button" onclick="window.storefront && window.storefront.closeFamilyComboBookingModal()"
         style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--color-gold); cursor: pointer; line-height: 1;">
@@ -1178,8 +1261,10 @@
 
       <!-- Modal Header -->
       <div style="border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 1rem; margin-bottom: 1.25rem;">
-        <span class="combo-badge-tag" id="fcModalBadge" style="margin-bottom: 0.5rem; font-size: 0.7rem;">👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE</span>
-        <h3 id="fcModalTitle" style="color: var(--color-gold); font-size: 1.35rem; margin: 0 0 0.35rem 0; font-family: var(--font-serif-display);">
+        <span class="combo-badge-tag" id="fcModalBadge" style="margin-bottom: 0.5rem; font-size: 0.7rem;">👨‍👩‍👧‍👦
+          HIGH VALUE FAMILY BUNDLE</span>
+        <h3 id="fcModalTitle"
+          style="color: var(--color-gold); font-size: 1.35rem; margin: 0 0 0.35rem 0; font-family: var(--font-serif-display);">
           Book Coordinated Family Combo Bundle
         </h3>
         <p id="fcModalSubtitle" style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
@@ -1188,35 +1273,43 @@
       </div>
 
       <!-- Pricing Summary Bar -->
-      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.3); padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.3); padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Special Bundle Price (All 4 Items Included):</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Special Bundle Price (All 4 Items
+            Included):</span>
           <span id="fcModalPrice" style="font-size: 1.5rem; font-weight: 800; color: var(--color-gold);">₹58,500</span>
-          <span id="fcModalOriginalPrice" style="font-size: 0.9rem; color: var(--text-muted); text-decoration: line-through; margin-left: 0.5rem;">₹72,000</span>
+          <span id="fcModalOriginalPrice"
+            style="font-size: 0.9rem; color: var(--text-muted); text-decoration: line-through; margin-left: 0.5rem;">₹72,000</span>
         </div>
-        <span id="fcModalSavings" style="font-size: 0.8rem; font-weight: 800; color: var(--color-success); background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 4px;">
+        <span id="fcModalSavings"
+          style="font-size: 0.8rem; font-weight: 800; color: var(--color-success); background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 4px;">
           Save ₹13,500
         </span>
       </div>
 
       <!-- Booking Form -->
-      <form id="familyComboOrderForm" onsubmit="window.storefront && window.storefront.handleFamilyComboOrderSubmit(event)">
+      <form id="familyComboOrderForm"
+        onsubmit="window.storefront && window.storefront.handleFamilyComboOrderSubmit(event)">
         <input type="hidden" id="fcFormComboId" value="" />
         <input type="hidden" id="fcFormComboTitle" value="" />
         <input type="hidden" id="fcFormTotalPrice" value="" />
 
         <!-- 4-Member Size Selection -->
-        <h4 style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
+        <h4
+          style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
           <span>📏</span> Select Family Member Sizing &amp; Tailoring
         </h4>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
           <!-- Father Size -->
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               👨 Father's Shirt Size *
             </label>
-            <select id="fcFormFatherSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+            <select id="fcFormFatherSize" class="input-field" required
+              style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
               <option value="38 (S - Chest 38)">38 (S) - Chest 38" + 8-Muzham Dhoti</option>
               <option value="40 (M - Chest 40)" selected>40 (M) - Chest 40" + 8-Muzham Dhoti</option>
               <option value="42 (L - Chest 42)">42 (L) - Chest 42" + 8-Muzham Dhoti</option>
@@ -1230,9 +1323,12 @@
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               ✨ Mother's Saree &amp; Blouse *
             </label>
-            <select id="fcFormMotherSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
-              <option value="Standard 6.3m (Unstitched Pure Zari Blouse)" selected>Standard 6.3m (Unstitched Pure Zari Blouse)</option>
-              <option value="Standard 6.3m (Pre-Pleated / Ready Saree Request)">Standard 6.3m (Pre-Pleated / Ready Saree Request)</option>
+            <select id="fcFormMotherSize" class="input-field" required
+              style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="Standard 6.3m (Unstitched Pure Zari Blouse)" selected>Standard 6.3m (Unstitched Pure Zari
+                Blouse)</option>
+              <option value="Standard 6.3m (Pre-Pleated / Ready Saree Request)">Standard 6.3m (Pre-Pleated / Ready Saree
+                Request)</option>
             </select>
           </div>
 
@@ -1241,7 +1337,8 @@
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               👦 Son's Age &amp; Kurta Size *
             </label>
-            <select id="fcFormSonSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+            <select id="fcFormSonSize" class="input-field" required
+              style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
               <option value="2-4 Years (Chest 22)">2 - 4 Years (Chest 22")</option>
               <option value="4-6 Years (Chest 24)">4 - 6 Years (Chest 24")</option>
               <option value="6-8 Years (Chest 26)" selected>6 - 8 Years (Chest 26")</option>
@@ -1256,7 +1353,8 @@
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               👧 Daughter's Age &amp; Pavadai Size *
             </label>
-            <select id="fcFormDaughterSize" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+            <select id="fcFormDaughterSize" class="input-field" required
+              style="width: 100%; font-size: 0.85rem; padding: 0.5rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
               <option value="2-4 Years (Length 24)">2 - 4 Years (Skirt 24")</option>
               <option value="4-6 Years (Length 28)" selected>4 - 6 Years (Skirt 28")</option>
               <option value="6-8 Years (Length 32)">6 - 8 Years (Skirt 32")</option>
@@ -1267,17 +1365,20 @@
         </div>
 
         <!-- Customer Contact & Shipping Details -->
-        <h4 style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
+        <h4
+          style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
           <span>📦</span> Delivery &amp; Contact Details
         </h4>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               Full Name *
             </label>
             <input type="text" id="fcFormCustomerName" class="input-field" required
-              placeholder="e.g. Karthik &amp; Ananya Subramanian" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+              placeholder="e.g. Karthik &amp; Ananya Subramanian"
+              style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
           </div>
 
           <div>
@@ -1285,7 +1386,8 @@
               WhatsApp Phone Number *
             </label>
             <input type="tel" id="fcFormCustomerPhone" class="input-field" required pattern="[0-9]{10}" maxlength="10"
-              placeholder="10-digit mobile number" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+              placeholder="10-digit mobile number"
+              style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
           </div>
 
           <div style="grid-column: 1 / -1;">
@@ -1293,7 +1395,8 @@
               Full Delivery Address &amp; Landmark *
             </label>
             <textarea id="fcFormDeliveryAddress" class="input-field" required rows="2"
-              placeholder="Flat/House No, Street, Landmark, City, State" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;"></textarea>
+              placeholder="Flat/House No, Street, Landmark, City, State"
+              style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;"></textarea>
           </div>
 
           <div>
@@ -1301,15 +1404,18 @@
               Postal Pincode *
             </label>
             <input type="text" id="fcFormPincode" class="input-field" required pattern="[0-9]{6}" maxlength="6"
-              placeholder="e.g. 600004" style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+              placeholder="e.g. 600004"
+              style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
           </div>
 
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               Payment Method *
             </label>
-            <select id="fcFormPaymentMode" class="input-field" required style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
-              <option value="UPI Online (GPay / PhonePe / Paytm)" selected>📱 UPI Online (GPay / PhonePe / Paytm)</option>
+            <select id="fcFormPaymentMode" class="input-field" required
+              style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;">
+              <option value="UPI Online (GPay / PhonePe / Paytm)" selected>📱 UPI Online (GPay / PhonePe / Paytm)
+              </option>
               <option value="COD (Cash on Delivery)">💵 Cash on Delivery (COD)</option>
               <option value="Direct Bank NEFT / RTGS">🏛️ Direct Bank NEFT / RTGS</option>
             </select>
@@ -1320,18 +1426,22 @@
               Ceremony Date / Special Customization Note
             </label>
             <input type="text" id="fcFormSpecialNotes" class="input-field"
-              placeholder="e.g. Wedding on 18th Oct, please expedite delivery or gift pack." style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
+              placeholder="e.g. Wedding on 18th Oct, please expedite delivery or gift pack."
+              style="width: 100%; font-size: 0.85rem; padding: 0.55rem; background: var(--bg-card); color: #FFF; border: 1px solid var(--border-color); border-radius: 6px;" />
           </div>
         </div>
 
         <!-- Submit & Guarantees -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(212, 175, 55, 0.3); padding-top: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(212, 175, 55, 0.3); padding-top: 1.25rem; flex-wrap: wrap; gap: 1rem;">
           <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
-            🛡️ <strong>Silk Mark Certified</strong> &bull; Complimentary Heirloom Muslin Covers &bull; Free Insured Express Delivery
+            🛡️ <strong>Silk Mark Certified</strong> &bull; Complimentary Heirloom Muslin Covers &bull; Free Insured
+            Express Delivery
           </div>
 
           <div style="display: flex; gap: 0.75rem;">
-            <button type="button" class="btn btn-outline" onclick="window.storefront && window.storefront.closeFamilyComboBookingModal()">
+            <button type="button" class="btn btn-outline"
+              onclick="window.storefront && window.storefront.closeFamilyComboBookingModal()">
               Cancel
             </button>
             <button type="submit" id="fcSubmitOrderBtn" class="btn btn-gold btn-lg" style="font-weight: 800;">
