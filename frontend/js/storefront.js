@@ -3480,26 +3480,13 @@ class StorefrontController {
       ? window.store.getFamilyComboSettings()
       : { autoRotate: true, intervalSeconds: 5, pauseOnHover: true };
 
-    // 1. Home Page Showcase (index.html)
-    const homeSection = document.getElementById("familyCombosHomeSection");
-    const homeContainer = document.getElementById("familyCombosHomeContainer");
-    if (homeSection && homeContainer) {
-      if (!isLive || activeCombos.length === 0) {
-        homeSection.style.display = "none";
-      } else {
-        homeSection.style.display = "block";
-        this.buildFamilyComboCarousel(homeContainer, activeCombos, settings);
-      }
-    }
-
-    // 2. Shop Page Showcase (shop.html)
+    // Only rendered on shop.html (never on index.html)
     const shopSection = document.getElementById("familyCombosSection");
     const shopContainer = document.getElementById("familyCombosContainer");
-    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
-    const isVisibleShopPage = isShopPage && (this.currentPage === "explore" || this.currentPage === "family");
+    const isVisiblePage = !this.currentPage || this.currentPage === "explore" || this.currentPage === "family";
 
     if (shopSection && shopContainer) {
-      if (!isLive || !isVisibleShopPage || activeCombos.length === 0) {
+      if (!isLive || !isVisiblePage || activeCombos.length === 0) {
         shopSection.style.display = "none";
       } else {
         shopSection.style.display = "block";
