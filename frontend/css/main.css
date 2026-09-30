@@ -780,21 +780,24 @@ textarea {
 }
 
 .dept-link {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text-main);
-  padding: 0.42rem 0.85rem;
+  color: #2D0310;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(254, 249, 238, 0.94) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(212, 175, 55, 0.12);
+  padding: 0.46rem 1.05rem;
   border-radius: var(--radius-full);
   cursor: pointer;
-  border: 1px solid transparent;
   white-space: nowrap;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  gap: 0.48rem;
+  position: relative;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* 2 Corner Navigation Arrows */
@@ -866,32 +869,162 @@ textarea {
   color: var(--text-muted);
 }
 
+/* Department Navigation Pill Badge Effects for ALL Tabs (Same Luxury Effect as Family Combos) */
+.dept-link .dept-nav-img-icon,
+.dept-link .dept-nav-img-icon svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #C98D1B;
+  stroke: currentColor;
+  transition: all 0.2s ease;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Hover State for ALL Tabs: elevated gold gradient glow like Family Combos */
 .dept-link:hover {
-  background: var(--bg-surface-alt);
-  border-color: var(--color-gold);
+  background: var(--color-gold-gradient) !important;
+  color: #1A0208 !important;
+  border-color: #B8860B !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.45), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
 }
 
+.dept-link:hover * {
+  color: #1A0208 !important;
+}
+
+.dept-link:hover .dept-nav-img-icon,
+.dept-link:hover .dept-nav-img-icon svg {
+  color: #1A0208 !important;
+  stroke: #1A0208 !important;
+  transform: scale(1.08);
+}
+
+/* Active State for ALL Tabs: Deep Royal Silk Crimson with Gold Accents */
 .dept-link.active {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, #7A0C2E 0%, #4D051B 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 2px 10px rgba(122, 12, 46, 0.3);
+  border: 1.5px solid var(--color-gold) !important;
+  box-shadow: 0 4px 16px rgba(122, 12, 46, 0.45), 0 0 10px rgba(212, 175, 55, 0.35) !important;
+  transform: translateY(-1px);
 }
 
-[data-theme="dark"] .dept-link.active {
-  background: var(--color-primary);
+.dept-link.active * {
   color: #ffffff !important;
-  box-shadow: 0 2px 12px rgba(255, 90, 130, 0.4);
 }
 
-.dept-link.highlight-combo {
+.dept-link.active .dept-nav-img-icon,
+.dept-link.active .dept-nav-img-icon svg {
+  color: #FFDE59 !important;
+  stroke: #FFDE59 !important;
+  filter: drop-shadow(0 0 4px rgba(255, 222, 89, 0.5));
+}
+
+.dept-link.active:hover {
+  background: linear-gradient(135deg, #8E1138 0%, #580821 100%) !important;
+  color: #ffffff !important;
+  border-color: #FFF2B2 !important;
+  box-shadow: 0 6px 20px rgba(122, 12, 46, 0.55), 0 0 14px rgba(212, 175, 55, 0.45) !important;
+}
+
+.dept-link.active:hover .dept-nav-img-icon svg {
+  color: #FFDE59 !important;
+  stroke: #FFDE59 !important;
+}
+
+/* Family Combos Signature Highlight Pill */
+.dept-link.highlight-combo,
+.dept-link.highlight-combo * {
   background: var(--color-gold-gradient);
-  color: #4D051B !important;
-  font-weight: 800;
+  color: #1A0208 !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+  border-color: #B8860B;
+}
+
+.dept-link.highlight-combo:hover,
+.dept-link.highlight-combo:hover * {
+  background: var(--color-gold-gradient) !important;
+  color: #1A0208 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.55) !important;
+}
+
+.dept-link.highlight-combo .dept-nav-img-icon,
+.dept-link.highlight-combo .dept-nav-img-icon svg {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #1A0208 !important;
+  stroke: #1A0208 !important;
 }
 
 .dept-link.highlight-combo.active {
-  border: 2px solid #ffffff;
-  box-shadow: var(--shadow-gold);
+  background: linear-gradient(135deg, #7A0C2E 0%, #4D051B 100%) !important;
+  color: #ffffff !important;
+  border: 2px solid #FFDE59 !important;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.5), 0 0 12px rgba(122, 12, 46, 0.6) !important;
+}
+
+.dept-link.highlight-combo.active * {
+  color: #ffffff !important;
+}
+
+.dept-link.highlight-combo.active .dept-nav-img-icon svg {
+  color: #FFDE59 !important;
+  stroke: #FFDE59 !important;
+}
+
+/* Dark Theme Overrides for All Tabs */
+[data-theme="dark"] .dept-link {
+  background: linear-gradient(135deg, #1C1F28 0%, #141720 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  color: #F8FAFC !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .dept-link .dept-nav-img-icon,
+[data-theme="dark"] .dept-link .dept-nav-img-icon svg {
+  color: var(--color-gold) !important;
+  stroke: var(--color-gold) !important;
+}
+
+[data-theme="dark"] .dept-link:hover {
+  background: var(--color-gold-gradient) !important;
+  color: #1A0208 !important;
+  border-color: #FFF2B2 !important;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.55) !important;
+}
+
+[data-theme="dark"] .dept-link:hover * {
+  color: #1A0208 !important;
+}
+
+[data-theme="dark"] .dept-link:hover .dept-nav-img-icon,
+[data-theme="dark"] .dept-link:hover .dept-nav-img-icon svg {
+  color: #1A0208 !important;
+  stroke: #1A0208 !important;
+}
+
+[data-theme="dark"] .dept-link.active {
+  background: linear-gradient(135deg, #8A0E34 0%, #58061F 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid var(--color-gold) !important;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.4), 0 0 12px rgba(255, 90, 130, 0.5) !important;
+}
+
+[data-theme="dark"] .dept-link.active * {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .dept-link.active .dept-nav-img-icon svg {
+  color: #FFDE59 !important;
+  stroke: #FFDE59 !important;
 }
 
 /* ==========================================================================
@@ -1582,23 +1715,24 @@ textarea {
   }
 
   /* Feedback button is housed in the 3-line menu on mobile */
-  .feedback-nav-btn {
+  .feedback-nav-btn,
+  .search-trigger-btn,
+  .wishlist-btn,
+  .favourites-trigger-btn,
+  .cart-btn,
+  .theme-toggle-btn {
     display: none !important;
   }
 
-  /* Exactly Sized 34px Round Action Icons on Mobile in Perfect Alignment */
-  .search-trigger-btn,
-  .wishlist-btn,
-  .cart-btn,
-  .theme-toggle-btn,
+  /* Touch-friendly 40px Round Action Icon on Mobile */
   .mobile-menu-btn {
-    width: 34px !important;
-    min-width: 34px !important;
-    max-width: 34px !important;
-    height: 34px !important;
-    min-height: 34px !important;
-    max-height: 34px !important;
-    border-radius: 50% !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    border-radius: 10px !important;
     padding: 0 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -2254,26 +2388,83 @@ textarea {
   border-color: #2E3342 !important;
 }
 
-[data-theme="dark"] .btn-outline-gold {
+/* Ensure All Gold Buttons (Solid and Hovered Outline) Have High Contrast Dark Text in Both Light & Dark Themes */
+.btn-gold,
+.btn-gold *,
+.btn-gold span,
+a.btn-gold,
+a.btn-gold *,
+button.btn-gold,
+button.btn-gold *,
+[data-theme="dark"] .btn-gold,
+[data-theme="dark"] .btn-gold *,
+[data-theme="dark"] .btn-gold span,
+[data-theme="dark"] a.btn-gold,
+[data-theme="dark"] a.btn-gold *,
+[data-theme="dark"] button.btn-gold,
+[data-theme="dark"] button.btn-gold * {
+  color: #1A0208 !important;
+  text-shadow: none !important;
+}
+
+.btn-gold:hover,
+.btn-gold:hover *,
+a.btn-gold:hover,
+a.btn-gold:hover *,
+[data-theme="dark"] .btn-gold:hover,
+[data-theme="dark"] .btn-gold:hover * {
+  color: #1A0208 !important;
+}
+
+/* Outline Gold Button (Default: Transparent with Gold Outline and Text) */
+.btn-outline-gold,
+a.btn-outline-gold,
+button.btn-outline-gold,
+[data-theme="dark"] .btn-outline-gold,
+[data-theme="dark"] a.btn-outline-gold,
+[data-theme="dark"] button.btn-outline-gold {
   color: var(--color-gold) !important;
+  border-color: var(--color-gold) !important;
+  background: transparent !important;
+}
+
+/* When Hovered or Active, Outline Gold becomes Solid Gold -> Text MUST be Dark (#1A0208) */
+.btn-outline-gold:hover,
+.btn-outline-gold:hover *,
+.btn-outline-gold:hover span,
+a.btn-outline-gold:hover,
+a.btn-outline-gold:hover *,
+button.btn-outline-gold:hover,
+button.btn-outline-gold:hover *,
+[data-theme="dark"] .btn-outline-gold:hover,
+[data-theme="dark"] .btn-outline-gold:hover *,
+[data-theme="dark"] .btn-outline-gold:hover span,
+[data-theme="dark"] a.btn-outline-gold:hover,
+[data-theme="dark"] a.btn-outline-gold:hover *,
+[data-theme="dark"] button.btn-outline-gold:hover,
+[data-theme="dark"] button.btn-outline-gold:hover * {
+  background: var(--color-gold) !important;
+  color: #1A0208 !important;
   border-color: var(--color-gold) !important;
 }
 
-[data-theme="dark"] .btn-gold {
-  color: #1a0208 !important;
-  /* Keep text dark on gold button for contrast */
+/* WhatsApp / Bulk Inquiry CTA Buttons */
+#bulkInquiryWhatsAppChatBtn,
+#bulkInquiryWhatsAppChatBtn *,
+[data-theme="dark"] #bulkInquiryWhatsAppChatBtn,
+[data-theme="dark"] #bulkInquiryWhatsAppChatBtn * {
+  color: #1A0208 !important;
+  font-weight: 800 !important;
 }
 
 [data-theme="dark"] .btn-primary {
   color: #ffffff !important;
 }
 
-[data-theme="dark"] .dept-link,
 [data-theme="dark"] .product-title {
   color: #F3F4F6 !important;
 }
 
-[data-theme="dark"] .dept-link:hover,
 [data-theme="dark"] .product-title:hover {
   color: var(--color-gold) !important;
 }
@@ -2435,9 +2626,23 @@ body:not(.shop-page) .festive-top-ticker-bar {
 }
 
 [data-theme="dark"] .search-trigger-btn .st-icon-search {
-  background: #ffffff;
-  border-radius: 50%;
-  padding: 1px;
+  background: transparent !important;
+  border-radius: 0;
+  padding: 0;
+  color: var(--color-gold);
+}
+
+[data-theme="dark"] .search-trigger-btn .st-icon-search svg,
+[data-theme="dark"] .search-trigger-btn svg.svg-search {
+  background: transparent !important;
+  color: var(--color-gold) !important;
+  stroke: var(--color-gold) !important;
+}
+
+[data-theme="dark"] .search-trigger-btn:hover .st-icon-search svg,
+[data-theme="dark"] .search-trigger-btn:hover svg.svg-search {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 .wishlist-btn .st-icon-favourite {
@@ -2502,8 +2707,7 @@ body:not(.shop-page) .festive-top-ticker-bar {
   object-fit: cover;
   margin-right: 0.45rem;
   vertical-align: -3px;
-  border: 1.5px solid var(--color-gold);
-  background: #ffffff;
+  background: transparent;
   display: inline-block;
 }
 
@@ -2514,8 +2718,7 @@ body:not(.shop-page) .festive-top-ticker-bar {
   object-fit: cover;
   margin-right: 0.6rem;
   vertical-align: -4px;
-  border: 1.5px solid var(--color-gold);
-  background: #ffffff;
+  background: transparent;
   display: inline-block;
 }
 
@@ -2530,29 +2733,43 @@ body:not(.shop-page) .festive-top-ticker-bar {
 }
 
 .gateway-title-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 0.6rem;
-  vertical-align: -6px;
-  border: 2px solid var(--color-gold);
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+  vertical-align: -4px;
+  background: transparent;
   display: inline-block;
 }
 
 .dept-banner-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 0.75rem;
-  vertical-align: -8px;
-  border: 2px solid var(--color-gold);
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+  width: 28px;
+  height: 28px;
+  margin-right: 0.65rem;
+  vertical-align: -6px;
+  background: transparent;
   display: inline-block;
+}
+
+.dept-nav-img-icon.svg-icon-inlined,
+.dept-nav-img-icon svg,
+.drawer-dept-icon.svg-icon-inlined,
+.drawer-dept-icon svg,
+.gateway-title-icon.svg-icon-inlined,
+.gateway-title-icon svg,
+.dept-banner-icon.svg-icon-inlined,
+.dept-banner-icon svg {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .dept-nav-img-icon,
+[data-theme="dark"] .drawer-dept-icon,
+[data-theme="dark"] .gateway-title-icon,
+[data-theme="dark"] .dept-banner-icon {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Video Call Icons */

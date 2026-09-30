@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/mobile-ui.css" />
 
   <style>
     /* High-Contrast Luxury Lock Screen Engine (Guaranteed Zero-Cache Visibility) */
@@ -3783,6 +3784,25 @@
       }
     }
   </script>
+
+  <!-- Mobile Admin Floating Action Button (FAB) -->
+  <button type="button" class="admin-mobile-fab" id="adminMobileFAB" title="Quick Admin Shortcuts">
+    <span>+</span>
+  </button>
+
+  <div class="admin-fab-menu" id="adminFABMenu">
+    <button type="button" class="admin-fab-action-btn" onclick="document.getElementById('openAddProductModalBtn')?.click() || (window.admin && window.admin.openAddProductModal && window.admin.openAddProductModal())">
+      <span>➕</span> Add New Product
+    </button>
+    <button type="button" class="admin-fab-action-btn" onclick="document.getElementById('createManualOrderBtn')?.click() || (window.admin && window.admin.openManualOrderModal && window.admin.openManualOrderModal())">
+      <span>📦</span> Create Manual Order
+    </button>
+    <button type="button" class="admin-fab-action-btn" onclick="document.getElementById('openCouponModalBtn')?.click() || (window.admin && window.admin.openCouponModal && window.admin.openCouponModal())">
+      <span>🏷️</span> Generate Coupon Code
+    </button>
+  </div>
+
+  <script src="js/mobile-ui.js"></script>
 </body>
 
 </html>

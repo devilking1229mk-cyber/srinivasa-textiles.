@@ -2764,8 +2764,12 @@ Warm regards,
           </select>
         </td>
         <td>
-          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+          <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
             <button class="btn btn-outline btn-sm gen-invoice-btn" data-order-id="${order.orderId}" title="Print official GST Invoice PDF"><span data-icon="printer" data-icon-size="14"></span> PDF Invoice</button>
+            ${order.customer && (order.customer.phone || order.mobile_number) ? `
+              <a href="tel:${order.customer.phone || order.mobile_number}" class="btn btn-sm btn-outline" style="padding: 0.25rem 0.5rem; text-decoration: none;" title="Call Customer">📞 Call</a>
+              <a href="https://wa.me/91${(order.customer.phone || order.mobile_number || '').replace(/[^0-9]/g, '').slice(-10)}?text=Namaste%20${encodeURIComponent(order.customer.name || 'Customer')}%2C%20regarding%20your%20Srinivasa%20Textiles%20Order%20%23${order.orderId}..." target="_blank" class="btn btn-sm btn-outline" style="padding: 0.25rem 0.5rem; color: #25D366; border-color: #25D366; text-decoration: none;" title="WhatsApp Customer">💬 Chat</a>
+            ` : ""}
           </div>
         </td>
       </tr>

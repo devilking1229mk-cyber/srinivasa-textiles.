@@ -34,31 +34,78 @@
       <polygon points="12 7.5 13.1 9.7 15.5 10 13.8 11.7 14.2 14.1 12 12.9 9.8 14.1 10.2 11.7 8.5 10 10.9 9.7 12 7.5" fill="currentColor" stroke="none"></polygon>
     </svg>`,
 
-    // 5. Ladies' / Women's Silk Sarees
+    // 5. Ladies' / Women's Silk Sarees (Couture South Indian Bridal Silk Saree Drape)
     ladies: `<svg class="svg-icon svg-ladies" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2a3 3 0 0 0-3 3c0 1.2.7 2.2 1.7 2.7L8 14h8l-2.7-6.3c1-.5 1.7-1.5 1.7-2.7a3 3 0 0 0-3-3z"></path>
-      <path d="M7 14l-3 8h16l-3-8"></path>
-      <path d="M12 14v8M9 18h6"></path>
+      <path d="M9 3.5c1 .8 2 1.2 3 1.2s2-.4 3-1.2"></path>
+      <path d="M9 3.5L6 6.5l2 2 1.5-1"></path>
+      <path d="M15 3.5L18 6.5l-2 2-1.5-1"></path>
+      <path d="M9.5 7.5h5v2.2h-5z"></path>
+      <path d="M6.5 6.5l8.5 4.5"></path>
+      <path d="M8.5 9.7h7l2.5 11.3H6L8.5 9.7z"></path>
+      <line x1="10.5" y1="9.7" x2="9.5" y2="21"></line>
+      <line x1="12" y1="9.7" x2="12" y2="21"></line>
+      <line x1="13.5" y1="9.7" x2="14.5" y2="21"></line>
+      <line x1="6.8" y1="18.5" x2="17.2" y2="18.5"></line>
     </svg>`,
 
-    // 6. Men's Silk & Dhoti
+    // 6. Men's Silk & Dhoti (Traditional Shirt, Silk Angavastram & Kasavu Dhoti)
     mens: `<svg class="svg-icon svg-mens" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 3h12l3 5-3 3v10H6V11L3 8l3-5z"></path>
-      <path d="M9 3v4a3 3 0 0 0 6 0V3M12 7v14M6 14h12"></path>
+      <path d="M9 3l3 2.5 3-2.5"></path>
+      <path d="M6 4.5l-2.5 3 2.5 2 1-1V14h10V8.5l1 1 2.5-2-2.5-3H6z"></path>
+      <path d="M12 5.5V14"></path>
+      <circle cx="12" cy="7.5" r="0.6" fill="currentColor"></circle>
+      <circle cx="12" cy="10.5" r="0.6" fill="currentColor"></circle>
+      <path d="M7 4.5v9.5c0 .6.4 1 1 1h.5"></path>
+      <path d="M7 12.5h1.5"></path>
+      <path d="M7 14v7h10v-7"></path>
+      <path d="M12 14v7"></path>
+      <path d="M7 19h10"></path>
     </svg>`,
 
-    // 7. Kids (Girls & Boys) Pattu Pavadai
-    kids: `<svg class="svg-icon svg-kids" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 3h6l2 5-3 1v3H10V9L7 8l2-5z"></path>
-      <path d="M8 12l-4 9h16l-4-9H8z"></path>
-      <path d="M12 12v9M8 17h8"></path>
+    // 7. Girls Pattu Pavadai & Ethnic (Blouse with Puff Sleeves, Pleated Skirt & Zari Border)
+    kids: `<svg class="svg-icon svg-girls" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.5 3.5c.8.5 1.6.7 2.5.7s1.7-.2 2.5-.7"></path>
+      <path d="M9.5 3.5C7.8 3.5 6.8 4.6 6.8 6s.8 2.2 2.2 2.2l1-.7"></path>
+      <path d="M14.5 3.5c1.7 0 2.7 1.1 2.7 2.5s-.8 2.2-2.2 2.2l-1-.7"></path>
+      <path d="M9.5 6.5h5v3.2h-5z"></path>
+      <path d="M8.5 10.5h7l3.5 10.5H5l3.5-10.5z"></path>
+      <path d="M10.2 10.5l-1 10.5M12 10.5v10.5M13.8 10.5l1 10.5"></path>
+      <path d="M5.8 18.2h12.4"></path>
+    </svg>`,
+    girls: `<svg class="svg-icon svg-girls" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.5 3.5c.8.5 1.6.7 2.5.7s1.7-.2 2.5-.7"></path>
+      <path d="M9.5 3.5C7.8 3.5 6.8 4.6 6.8 6s.8 2.2 2.2 2.2l1-.7"></path>
+      <path d="M14.5 3.5c1.7 0 2.7 1.1 2.7 2.5s-.8 2.2-2.2 2.2l-1-.7"></path>
+      <path d="M9.5 6.5h5v3.2h-5z"></path>
+      <path d="M8.5 10.5h7l3.5 10.5H5l3.5-10.5z"></path>
+      <path d="M10.2 10.5l-1 10.5M12 10.5v10.5M13.8 10.5l1 10.5"></path>
+      <path d="M5.8 18.2h12.4"></path>
     </svg>`,
 
-    // 8. Born Babies & Infants
+    // 8. Boys' Silk Kurta & Dhoti (Mandarin Collar Kurta with Buttons & Traditional Kasavu Dhoti)
+    boys: `<svg class="svg-icon svg-boys" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 2.8h4v1.8c0 .5-.4.9-.9.9h-2.2c-.5 0-.9-.4-.9-.9V2.8z"></path>
+      <path d="M9.5 3.5L5.5 6.5 7 9l2-1.5"></path>
+      <path d="M14.5 3.5l4 3-1.5 2.5-2-1.5"></path>
+      <path d="M8.5 7.5v5h7v-5"></path>
+      <line x1="12" y1="5.2" x2="12" y2="10"></line>
+      <circle cx="12" cy="6.8" r="0.6" fill="currentColor"></circle>
+      <circle cx="12" cy="8.8" r="0.6" fill="currentColor"></circle>
+      <path d="M8 12.5v8.5h8v-8.5"></path>
+      <line x1="11" y1="12.5" x2="11" y2="21"></line>
+      <line x1="13" y1="12.5" x2="13" y2="21"></line>
+      <line x1="8" y1="18.5" x2="16" y2="18.5"></line>
+    </svg>`,
+
+    // 8. Born Babies & Infants (Classic Luxury Baby Carriage / Pram)
     baby: `<svg class="svg-icon svg-baby" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="6" r="3.5"></circle>
-      <path d="M7 12a5 5 0 0 1 10 0v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7z"></path>
-      <path d="M10 13v3M14 13v3M10 18h4"></path>
+      <path d="M4 11a5 5 0 0 1 5-5h3.5v6H4v-1z"></path>
+      <path d="M4 12h14a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4z"></path>
+      <path d="M19 12l2.5-5.5h2"></path>
+      <circle cx="7.5" cy="19.5" r="2"></circle>
+      <circle cx="15.5" cy="19.5" r="2"></circle>
+      <line x1="7.5" y1="17.5" x2="9.5" y2="13.5"></line>
+      <line x1="15.5" y1="17.5" x2="13.5" y2="13.5"></line>
     </svg>`,
 
     // 9. Video Shopping Call
@@ -93,16 +140,26 @@
 
     // 13. Heritage Showroom / Palace
     palace: `<svg class="svg-icon svg-palace" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2L3 7v2h18V7L12 2zM4 11v9M8 11v9M12 11v9M16 11v9M20 11v9M2 20h20M10 20v-4a2 2 0 0 1 4 0v4"></path>
+      <path d="M12 2l2 2.5h-4L12 2z"></path>
+      <path d="M7 5h10l1.5 3H5.5L7 5z"></path>
+      <path d="M3 8.5h18v2H3v-2z"></path>
+      <path d="M5 10.5v9M9 10.5v9M15 10.5v9M19 10.5v9"></path>
+      <path d="M2 20h20v2H2v-2z"></path>
+      <path d="M10 20v-5a2 2 0 0 1 4 0v5"></path>
     </svg>`,
 
-    // 14. Family Combos & Bundles
+    // 14. Family Combos & Bundles (Royal Family Ensemble with Crown Sparkle)
     family: `<svg class="svg-icon svg-family" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="7" cy="5" r="2.5"></circle>
-      <circle cx="17" cy="5" r="2.5"></circle>
-      <path d="M3 17v-2a4 4 0 0 1 4-4h1a4 4 0 0 1 4 4v2M12 17v-2a4 4 0 0 1 4-4h1a4 4 0 0 1 4 4v2"></path>
-      <circle cx="12" cy="12" r="2"></circle>
-      <path d="M9 21v-1a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v1"></path>
+      <circle cx="6" cy="4.5" r="2"></circle>
+      <path d="M3 18v-3.5a2.5 2.5 0 0 1 2.5-2.5h1a2.5 2.5 0 0 1 2.5 2.5V18"></path>
+      <path d="M4 18v3h4v-3"></path>
+      <circle cx="18" cy="4.5" r="2"></circle>
+      <path d="M19.8 3.5c.8.2 1.2.8 1.2 1.5s-.4 1.3-1.2 1.5"></path>
+      <path d="M15 18l1-6a2.5 2.5 0 0 1 2.5-2.5h0a2.5 2.5 0 0 1 2.5 2.5l1 6"></path>
+      <path d="M15 18h6v3h-6z"></path>
+      <circle cx="12" cy="10.5" r="1.6"></circle>
+      <path d="M9.5 21v-2.5a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v2.5"></path>
+      <path d="M12 2l.7 1.5L14 4.2l-1.3.7L12 6.5l-.7-1.6-1.3-.7 1.3-.7z" fill="currentColor" stroke="none"></path>
     </svg>`,
 
     // 15. Sparkle / Celestial Zari Glow
@@ -533,7 +590,8 @@
         resolvedKey =
           lowerKey === 'women' || lowerKey === 'saree' ? 'ladies' :
           lowerKey === 'men' || lowerKey === 'dhoti' ? 'mens' :
-          lowerKey === 'girls' || lowerKey === 'boys' || lowerKey === 'pavadai' ? 'kids' :
+          lowerKey === 'girls' || lowerKey === 'pavadai' || lowerKey === 'kids' ? 'girls' :
+          lowerKey === 'boys' || lowerKey === 'kurta' ? 'boys' :
           lowerKey === 'infants' || lowerKey === 'born babies' ? 'baby' :
           lowerKey === 'heart' ? 'favourite' :
           lowerKey === 'videocall' || lowerKey === 'video' ? 'videoCall' :

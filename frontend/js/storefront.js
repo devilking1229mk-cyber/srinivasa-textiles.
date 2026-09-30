@@ -73,6 +73,8 @@ class StorefrontController {
       document.querySelector("#checkoutModal.active") ||
       document.querySelector("#invoiceModal.active") ||
       document.querySelector("#lightboxModal.active") ||
+      document.querySelector("#searchBarModal.active") ||
+      document.querySelector(".search-bar-modal.active") ||
       document.querySelector("#familyComboBookingModal.active") ||
       (document.getElementById("familyComboBookingModal") && document.getElementById("familyComboBookingModal").style.display === "flex") ||
       (document.getElementById("feedbackModal") && document.getElementById("feedbackModal").style.display === "flex")
@@ -123,12 +125,40 @@ class StorefrontController {
     document.getElementById("checkoutModal")?.classList.remove("active");
     document.getElementById("invoiceModal")?.classList.remove("active");
     document.getElementById("lightboxModal")?.classList.remove("active");
+    document.getElementById("searchBarModal")?.classList.remove("active");
     const fcModal = document.getElementById("familyComboBookingModal");
     if (fcModal) {
       fcModal.classList.remove("active");
       fcModal.style.display = "none";
     }
     this.syncBodyScrollLock();
+  }
+
+  openSearchModal() {
+    const searchBarModal = document.getElementById("searchBarModal");
+    const searchInput = document.getElementById("headerSearchInput");
+    if (!searchBarModal) return;
+
+    searchBarModal.classList.add("active");
+    this.syncBodyScrollLock();
+
+    if (searchInput) {
+      searchInput.value = "";
+      const liveRes = document.getElementById("searchLiveResults");
+      if (liveRes) liveRes.innerHTML = "";
+      setTimeout(() => searchInput.focus(), 60);
+    }
+  }
+
+  closeSearchModal() {
+    const searchBarModal = document.getElementById("searchBarModal");
+    if (!searchBarModal) return;
+
+    searchBarModal.classList.remove("active");
+    this.syncBodyScrollLock();
+
+    const searchInput = document.getElementById("headerSearchInput");
+    if (searchInput) searchInput.blur();
   }
 
   // Theme Management (Light & Dark Mode - Strict Light Default)
@@ -347,43 +377,78 @@ class StorefrontController {
     if (searchTrigger && searchBarModal) {
       searchTrigger.addEventListener("click", (e) => {
         e.stopPropagation();
-        const isOpen = searchBarModal.classList.contains("active");
-        if (isOpen) {
-          searchBarModal.classList.remove("active");
+        if (searchBarModal.classList.contains("active")) {
+          this.closeSearchModal();
         } else {
-          searchBarModal.classList.add("active");
-          if (searchInput) {
-            searchInput.value = "";
-            const liveRes = document.getElementById("searchLiveResults");
-            if (liveRes) liveRes.innerHTML = "";
-            setTimeout(() => searchInput.focus(), 50);
-          }
+          this.openSearchModal();
         }
       });
     }
 
     if (searchCloseBtn && searchBarModal) {
       searchCloseBtn.addEventListener("click", () => {
-        searchBarModal.classList.remove("active");
+        this.closeSearchModal();
       });
     }
 
     if (searchBarModal) {
       searchBarModal.addEventListener("click", (e) => {
         if (e.target === searchBarModal) {
-          searchBarModal.classList.remove("active");
+          this.closeSearchModal();
         }
       });
+
+      // Strict Scroll Isolation: Background stays 100% frozen/stable, only search suggestions scroll
+      searchBarModal.addEventListener("wheel", (e) => {
+        const liveRes = document.getElementById("searchLiveResults");
+        if (!liveRes || !liveRes.contains(e.target)) {
+          // Prevent wheel anywhere outside suggestions
+          e.preventDefault();
+        } else {
+          // When cursor is inside suggestions, isolate scroll and prevent wheel chaining to document
+          const { scrollTop, scrollHeight, clientHeight } = liveRes;
+          const isScrollable = scrollHeight > clientHeight;
+          if (!isScrollable) {
+            e.preventDefault();
+            return;
+          }
+          const delta = e.deltaY;
+          if (delta > 0 && scrollTop + clientHeight >= scrollHeight - 1) {
+            // Reached bottom of suggestions list - prevent bleed to background
+            e.preventDefault();
+          } else if (delta < 0 && scrollTop <= 0) {
+            // Reached top of suggestions list - prevent bleed to background
+            e.preventDefault();
+          }
+        }
+      }, { passive: false });
+
+      // Touch scroll isolation for mobile devices
+      searchBarModal.addEventListener("touchmove", (e) => {
+        const liveRes = document.getElementById("searchLiveResults");
+        if (!liveRes || !liveRes.contains(e.target)) {
+          e.preventDefault();
+        }
+      }, { passive: false });
     }
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && searchBarModal && searchBarModal.classList.contains("active")) {
-        searchBarModal.classList.remove("active");
+        this.closeSearchModal();
       }
     });
 
     if (searchInput) {
       searchInput.addEventListener("input", (e) => this.handleSearchAutocomplete(e.target.value));
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const firstResult = document.querySelector("#searchLiveResults .search-result-item");
+          if (firstResult) {
+            firstResult.click();
+          }
+        }
+      });
     }
 
     // Cart Drawer (Shopping Bag)
@@ -794,14 +859,14 @@ class StorefrontController {
         };
       case "girls":
         return {
-          title: `${window.Icons ? window.Icons.get('kids', { className: 'dept-banner-icon' }) : ''} Girls' Ethnic Wear (2 - 14 Years)`,
+          title: `${window.Icons ? window.Icons.get('girls', { className: 'dept-banner-icon' }) : ''} Girls' Ethnic Wear (2 - 14 Years)`,
           desc: "Traditional Pure Silk Pattu Pavadai & Lehenga Sets backed by our Scratch-Free Soft Cotton Inner-Lining Guarantee.",
           breadcrumb: "Kids Wear (Girls)",
           filterDept: "Kids Wear (Girls)"
         };
       case "boys":
         return {
-          title: `${window.Icons ? window.Icons.get('kids', { className: 'dept-banner-icon' }) : ''} Boys' Festive Kurta & Dhoti Sets (2 - 14 Years)`,
+          title: `${window.Icons ? window.Icons.get('boys', { className: 'dept-banner-icon' }) : ''} Boys' Festive Kurta & Dhoti Sets (2 - 14 Years)`,
           desc: "Silk Jacquard Kurtas with Pre-Pleated Ready-to-Wear Elastic Dhotis and Soft Cotton Undersides.",
           breadcrumb: "Kids Wear (Boys)",
           filterDept: "Kids Wear (Boys)"
@@ -1077,6 +1142,19 @@ class StorefrontController {
           <h3 class="product-title open-pdp">${titleVal}</h3>
           <p class="product-subtitle">${subtitleVal}</p>
 
+          ${(product.colors && product.colors.length > 0) ? `
+            <div class="card-color-swatches" onclick="event.stopPropagation();">
+              ${product.colors.slice(0, 4).map((c, i) => `
+                <span class="color-swatch-dot ${i === 0 ? 'active' : ''}"
+                      style="background: ${c.hex || '#800020'};"
+                      title="${c.name || 'Color'}"
+                      data-color-img="${c.image || primaryImg}"
+                      onclick="window.storefront.switchCardColor(this, '${product.id}', '${c.image || primaryImg}')">
+                </span>
+              `).join("")}
+            </div>
+          ` : ""}
+
           ${product.safetyBadges && product.safetyBadges.length > 0 ? `
             <div style="display: flex; gap: 0.35rem; margin-bottom: 0.6rem; flex-wrap: wrap;">
               ${product.safetyBadges.map(sb => `<span class="badge-safety">${sb}</span>`).join("")}
@@ -1092,12 +1170,23 @@ class StorefrontController {
             ${isOutOfStock ? `
               <button class="card-add-btn card-notify-btn" data-id="${product.id}" style="background: var(--color-primary); color: #FFF5CF; border: 1px solid var(--color-gold);">🔔 Notify Me</button>
             ` : `
-              <button class="card-add-btn quick-add-btn">Add to Bag</button>
+              <button class="card-add-btn quick-add-btn">Add +</button>
             `}
           </div>
         </div>
       </div>
     `;
+  }
+
+  switchCardColor(dotEl, prodId, imgSrc) {
+    const card = dotEl.closest(".product-card");
+    if (!card) return;
+    card.querySelectorAll(".color-swatch-dot").forEach(d => d.classList.remove("active"));
+    dotEl.classList.add("active");
+    const imgEl = card.querySelector(".product-image-box img");
+    if (imgEl && imgSrc) {
+      imgEl.src = imgSrc;
+    }
   }
 
   resetAllFilters() {
@@ -3247,7 +3336,7 @@ class StorefrontController {
     resultsContainer.querySelectorAll(".search-result-item").forEach(item => {
       item.addEventListener("click", () => {
         const id = item.getAttribute("data-id");
-        document.getElementById("searchBarModal")?.classList.remove("active");
+        this.closeSearchModal();
         this.openPDP(id);
       });
     });
@@ -3433,11 +3522,12 @@ class StorefrontController {
       const discount = pkg.discountPercent || Math.round(((pkg.retailMrp - pkg.wholesalePrice) / pkg.retailMrp) * 100) || 50;
 
       return `
-        <div class="bulk-store-card" id="bulk-card-${pkg.id}">
+        <div class="bulk-store-card" id="bulk-card-${pkg.id}" onclick="window.storefront.openBulkPackageModal('${pkg.id}')" style="cursor: pointer;" title="Click to view full specifications &amp; place order">
           <div class="bulk-card-media">
             <img src="${pkg.image || 'assets/images/family_matching_combo.jpg'}" alt="${pkg.title}" loading="lazy" onerror="this.src='assets/images/hero_banner.jpg'" />
             <span class="bulk-card-badge">${pkg.badge || '✨ Verified Lot'}</span>
             <span class="bulk-card-discount-tag">${discount}% WHOLESALE SAVINGS</span>
+            <div class="bulk-card-hover-prompt"><span>🔍 Click to View Full Details &amp; Order</span></div>
           </div>
 
           <div class="bulk-card-content">
@@ -3457,8 +3547,8 @@ class StorefrontController {
               <span class="bulk-moq-pill">MOQ: ${pkg.moq || 15} ${pkg.unitLabel || 'Pieces'}</span>
             </div>
 
-            <button type="button" class="btn btn-gold btn-sm" onclick="window.storefront.openBulkInquiryModal('${pkg.id}')" style="width: 100%; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
-              <span>📋</span> Enquire for This Lot ➔
+            <button type="button" class="btn btn-gold btn-sm" onclick="event.stopPropagation(); window.storefront.openBulkPackageModal('${pkg.id}')" style="width: 100%; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
+              <span>📋</span> View Full Details &amp; Order ➔
             </button>
           </div>
         </div>
@@ -3923,12 +4013,44 @@ class StorefrontController {
     const cancelBtn = document.getElementById("cancelBulkInquiryBtn");
     const closeSuccessBtn = document.getElementById("bulkInquiryCloseSuccessBtn");
     const form = document.getElementById("customerBulkInquiryForm");
+    const qtyMinusBtn = document.getElementById("bulkQtyMinus");
+    const qtyPlusBtn = document.getElementById("bulkQtyPlus");
+    const piecesInput = document.getElementById("bulkCustPieces");
+    const waOrderBtn = document.getElementById("bulkDirectWhatsAppBtn");
 
     const closeModal = () => this.closeBulkInquiryModal();
 
     if (closeBtn) closeBtn.addEventListener("click", closeModal);
     if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
     if (closeSuccessBtn) closeSuccessBtn.addEventListener("click", closeModal);
+
+    if (qtyMinusBtn && piecesInput) {
+      qtyMinusBtn.addEventListener("click", () => {
+        const minVal = parseInt(piecesInput.min, 10) || 1;
+        const currentVal = parseInt(piecesInput.value, 10) || minVal;
+        if (currentVal > minVal) {
+          piecesInput.value = currentVal - 1;
+          this.updateBulkLiveCalculator();
+        }
+      });
+    }
+
+    if (qtyPlusBtn && piecesInput) {
+      qtyPlusBtn.addEventListener("click", () => {
+        const currentVal = parseInt(piecesInput.value, 10) || 1;
+        piecesInput.value = currentVal + 1;
+        this.updateBulkLiveCalculator();
+      });
+    }
+
+    if (piecesInput) {
+      piecesInput.addEventListener("input", () => this.updateBulkLiveCalculator());
+      piecesInput.addEventListener("change", () => this.updateBulkLiveCalculator());
+    }
+
+    if (waOrderBtn) {
+      waOrderBtn.addEventListener("click", () => this.orderBulkPackageOnWhatsApp());
+    }
 
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeModal();
@@ -3945,18 +4067,36 @@ class StorefrontController {
     }
   }
 
+  openBulkPackageModal(packageId) {
+    this.openBulkInquiryModal(packageId);
+  }
+
   openBulkInquiryModal(packageId = "custom") {
     const modal = document.getElementById("bulkInquiryModal");
     if (!modal) return;
 
     const form = document.getElementById("customerBulkInquiryForm");
     const successBox = document.getElementById("bulkInquirySuccessContainer");
-    const pkgBanner = document.getElementById("bulkInquirySelectedPkgBanner");
-    const pkgTitleEl = document.getElementById("bulkInquirySelectedPkgTitle");
-    const pkgPriceEl = document.getElementById("bulkInquirySelectedPkgPrice");
     const pkgIdInput = document.getElementById("bulkInquiryPackageId");
     const piecesInput = document.getElementById("bulkCustPieces");
     const typeSelect = document.getElementById("bulkCustOrderType");
+    const deadlineInput = document.getElementById("bulkCustDeadline");
+
+    // Product showcase elements
+    const headerTitleEl = document.getElementById("bulkInquiryHeaderTitle");
+    const imgEl = document.getElementById("bulkModalImg");
+    const badgeEl = document.getElementById("bulkModalBadge");
+    const discountEl = document.getElementById("bulkModalDiscountTag");
+    const categoryEl = document.getElementById("bulkModalCategory");
+    const titleEl = document.getElementById("bulkModalTitle");
+    const descEl = document.getElementById("bulkModalDesc");
+    const fabricEl = document.getElementById("bulkModalFabric");
+    const inclusionsEl = document.getElementById("bulkModalInclusions");
+    const timelineEl = document.getElementById("bulkModalTimeline");
+    const unitRateEl = document.getElementById("calcUnitRate");
+    const retailMrpEl = document.getElementById("calcRetailMrp");
+    const moqBadgeEl = document.getElementById("calcMoqBadge");
+    const unitLabelEl = document.getElementById("calcUnitLabel");
 
     if (form) {
       form.reset();
@@ -3964,7 +4104,6 @@ class StorefrontController {
     }
     if (successBox) successBox.style.display = "none";
 
-    const deadlineInput = document.getElementById("bulkCustDeadline");
     if (deadlineInput) {
       const targetDate = new Date();
       targetDate.setDate(targetDate.getDate() + 15);
@@ -3974,13 +4113,32 @@ class StorefrontController {
     if (packageId && packageId !== "custom" && window.store) {
       const pkg = window.store.getBulkPackageById(packageId);
       if (pkg) {
+        const wholesaleFormatted = Number(pkg.wholesalePrice || 0).toLocaleString("en-IN");
+        const retailFormatted = Number(pkg.retailMrp || (pkg.wholesalePrice * 2)).toLocaleString("en-IN");
+        const discount = pkg.discountPercent || Math.round(((pkg.retailMrp - pkg.wholesalePrice) / pkg.retailMrp) * 100) || 50;
+
         if (pkgIdInput) pkgIdInput.value = pkg.id;
-        if (pkgBanner) pkgBanner.style.display = "block";
-        if (pkgTitleEl) pkgTitleEl.textContent = pkg.title;
-        if (pkgPriceEl) {
-          pkgPriceEl.textContent = `Wholesale: ₹${Number(pkg.wholesalePrice).toLocaleString("en-IN")} / unit (Showroom MRP ₹${Number(pkg.retailMrp).toLocaleString("en-IN")}) • MOQ: ${pkg.moq} ${pkg.unitLabel || 'Pcs'}`;
+        if (headerTitleEl) headerTitleEl.textContent = `${pkg.title} - Wholesale Lot`;
+        if (imgEl) imgEl.src = pkg.image || 'assets/images/hero_banner.jpg';
+        if (badgeEl) badgeEl.textContent = pkg.badge || '✨ Verified Bulk Lot';
+        if (discountEl) discountEl.textContent = `${discount}% WHOLESALE SAVINGS`;
+        if (categoryEl) categoryEl.textContent = (pkg.category || 'WHOLESALE LOT').toUpperCase();
+        if (titleEl) titleEl.textContent = pkg.title;
+        if (descEl) descEl.textContent = pkg.description || 'Authentic Kanchipuram master handloom bulk trousseau lot woven with pure silk and certified zari.';
+        if (fabricEl) fabricEl.textContent = pkg.fabric || '100% Pure Kanchipuram Mulberry Silk with Korvai Interlocking Weave';
+        if (inclusionsEl) inclusionsEl.textContent = pkg.inclusions || 'Standard bridal assortment & matching unstitched blouse material';
+        if (timelineEl) timelineEl.textContent = pkg.timeline || 'Express 7-10 Days Direct Dispatch';
+
+        if (unitRateEl) unitRateEl.textContent = `₹${wholesaleFormatted}`;
+        if (retailMrpEl) retailMrpEl.textContent = `₹${retailFormatted}`;
+        if (moqBadgeEl) moqBadgeEl.textContent = `MOQ: ${pkg.moq || 10} ${pkg.unitLabel || 'Units'}`;
+        if (unitLabelEl) unitLabelEl.textContent = `Min Order Quantity: ${pkg.moq || 10} ${pkg.unitLabel || 'Units'}`;
+
+        if (piecesInput) {
+          piecesInput.value = pkg.moq || 10;
+          piecesInput.min = pkg.moq || 1;
         }
-        if (piecesInput) piecesInput.value = pkg.moq || 15;
+
         if (typeSelect) {
           if (pkg.category && pkg.category.toLowerCase().includes("wedding")) {
             typeSelect.value = "Wedding Bulk";
@@ -3995,13 +4153,98 @@ class StorefrontController {
       }
     } else {
       if (pkgIdInput) pkgIdInput.value = "";
-      if (pkgBanner) pkgBanner.style.display = "none";
-      if (piecesInput) piecesInput.value = 15;
-      if (typeSelect) typeSelect.value = "Customer Bulk Inquiry";
+      if (headerTitleEl) headerTitleEl.textContent = "Direct Handloom Wholesale & Bulk Order";
+      if (piecesInput) {
+        piecesInput.value = 10;
+        piecesInput.min = 5;
+      }
+      if (typeSelect) typeSelect.value = "Wedding Bulk";
     }
 
+    this.updateBulkLiveCalculator();
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
+  }
+
+  updateBulkLiveCalculator() {
+    const pkgId = document.getElementById("bulkInquiryPackageId")?.value || "";
+    const piecesInput = document.getElementById("bulkCustPieces");
+    let pieces = parseInt(piecesInput?.value, 10);
+
+    let wholesalePrice = 18500;
+    let retailMrp = 37000;
+    let minMoq = 5;
+
+    if (pkgId && window.store && typeof window.store.getBulkPackageById === "function") {
+      const pkg = window.store.getBulkPackageById(pkgId);
+      if (pkg) {
+        wholesalePrice = Number(pkg.wholesalePrice) || 18500;
+        retailMrp = Number(pkg.retailMrp) || (wholesalePrice * 2);
+        minMoq = Number(pkg.moq) || 5;
+      }
+    }
+
+    if (isNaN(pieces) || pieces < 1) {
+      pieces = minMoq;
+    }
+
+    const subtotal = pieces * wholesalePrice;
+    const gst = Math.round(subtotal * 0.05);
+    const totalAmount = subtotal + gst;
+    const retailTotal = pieces * retailMrp;
+    const savings = Math.max(0, retailTotal - totalAmount);
+
+    const piecesLabel = document.getElementById("calcPiecesLabel");
+    const subtotalEl = document.getElementById("calcSubtotal");
+    const gstEl = document.getElementById("calcGst");
+    const savingsEl = document.getElementById("calcTotalSavings");
+    const totalEl = document.getElementById("calcTotal");
+
+    if (piecesLabel) piecesLabel.textContent = pieces;
+    if (subtotalEl) subtotalEl.textContent = `₹${subtotal.toLocaleString("en-IN")}`;
+    if (gstEl) gstEl.textContent = `₹${gst.toLocaleString("en-IN")}`;
+    if (savingsEl) savingsEl.textContent = `Save ₹${savings.toLocaleString("en-IN")}`;
+    if (totalEl) totalEl.textContent = `₹${totalAmount.toLocaleString("en-IN")}`;
+
+    return { pieces, wholesalePrice, retailMrp, subtotal, gst, totalAmount, savings };
+  }
+
+  orderBulkPackageOnWhatsApp() {
+    const pkgId = document.getElementById("bulkInquiryPackageId")?.value || "";
+    const name = document.getElementById("bulkCustName")?.value.trim() || "Valued Customer";
+    const phone = document.getElementById("bulkCustPhone")?.value.trim() || "Not specified";
+    const company = document.getElementById("bulkCustCompany")?.value.trim() || "Wedding / Retailer";
+    const city = document.getElementById("bulkCustCity")?.value.trim() || "India";
+    const deadline = document.getElementById("bulkCustDeadline")?.value || "Earliest";
+    const notes = document.getElementById("bulkCustNotes")?.value.trim() || "";
+
+    const calc = this.updateBulkLiveCalculator();
+    let pkgTitle = "Handloom Wholesale Bulk Package";
+    if (pkgId && window.store) {
+      const pkg = window.store.getBulkPackageById(pkgId);
+      if (pkg) pkgTitle = pkg.title;
+    }
+
+    const waMsg = encodeURIComponent(
+      `🙏 *Namaste Srinivasa Textiles Master Weavers!*\n\n` +
+      `I would like to place a *Wholesale Handloom Order*:\n\n` +
+      `📦 *Package:* ${pkgTitle}\n` +
+      `🔢 *Quantity:* ${calc.pieces} Units\n` +
+      `💰 *Direct Wholesale Price:* ₹${calc.wholesalePrice.toLocaleString("en-IN")} / unit\n` +
+      `📊 *Subtotal:* ₹${calc.subtotal.toLocaleString("en-IN")}\n` +
+      `🧾 *GST (5% Handloom Silk):* ₹${calc.gst.toLocaleString("en-IN")}\n` +
+      `💎 *Estimated Total:* ₹${calc.totalAmount.toLocaleString("en-IN")}\n` +
+      `🎉 *Estimated Savings:* ₹${calc.savings.toLocaleString("en-IN")}\n\n` +
+      `👤 *Customer Name:* ${name}\n` +
+      `📞 *Phone:* ${phone}\n` +
+      `🏛️ *Company / Occasion:* ${company}\n` +
+      `📍 *Delivery City:* ${city}\n` +
+      `📅 *Needed By Date:* ${deadline}\n` +
+      (notes ? `📝 *Customization:* ${notes}\n\n` : `\n`) +
+      `Please confirm order acceptance and share payment details.`
+    );
+
+    window.open(`https://wa.me/918778503021?text=${waMsg}`, "_blank");
   }
 
   closeBulkInquiryModal() {
@@ -4021,21 +4264,20 @@ class StorefrontController {
     const phone = document.getElementById("bulkCustPhone")?.value.trim() || "";
     const email = document.getElementById("bulkCustEmail")?.value.trim() || "";
     const company = document.getElementById("bulkCustCompany")?.value.trim() || name;
-    const orderType = document.getElementById("bulkCustOrderType")?.value || "Customer Bulk Inquiry";
-    const pieces = parseInt(document.getElementById("bulkCustPieces")?.value, 10) || 15;
+    const orderType = document.getElementById("bulkCustOrderType")?.value || "Wedding Bulk";
+    const pieces = parseInt(document.getElementById("bulkCustPieces")?.value, 10) || 10;
     const deadline = document.getElementById("bulkCustDeadline")?.value || "";
     const city = document.getElementById("bulkCustCity")?.value.trim() || "";
-    const gstin = document.getElementById("bulkCustGstin")?.value.trim() || "Unregistered / Individual";
     const notes = document.getElementById("bulkCustNotes")?.value.trim() || "";
     const packageId = document.getElementById("bulkInquiryPackageId")?.value || "";
 
     let pkgTitle = "Custom Handloom Bulk Requirement";
-    let unitRate = 3500;
+    let unitRate = 18500;
     if (packageId) {
       const pkg = window.store.getBulkPackageById(packageId);
       if (pkg) {
         pkgTitle = pkg.title;
-        unitRate = pkg.wholesalePrice || 3500;
+        unitRate = Number(pkg.wholesalePrice) || 18500;
       }
     }
 
@@ -4043,14 +4285,14 @@ class StorefrontController {
     const gst = Math.round(subtotal * 0.05);
     const totalAmount = subtotal + gst;
 
-    const itemsDesc = `${pieces}x [${pkgTitle}] • Destination: ${city} • Details: ${notes || 'Standard specifications requested'}`;
+    const itemsDesc = `${pieces}x [${pkgTitle}] • Destination: ${city} • Notes: ${notes || 'Standard master weaver specifications'}`;
 
     const newOrderData = {
       clientCompany: company,
       contactPerson: name,
       phone: phone,
       email: email,
-      gstin: gstin,
+      gstin: "Unregistered / Direct Consumer",
       billingAddress: `${city}, India`,
       shippingAddress: `${city}, India`,
       orderType: orderType,
@@ -4062,11 +4304,11 @@ class StorefrontController {
       advancePaidINR: 0,
       balanceDueINR: totalAmount,
       paymentStatus: "Unpaid",
-      orderStatus: "New Inquiry",
+      orderStatus: "Order Placed",
       deliveryDeadline: deadline,
-      priority: pieces >= 50 ? "High" : "Standard",
+      priority: pieces >= 30 ? "High" : "Standard",
       productionUnit: "Loom Shed Unit 1",
-      notes: `Online Customer Inquiry from Storefront • Selected Package: ${packageId || 'Custom Quote'} • ${notes}`
+      notes: `Online Wholesale Order from Storefront • Package: ${packageId || 'Custom'} • Customer Notes: ${notes}`
     };
 
     const savedOrder = window.store.addBulkOrder(newOrderData);
@@ -4074,30 +4316,59 @@ class StorefrontController {
     if (form) form.style.display = "none";
     const successBox = document.getElementById("bulkInquirySuccessContainer");
     const confirmIdEl = document.getElementById("bulkInquiryConfirmId");
+    const receiptCard = document.getElementById("bulkOrderReceiptCard");
     const waChatBtn = document.getElementById("bulkInquiryWhatsAppChatBtn");
 
     if (confirmIdEl && savedOrder) {
-      confirmIdEl.textContent = `Reference #${savedOrder.bulkOrderId}`;
+      confirmIdEl.textContent = `Order #${savedOrder.bulkOrderId}`;
+    }
+
+    if (receiptCard && savedOrder) {
+      receiptCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.65rem; margin-bottom: 0.75rem;">
+          <div>
+            <strong style="color: var(--color-gold); font-size: 1.05rem;">Order #${savedOrder.bulkOrderId}</strong>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Srinivasa Textiles Direct Handloom Loom Shed</div>
+          </div>
+          <span style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; font-weight: 700; font-size: 0.78rem; padding: 0.25rem 0.65rem; border-radius: 9999px;">
+            ✓ Booked to Loom Shed
+          </span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem; font-size: 0.85rem;">
+          <div><span style="color: var(--text-muted);">Package:</span><br /><strong>${pkgTitle}</strong></div>
+          <div><span style="color: var(--text-muted);">Quantity:</span><br /><strong>${pieces} Units</strong></div>
+          <div><span style="color: var(--text-muted);">Customer:</span><br /><strong>${name}</strong></div>
+          <div><span style="color: var(--text-muted);">Contact:</span><br /><strong>${phone}</strong></div>
+          <div><span style="color: var(--text-muted);">Occasion / Boutique:</span><br /><strong>${company}</strong></div>
+          <div><span style="color: var(--text-muted);">Delivery City:</span><br /><strong>${city}</strong></div>
+          <div><span style="color: var(--text-muted);">Target Delivery:</span><br /><strong>${deadline || 'Earliest Express'}</strong></div>
+          <div><span style="color: var(--text-muted);">Net Payable:</span><br /><strong style="color: var(--color-gold); font-size: 1.1rem;">₹${totalAmount.toLocaleString("en-IN")}</strong></div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.08); padding: 0.55rem 0.75rem; border-radius: 6px; line-height: 1.45;">
+          Subtotal (Weaver Direct): <strong>₹${subtotal.toLocaleString("en-IN")}</strong> + 5% Handloom Silk GST: <strong>₹${gst.toLocaleString("en-IN")}</strong>. Certified Silk Mark authenticity seals &amp; transit insurance included.
+        </div>
+      `;
     }
 
     if (waChatBtn && savedOrder) {
       const waText = encodeURIComponent(
-        `Hello Srinivasa Textiles Master Weavers,\n` +
-        `I have just submitted a Bulk Inquiry #${savedOrder.bulkOrderId}.\n` +
-        `Name: ${name}\n` +
-        `Company/Occasion: ${company}\n` +
-        `Requirement: ${pkgTitle}\n` +
-        `Pieces: ${pieces} Units\n` +
-        `Destination: ${city}\n` +
-        `Needed By: ${deadline}\n` +
-        `Please share the formal quote and fabric swatches.`
+        `🙏 Namaste Srinivasa Textiles Master Weavers,\n` +
+        `I have placed Wholesale Order #${savedOrder.bulkOrderId}.\n\n` +
+        `Package: ${pkgTitle}\n` +
+        `Quantity: ${pieces} Units\n` +
+        `Amount: ₹${totalAmount.toLocaleString("en-IN")}\n` +
+        `Name: ${name} (${phone})\n` +
+        `Company: ${company}\n` +
+        `Delivery City: ${city}\n` +
+        `Needed By: ${deadline}\n\n` +
+        `Please confirm loom schedule allocation and share payment link.`
       );
       waChatBtn.href = `https://wa.me/918778503021?text=${waText}`;
     }
 
     if (successBox) successBox.style.display = "block";
 
-    this.showToast(`🎉 Bulk Inquiry #${savedOrder.bulkOrderId} submitted successfully!`, "success");
+    this.showToast(`🎉 Wholesale Order #${savedOrder.bulkOrderId} booked successfully!`, "success");
   }
 }
 

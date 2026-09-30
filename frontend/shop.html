@@ -43,6 +43,7 @@
   <link rel="stylesheet" href="css/storefront.css" />
   <link rel="stylesheet" href="css/admin.css" />
   <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/mobile-ui.css" />
   <link rel="stylesheet" href="css/scroll-animations.css" />
 </head>
 
@@ -151,8 +152,8 @@
               <li><button class="dept-link active" data-page="explore"><span data-icon="palace" class="dept-nav-img-icon"></span> All Departments (Explore)</button></li>
               <li><button class="dept-link highlight-combo" data-page="family"><span data-icon="family" class="dept-nav-img-icon"></span> Family Combos &amp; Sets</button></li>
               <li><button class="dept-link" data-page="women"><span data-icon="ladies" class="dept-nav-img-icon"></span> Ladies' Sarees &amp; Ethnic</button></li>
-              <li><button class="dept-link" data-page="girls"><span data-icon="kids" class="dept-nav-img-icon"></span> Girls (Pattu Pavadai 2-14Y)</button></li>
-              <li><button class="dept-link" data-page="boys"><span data-icon="kids" class="dept-nav-img-icon"></span> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
+              <li><button class="dept-link" data-page="girls"><span data-icon="girls" class="dept-nav-img-icon"></span> Girls (Pattu Pavadai 2-14Y)</button></li>
+              <li><button class="dept-link" data-page="boys"><span data-icon="boys" class="dept-nav-img-icon"></span> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
               <li><button class="dept-link" data-page="men"><span data-icon="mens" class="dept-nav-img-icon"></span> Men's Silk &amp; Dhotis</button></li>
               <li><button class="dept-link" data-page="infants"><span data-icon="baby" class="dept-nav-img-icon"></span> Born Babies &amp; Infants (0-2Y)</button></li>
             </ul>
@@ -236,7 +237,7 @@
             <img src="assets/images/kids_pattu_pavadai.jpg" alt="Girls Pattu Pavadai" />
             <div class="gender-badge-pill">🛡️ Soft Inner-Lining</div>
             <div class="gender-gateway-overlay">
-              <h3><span data-icon="kids" class="gateway-title-icon"></span> Girls' Store (2-14Y)</h3>
+              <h3><span data-icon="girls" class="gateway-title-icon"></span> Girls' Store (2-14Y)</h3>
               <p>Pure Silk Pattu Pavadai &amp; Lehengas with Soft Cotton Lining</p>
               <div class="gateway-bottom-action">
                 <span class="gateway-price-tag">From ₹8,900</span>
@@ -250,7 +251,7 @@
             <img src="assets/images/boys_kurta_dhoti.jpg" alt="Boys Kurta Dhoti" />
             <div class="gender-badge-pill">⚡ Ready-to-Wear Elastic</div>
             <div class="gender-gateway-overlay">
-              <h3><span data-icon="kids" class="gateway-title-icon"></span> Boys' Store (2-14Y)</h3>
+              <h3><span data-icon="boys" class="gateway-title-icon"></span> Boys' Store (2-14Y)</h3>
               <p>Silk Jacquard Kurtas &amp; Elastic Waist Dhoti Pants</p>
               <div class="gateway-bottom-action">
                 <span class="gateway-price-tag">From ₹5,990</span>
@@ -574,7 +575,7 @@
               <button type="button" class="btn btn-gold btn-lg" id="openCustomBulkModalBtn" onclick="window.storefront && window.storefront.openBulkInquiryModal('custom')" style="font-weight: 800; min-width: 230px;">
                 📋 Request Custom Bulk Quote
               </button>
-              <a href="https://wa.me/918778503021?text=Hello%20Srinivasa%20Textiles%2C%20I%20am%20interested%20in%20placing%20a%20Bulk%2FWholesale%20Order.%20Please%20guide%20me." target="_blank" class="btn btn-outline-gold btn-lg" style="font-weight: 800; min-width: 230px; text-decoration: none; color: #FFF2B2; border-color: var(--color-gold);">
+              <a href="https://wa.me/918778503021?text=Hello%20Srinivasa%20Textiles%2C%20I%20am%20interested%20in%20placing%20a%20Bulk%2FWholesale%20Order.%20Please%20guide%20me." target="_blank" class="btn btn-outline-gold btn-lg" style="font-weight: 800; min-width: 230px; text-decoration: none; border-color: var(--color-gold);">
                 💬 Chat with Master Weaver (WhatsApp)
               </a>
             </div>
@@ -687,6 +688,19 @@
           </div>
         </div>
 
+        <!-- Mobile Grid Layout Switcher Bar (1-Column vs 2-Column) -->
+        <div class="mobile-grid-switcher-bar" id="mobileGridSwitcherBar">
+          <span class="mobile-results-count" id="mobileResultsCount">✨ Handloom Master Weaves</span>
+          <div class="mobile-layout-toggles">
+            <button type="button" class="mobile-layout-btn" id="mobileGrid1ColBtn" title="1-Column Detailed View">
+              <span>⬛</span> 1-Col
+            </button>
+            <button type="button" class="mobile-layout-btn active" id="mobileGrid2ColBtn" title="2-Column Compact Grid">
+              <span>▦</span> 2-Col
+            </button>
+          </div>
+        </div>
+
         <!-- Products Grid (Isolated to Current Demographic) -->
         <div class="products-grid" id="productsGrid"></div>
       </div>
@@ -790,8 +804,8 @@
         <li><button class="mobile-dept-btn active" data-page="explore"><span data-icon="palace" class="drawer-dept-icon"></span> All Collections (Explore)</button></li>
         <li><button class="mobile-dept-btn highlight-combo" data-page="family"><span data-icon="family" class="drawer-dept-icon"></span> Family Combos &amp; Matching Sets</button></li>
         <li><button class="mobile-dept-btn" data-page="women"><span data-icon="ladies" class="drawer-dept-icon"></span> Ladies' Sarees &amp; Ethnic</button></li>
-        <li><button class="mobile-dept-btn" data-page="girls"><span data-icon="kids" class="drawer-dept-icon"></span> Girls (Pattu Pavadai 2-14Y)</button></li>
-        <li><button class="mobile-dept-btn" data-page="boys"><span data-icon="kids" class="drawer-dept-icon"></span> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="girls"><span data-icon="girls" class="drawer-dept-icon"></span> Girls (Pattu Pavadai 2-14Y)</button></li>
+        <li><button class="mobile-dept-btn" data-page="boys"><span data-icon="boys" class="drawer-dept-icon"></span> Boys (Kurta &amp; Dhoti 2-14Y)</button></li>
         <li><button class="mobile-dept-btn" data-page="men"><span data-icon="mens" class="drawer-dept-icon"></span> Men's Silk &amp; Dhotis</button></li>
         <li><button class="mobile-dept-btn" data-page="infants"><span data-icon="baby" class="drawer-dept-icon"></span> Born Babies &amp; Infants (0-2Y)</button></li>
       </ul>
@@ -966,129 +980,203 @@
             🏢
           </div>
           <div class="bulk-inquiry-title-wrap">
-            <h3>Direct Handloom Bulk Inquiry</h3>
-            <p>Srinivasa Textiles Master Weaver Direct Wholesale &amp; Wedding Troupe Quotation</p>
+            <h3 id="bulkInquiryHeaderTitle">Direct Handloom Wholesale &amp; Bulk Order</h3>
+            <p>Master Weaver Direct Pricing • Certified Kanchipuram Pure Silk Handloom</p>
           </div>
         </div>
         <button type="button" class="pdp-close-btn bulk-inquiry-close-btn" id="closeBulkInquiryModalBtn" title="Close Inquiry Modal">✕</button>
       </div>
 
-      <!-- Selected Package Banner if triggered from a specific card -->
-      <div id="bulkInquirySelectedPkgBanner" class="bulk-pkg-highlight-banner" style="display: none;">
-        <div class="bulk-pkg-banner-badge">
-          <span>👑</span> Selected Bulk Package:
-        </div>
-        <strong id="bulkInquirySelectedPkgTitle" class="bulk-pkg-banner-title"></strong>
-        <span id="bulkInquirySelectedPkgPrice" class="bulk-pkg-banner-price"></span>
-      </div>
-
-      <form id="customerBulkInquiryForm" style="display: flex; flex-direction: column; gap: 1rem;">
-        <input type="hidden" id="bulkInquiryPackageId" value="" />
-
-        <div class="bulk-form-grid-2">
-          <div class="bulk-form-field">
-            <label for="bulkCustName" class="bulk-form-label">
-              <span>👤</span> Full Name / Contact Person *
-            </label>
-            <input type="text" id="bulkCustName" required class="bulk-form-input" placeholder="e.g. S. Vijayaraghavan" />
+      <!-- 2-Column Responsive Layout: Left = Product Details, Right = Live Calculator & Order Form -->
+      <div class="bulk-modal-grid" id="bulkModalMainGrid">
+        <!-- Left: Full Product Details Showcase -->
+        <div class="bulk-modal-details-col" id="bulkModalDetailsCol">
+          <div class="bulk-modal-img-wrap">
+            <img id="bulkModalImg" src="assets/images/hero_banner.jpg" alt="Bulk Package" />
+            <span class="bulk-card-badge" id="bulkModalBadge">👑 Bridal Troupe Favorite</span>
+            <span class="bulk-card-discount-tag" id="bulkModalDiscountTag">50% WHOLESALE SAVINGS</span>
           </div>
-          <div class="bulk-form-field">
-            <label for="bulkCustPhone" class="bulk-form-label">
-              <span>📞</span> Phone / WhatsApp Number *
-            </label>
-            <input type="tel" id="bulkCustPhone" required class="bulk-form-input" placeholder="+91 98400 12345" />
-          </div>
-        </div>
 
-        <div class="bulk-form-grid-2">
-          <div class="bulk-form-field">
-            <label for="bulkCustEmail" class="bulk-form-label">
-              <span>✉️</span> Email Address (Optional)
-            </label>
-            <input type="email" id="bulkCustEmail" class="bulk-form-input" placeholder="client@example.com" />
+          <div class="bulk-modal-meta">
+            <span class="bulk-card-category" id="bulkModalCategory">WEDDING TROUPE</span>
+            <h3 class="bulk-modal-product-title" id="bulkModalTitle">Grand Muhurtham Wedding Bridal Trousseau Lot</h3>
+            <p class="bulk-modal-product-desc" id="bulkModalDesc">Authentic Kanchipuram bridal silk sarees with heavy contrast zari pallu and rich borders directly from our master handlooms.</p>
           </div>
-          <div class="bulk-form-field">
-            <label for="bulkCustCompany" class="bulk-form-label">
-              <span>🏛️</span> Company / Family / Occasion Name *
-            </label>
-            <input type="text" id="bulkCustCompany" required class="bulk-form-input" placeholder="e.g. Raghavan Wedding Troupe or Boutique" />
+
+          <div class="bulk-modal-specs-list">
+            <div class="bulk-spec-item">
+              <span class="spec-icon">🧵</span>
+              <div><strong>Master Weave:</strong> <span id="bulkModalFabric">100% Pure Kanchipuram Mulberry Silk with Korvai Interlocking Weave</span></div>
+            </div>
+            <div class="bulk-spec-item">
+              <span class="spec-icon">📦</span>
+              <div><strong>Set Inclusions:</strong> <span id="bulkModalInclusions">Assorted Bridal Palette &amp; Matching Unstitched Blouse</span></div>
+            </div>
+            <div class="bulk-spec-item">
+              <span class="spec-icon">⏱️</span>
+              <div><strong>Dispatch &amp; Delivery:</strong> <span id="bulkModalTimeline">Express 7-10 Days Direct Dispatch</span></div>
+            </div>
+            <div class="bulk-spec-item">
+              <span class="spec-icon">🏛️</span>
+              <div><strong>Authenticity:</strong> <span>Certified Silk Mark Organisation of India (SMOI) 100% Pure Tested Silk</span></div>
+            </div>
+            <div class="bulk-spec-item">
+              <span class="spec-icon">🛡️</span>
+              <div><strong>Quality Assurance:</strong> <span>Zero middleman markup, weaver direct testing certificate &amp; insurance in transit</span></div>
+            </div>
           </div>
         </div>
 
-        <div class="bulk-form-grid-3">
-          <div class="bulk-form-field">
-            <label for="bulkCustOrderType" class="bulk-form-label">
-              <span>📋</span> Requirement Type *
-            </label>
-            <select id="bulkCustOrderType" class="bulk-form-select">
-              <option value="Customer Bulk Inquiry">General Bulk Inquiry</option>
-              <option value="Wedding Bulk">Wedding Troupe / Bridal Lot</option>
-              <option value="Wholesale">Wholesale Showroom Stock</option>
-              <option value="Boutique Reseller">Boutique Reseller Pack</option>
-              <option value="Corporate Gifting">Corporate Festive Gifting</option>
-            </select>
-          </div>
-          <div class="bulk-form-field">
-            <label for="bulkCustPieces" class="bulk-form-label">
-              <span>📦</span> Estimated Pieces *
-            </label>
-            <input type="number" id="bulkCustPieces" required min="5" value="15" class="bulk-form-input" />
-          </div>
-          <div class="bulk-form-field">
-            <label for="bulkCustDeadline" class="bulk-form-label">
-              <span>📅</span> Needed By Date *
-            </label>
-            <input type="date" id="bulkCustDeadline" required class="bulk-form-input" />
-          </div>
-        </div>
+        <!-- Right: Interactive Live Calculator & Order Form -->
+        <div class="bulk-modal-order-col">
+          <form id="customerBulkInquiryForm" class="bulk-order-form">
+            <input type="hidden" id="bulkInquiryPackageId" value="" />
 
-        <div class="bulk-form-grid-2">
-          <div class="bulk-form-field">
-            <label for="bulkCustCity" class="bulk-form-label">
-              <span>📍</span> Delivery City / State *
-            </label>
-            <input type="text" id="bulkCustCity" required class="bulk-form-input" placeholder="e.g. Chennai, Tamil Nadu" />
+            <!-- Live Price Calculator Card -->
+            <div class="bulk-live-calc-card">
+              <div class="bulk-rates-row">
+                <div class="rate-item">
+                  <span class="rate-lbl">Direct Wholesale Rate</span>
+                  <span class="rate-val" id="calcUnitRate">₹18,500</span>
+                </div>
+                <div class="rate-item">
+                  <span class="rate-lbl">Showroom MRP</span>
+                  <span class="rate-val retail-mrp" id="calcRetailMrp">₹37,000</span>
+                </div>
+                <span class="bulk-moq-pill" id="calcMoqBadge">MOQ: 10 Sets</span>
+              </div>
+
+              <!-- Interactive Stepper -->
+              <div class="bulk-qty-selector-group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <label for="bulkCustPieces" class="bulk-form-label" style="margin: 0; font-weight: 700;">
+                    <span>🔢</span> Order Quantity (Units):
+                  </label>
+                  <small style="color: var(--color-gold); font-size: 0.75rem;" id="calcUnitLabel">Min Order Quantity: 10</small>
+                </div>
+                <div class="bulk-stepper-control">
+                  <button type="button" class="stepper-btn" id="bulkQtyMinus" title="Decrease Quantity">-</button>
+                  <input type="number" id="bulkCustPieces" class="stepper-input" min="1" value="10" required />
+                  <button type="button" class="stepper-btn" id="bulkQtyPlus" title="Increase Quantity">+</button>
+                </div>
+              </div>
+
+              <!-- Cost Breakdown -->
+              <div class="bulk-cost-breakdown">
+                <div class="cost-row">
+                  <span>Subtotal (<span id="calcPiecesLabel">10</span> units):</span>
+                  <strong id="calcSubtotal">₹1,85,000</strong>
+                </div>
+                <div class="cost-row">
+                  <span>GST (5% Handloom Silk):</span>
+                  <span id="calcGst">₹9,250</span>
+                </div>
+                <div class="cost-row savings-row">
+                  <span>Wholesale Savings vs Retail:</span>
+                  <span id="calcTotalSavings">Save ₹1,85,000</span>
+                </div>
+                <div class="cost-row total-row">
+                  <span>Estimated Total:</span>
+                  <span style="color: var(--color-gold);" id="calcTotal">₹1,94,250</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customer & Delivery Details -->
+            <div class="bulk-form-grid-2">
+              <div class="bulk-form-field">
+                <label for="bulkCustName" class="bulk-form-label">
+                  <span>👤</span> Your Name / Contact Person *
+                </label>
+                <input type="text" id="bulkCustName" required class="bulk-form-input" placeholder="e.g. S. Vijayaraghavan" />
+              </div>
+              <div class="bulk-form-field">
+                <label for="bulkCustPhone" class="bulk-form-label">
+                  <span>📞</span> Phone / WhatsApp Number *
+                </label>
+                <input type="tel" id="bulkCustPhone" required class="bulk-form-input" placeholder="+91 98400 12345" />
+              </div>
+            </div>
+
+            <div class="bulk-form-grid-2">
+              <div class="bulk-form-field">
+                <label for="bulkCustCompany" class="bulk-form-label">
+                  <span>🏛️</span> Occasion / Boutique Name *
+                </label>
+                <input type="text" id="bulkCustCompany" required class="bulk-form-input" placeholder="e.g. Wedding Troupe or Boutique Name" />
+              </div>
+              <div class="bulk-form-field">
+                <label for="bulkCustCity" class="bulk-form-label">
+                  <span>📍</span> Delivery City / State *
+                </label>
+                <input type="text" id="bulkCustCity" required class="bulk-form-input" placeholder="e.g. Chennai, Tamil Nadu" />
+              </div>
+            </div>
+
+            <div class="bulk-form-grid-2">
+              <div class="bulk-form-field">
+                <label for="bulkCustDeadline" class="bulk-form-label">
+                  <span>📅</span> Needed By Date *
+                </label>
+                <input type="date" id="bulkCustDeadline" required class="bulk-form-input" />
+              </div>
+              <div class="bulk-form-field">
+                <label for="bulkCustOrderType" class="bulk-form-label">
+                  <span>📋</span> Order Type *
+                </label>
+                <select id="bulkCustOrderType" class="bulk-form-select">
+                  <option value="Wedding Bulk">Wedding Troupe / Bridal Lot</option>
+                  <option value="Wholesale">Wholesale Showroom Stock</option>
+                  <option value="Boutique Reseller">Boutique Reseller Pack</option>
+                  <option value="Corporate Gifting">Corporate Festive Gifting</option>
+                  <option value="Customer Bulk Inquiry">General Bulk Order</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="bulk-form-field">
+              <label for="bulkCustNotes" class="bulk-form-label">
+                <span>📝</span> Special Weaving / Color / Customization Notes:
+              </label>
+              <textarea id="bulkCustNotes" rows="2" class="bulk-form-textarea" placeholder="Specify color combinations, zari preferences, blouse fabric options..."></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="bulk-form-actions-stack">
+              <button type="submit" class="btn btn-gold btn-md bulk-submit-order-btn" id="submitBulkInquiryBtn">
+                <span>🛍️</span> Place Wholesale Order Now
+              </button>
+              <button type="button" class="btn btn-outline btn-md bulk-whatsapp-order-btn" id="bulkDirectWhatsAppBtn" style="border-color: #25D366; color: #25D366;">
+                <span>💬</span> Place Order on WhatsApp
+              </button>
+            </div>
+          </form>
+
+          <!-- Order Confirmation Screen -->
+          <div id="bulkInquirySuccessContainer" style="display: none; padding: 1.5rem 1rem;">
+            <div style="text-align: center; margin-bottom: 1.25rem;">
+              <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+              <h3 style="font-family: var(--font-serif-display); color: var(--color-gold); margin-bottom: 0.35rem; font-size: 1.4rem;">
+                Wholesale Order Confirmed!
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 480px; margin: 0 auto; line-height: 1.5;">
+                Your order <strong id="bulkInquiryConfirmId" style="color: var(--color-gold);"></strong> has been received and entered directly into our Master Weavers Loom Schedule.
+              </p>
+            </div>
+
+            <div id="bulkOrderReceiptCard" style="background: var(--bg-surface-alt); border: 1.5px solid var(--color-gold); border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.88rem;">
+              <!-- Dynamically populated with order receipt breakdown -->
+            </div>
+
+            <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
+              <a id="bulkInquiryWhatsAppChatBtn" href="#" target="_blank" class="btn btn-gold btn-md" style="font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;">
+                <span>💬</span> Connect with Master Weaver on WhatsApp
+              </a>
+              <button type="button" class="btn btn-outline btn-md" id="bulkInquiryCloseSuccessBtn">
+                Close &amp; Continue
+              </button>
+            </div>
           </div>
-          <div class="bulk-form-field">
-            <label for="bulkCustGstin" class="bulk-form-label">
-              <span>💼</span> GSTIN (If Business / Optional)
-            </label>
-            <input type="text" id="bulkCustGstin" class="bulk-form-input" placeholder="33AAAC1234F1Z5 or Unregistered" />
-          </div>
-        </div>
-
-        <div class="bulk-form-field">
-          <label for="bulkCustNotes" class="bulk-form-label">
-            <span>📝</span> Specific Customization, Color Schemes, or Weaver Notes:
-          </label>
-          <textarea id="bulkCustNotes" rows="3" class="bulk-form-textarea" placeholder="e.g. Need 15 sarees in Crimson &amp; Mustard with Korvai borders, plus matching raw silk unstitched blouse material..."></textarea>
-        </div>
-
-        <div class="bulk-form-actions">
-          <button type="button" class="btn btn-outline btn-md" id="cancelBulkInquiryBtn" style="padding: 0.65rem 1.4rem;">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-md" id="submitBulkInquiryBtn" style="font-weight: 800; padding: 0.65rem 1.75rem;">
-            <span>📨</span> Submit Bulk Inquiry
-          </button>
-        </div>
-      </form>
-
-      <!-- Confirmation Screen -->
-      <div id="bulkInquirySuccessContainer" style="display: none; text-align: center; padding: 2rem 1rem;">
-        <div style="font-size: 3rem; margin-bottom: 0.75rem;">🎉</div>
-        <h3 style="font-family: var(--font-serif-display); color: var(--color-primary); margin-bottom: 0.5rem; font-size: 1.4rem;">
-          Bulk Inquiry Received with Reverence!
-        </h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto 1.5rem; line-height: 1.55;">
-          Your inquiry <strong id="bulkInquiryConfirmId" style="color: var(--color-gold);"></strong> has been dispatched directly to our master weavers console. Our wholesale executive will contact you via WhatsApp with a detailed quotation and fabric swatches within 2-4 business hours.
-        </p>
-
-        <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
-          <a id="bulkInquiryWhatsAppChatBtn" href="#" target="_blank" class="btn btn-gold btn-md" style="font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;">
-            <span>💬</span> Connect on WhatsApp Now
-          </a>
-          <button type="button" class="btn btn-outline btn-md" id="bulkInquiryCloseSuccessBtn">
-            Close &amp; Continue Shopping
-          </button>
         </div>
       </div>
     </div>
@@ -1620,6 +1708,139 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-client.js"></script>
 
+  <!-- ==========================================================================
+       MOBILE STICKY DUAL BOTTOM ACTION BAR ([ ⇅ Sort By ] | [ ⚙ Filter ])
+       ========================================================================== -->
+  <div class="mobile-sticky-action-bar" id="mobileStickyActionBar">
+    <button type="button" class="mobile-action-bar-btn" id="mobileOpenSortBtn">
+      <span>⇅</span> Sort By
+    </button>
+    <button type="button" class="mobile-action-bar-btn" id="mobileOpenFilterBtn">
+      <span>⚙</span> Filter
+      <span class="filter-badge-counter" id="mobileFilterBadgeCounter" style="display: none;">0</span>
+    </button>
+  </div>
+
+  <!-- ==========================================================================
+       BOTTOM SLIDE-UP FILTER PANEL (Thumb Friendly Sheet)
+       ========================================================================== -->
+  <div class="mobile-filter-bottom-sheet" id="mobileFilterBottomSheet" role="dialog" aria-modal="true">
+    <div class="sheet-drag-handle"></div>
+    <div class="sheet-header">
+      <h3>Filter Handloom Collections</h3>
+      <button type="button" class="sheet-close-btn" onclick="window.mobileUI.closeAllSheets()">✕</button>
+    </div>
+    <div class="sheet-content">
+      <!-- 1. Price Range Slider -->
+      <div class="sheet-filter-group">
+        <div class="sheet-filter-label">
+          <span>Price Range</span>
+          <strong id="sheetPriceLabel" style="color: var(--color-gold);">Up to ₹80,000</strong>
+        </div>
+        <input type="range" id="sheetPriceRange" min="1000" max="80000" step="1000" value="80000"
+          style="width: 100%; accent-color: var(--color-gold);"
+          oninput="window.mobileUI.updatePriceSlider(this.value)" />
+        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted);">
+          <span>₹1,000</span>
+          <span>₹40,000</span>
+          <span>₹80,000+</span>
+        </div>
+      </div>
+
+      <!-- 2. Fabric Type Multi-Select -->
+      <div class="sheet-filter-group">
+        <div class="sheet-filter-label">Fabric Type</div>
+        <div class="sheet-chips-row">
+          <button type="button" class="sheet-filter-chip" data-value="Kanchipuram Silk" onclick="window.mobileUI.toggleFilterChip(this, 'fabrics')">Kanchipuram Silk</button>
+          <button type="button" class="sheet-filter-chip" data-value="Cotton" onclick="window.mobileUI.toggleFilterChip(this, 'fabrics')">Pure Cotton</button>
+          <button type="button" class="sheet-filter-chip" data-value="Pure Linen" onclick="window.mobileUI.toggleFilterChip(this, 'fabrics')">Pure Linen</button>
+          <button type="button" class="sheet-filter-chip" data-value="Banarasi Silk" onclick="window.mobileUI.toggleFilterChip(this, 'fabrics')">Banarasi Silk</button>
+          <button type="button" class="sheet-filter-chip" data-value="Tussar Silk" onclick="window.mobileUI.toggleFilterChip(this, 'fabrics')">Tussar Silk</button>
+          <button type="button" class="sheet-filter-chip" data-value="Pure Mulberry Silk" onclick="window.mobileUI.toggleFilterChip(this, 'fabrics')">Mulberry Silk</button>
+        </div>
+      </div>
+
+      <!-- 3. Color Palette Dots -->
+      <div class="sheet-filter-group">
+        <div class="sheet-filter-label">Color Palette</div>
+        <div class="sheet-color-dots">
+          <button type="button" class="sheet-color-btn" data-value="Crimson" style="background: #800020;" title="Crimson / Maroon" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+          <button type="button" class="sheet-color-btn" data-value="Gold" style="background: #D4AF37;" title="Mustard Gold" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+          <button type="button" class="sheet-color-btn" data-value="Royal Blue" style="background: #002366;" title="Royal Blue" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+          <button type="button" class="sheet-color-btn" data-value="Temple Green" style="background: #00563B;" title="Temple Green" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+          <button type="button" class="sheet-color-btn" data-value="Pink" style="background: #D81B60;" title="Rani Pink" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+          <button type="button" class="sheet-color-btn" data-value="Ivory" style="background: #FFFDD0; color: #111;" title="Ivory Cream" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+          <button type="button" class="sheet-color-btn" data-value="Purple" style="background: #4B0082;" title="Deep Violet" onclick="window.mobileUI.toggleFilterChip(this, 'colors')"></button>
+        </div>
+      </div>
+
+      <!-- 4. Pattern & Weave -->
+      <div class="sheet-filter-group">
+        <div class="sheet-filter-label">Pattern &amp; Weave</div>
+        <div class="sheet-chips-row">
+          <button type="button" class="sheet-filter-chip" data-value="Korvai" onclick="window.mobileUI.toggleFilterChip(this, 'patterns')">Korvai Interlocking</button>
+          <button type="button" class="sheet-filter-chip" data-value="Zari" onclick="window.mobileUI.toggleFilterChip(this, 'patterns')">Gold Zari Brocade</button>
+          <button type="button" class="sheet-filter-chip" data-value="Embroidery" onclick="window.mobileUI.toggleFilterChip(this, 'patterns')">Hand Embroidery</button>
+          <button type="button" class="sheet-filter-chip" data-value="Printed" onclick="window.mobileUI.toggleFilterChip(this, 'patterns')">Block Printed</button>
+          <button type="button" class="sheet-filter-chip" data-value="Plain" onclick="window.mobileUI.toggleFilterChip(this, 'patterns')">Classic Plain</button>
+        </div>
+      </div>
+
+      <!-- 5. Size Selector -->
+      <div class="sheet-filter-group">
+        <div class="sheet-filter-label">Size Availability</div>
+        <div class="sheet-chips-row">
+          <button type="button" class="sheet-filter-chip" data-value="S" onclick="window.mobileUI.toggleFilterChip(this, 'sizes')">S</button>
+          <button type="button" class="sheet-filter-chip" data-value="M" onclick="window.mobileUI.toggleFilterChip(this, 'sizes')">M</button>
+          <button type="button" class="sheet-filter-chip" data-value="L" onclick="window.mobileUI.toggleFilterChip(this, 'sizes')">L</button>
+          <button type="button" class="sheet-filter-chip" data-value="XL" onclick="window.mobileUI.toggleFilterChip(this, 'sizes')">XL</button>
+          <button type="button" class="sheet-filter-chip" data-value="XXL" onclick="window.mobileUI.toggleFilterChip(this, 'sizes')">XXL</button>
+          <button type="button" class="sheet-filter-chip" data-value="Free Size" onclick="window.mobileUI.toggleFilterChip(this, 'sizes')">Free Size</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Footer Actions with live count -->
+    <div class="sheet-footer-actions">
+      <button type="button" class="btn btn-outline sheet-reset-btn" onclick="window.mobileUI.resetFilters()">Reset All</button>
+      <button type="button" class="btn btn-gold sheet-apply-btn" onclick="window.mobileUI.applyFilters()" id="sheetFilterLiveCount">
+        Apply Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       STICKY BOTTOM NAVIGATION BAR (5 Core Tabs)
+       ========================================================================== -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+    <a href="index.html" class="bottom-nav-tab" data-tab-action="home">
+      <span class="tab-icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="shop.html" class="bottom-nav-tab active" data-tab-action="shop">
+      <span class="tab-icon">🛍️</span>
+      <span>Shop</span>
+    </a>
+    <button type="button" class="bottom-nav-tab" data-tab-action="search">
+      <span class="tab-icon">🔍</span>
+      <span>Search</span>
+    </button>
+    <button type="button" class="bottom-nav-tab" data-tab-action="wishlist">
+      <span class="tab-icon">
+        🤍
+        <span class="tab-badge" id="bottomNavWishlistBadge" style="display: none;">0</span>
+      </span>
+      <span>Wishlist</span>
+    </button>
+    <button type="button" class="bottom-nav-tab" data-tab-action="cart">
+      <span class="tab-icon">
+        🛒
+        <span class="tab-badge" id="bottomNavCartBadge" style="display: none;">0</span>
+      </span>
+      <span>Bag</span>
+    </button>
+  </nav>
+
   <!-- Scripts -->
   <script src="js/icons.js"></script>
   <script src="js/api.js"></script>
@@ -1629,6 +1850,7 @@
   <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
   <script src="js/scroll-animations.js"></script>
+  <script src="js/mobile-ui.js"></script>
 </body>
 
 </html>
