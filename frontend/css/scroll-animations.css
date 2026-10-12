@@ -228,10 +228,11 @@ html {
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .back-to-top-btn {
-    bottom: 5.8rem;
-    right: 1.25rem;
+    bottom: calc(var(--mobile-bottom-nav-height, 64px) + 72px);
+    right: 15px;
     width: 44px;
     height: 44px;
+    z-index: 996;
   }
   .reveal-on-scroll {
     transform: translate3d(0, 24px, 0);
@@ -241,6 +242,605 @@ html {
   .reveal-fade-right {
     transform: translate3d(0, 20px, 0);
   }
+}
+
+/* ==========================================================================
+   10. LIVING ROYAL SILK BACKGROUND ENGINE (Desktop & Mobile)
+   60fps GPU-accelerated breathing ambient glow & golden aura drift
+   ========================================================================== */
+body {
+  position: relative;
+  background-color: var(--bg-body, #FFFDF8);
+  background-image: 
+    radial-gradient(circle at 15% 18%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 82%, rgba(122, 12, 46, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(255, 245, 220, 0.03) 0%, transparent 60%);
+  background-attachment: fixed;
+  animation: ambientSilkBreathe 20s ease-in-out infinite alternate;
+}
+
+[data-theme="dark"] body {
+  background-image: 
+    radial-gradient(circle at 15% 18%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 82%, rgba(158, 22, 62, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(26, 2, 8, 0.08) 0%, transparent 60%);
+  animation: ambientSilkBreatheDark 20s ease-in-out infinite alternate;
+}
+
+/* Subtle Floating Golden Silk Aura Layer */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(750px circle at 20% 30%, rgba(212, 175, 55, 0.035), transparent 70%),
+    radial-gradient(900px circle at 80% 70%, rgba(122, 12, 46, 0.025), transparent 75%);
+  animation: goldAuraDrift 24s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes ambientSilkBreathe {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  50% {
+    background-position: 8% 6%, 92% 94%, 52% 48%;
+  }
+  100% {
+    background-position: -6% 10%, 106% 90%, 48% 52%;
+  }
+}
+
+@keyframes ambientSilkBreatheDark {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  50% {
+    background-position: 6% 8%, 94% 92%, 52% 48%;
+  }
+  100% {
+    background-position: -8% 6%, 108% 94%, 48% 52%;
+  }
+}
+
+@keyframes goldAuraDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(24px, -18px, 0) scale(1.06);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(-20px, 20px, 0) scale(1.02);
+    opacity: 0.8;
+  }
+}
+
+/* Ensure foreground content stays above the ambient aura layer */
+#storefrontView,
+.site-footer,
+.announcement-bar {
+  position: relative;
+  z-index: 1;
+}
+
+/* Rock-Solid Fixed Bottom Navigation on Mobile (Always constant at screen bottom while scrolling) */
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: var(--mobile-bottom-nav-height, 60px) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.35) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    z-index: 99999 !important;
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+    will-change: transform !important;
+  }
+
+  [data-theme="dark"] .mobile-bottom-nav {
+    background: rgba(18, 20, 30, 0.96) !important;
+    border-top-color: rgba(212, 175, 55, 0.45) !important;
+    box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+/* ==========================================================================
+   11. ULTRA-SMOOTH ANIMATIONS FOR ALL TABS & NAVIGATION (Desktop & Mobile)
+   ========================================================================== */
+
+/* A. Department Navigation Tabs */
+.dept-link {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.25s ease,
+              border-color 0.25s ease,
+              color 0.2s ease !important;
+  will-change: transform, box-shadow;
+}
+
+.dept-link:hover {
+  transform: translateY(-3px) scale(1.025) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14), 0 0 16px rgba(212, 175, 55, 0.35) !important;
+}
+
+.dept-link:active {
+  transform: scale(0.94) !important;
+}
+
+.dept-link .dept-nav-img-icon svg,
+.dept-link .dept-nav-img-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease !important;
+}
+
+.dept-link:hover .dept-nav-img-icon svg,
+.dept-link:hover .dept-nav-img-icon {
+  transform: scale(1.18) rotate(5deg) !important;
+  filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.55)) !important;
+}
+
+/* Active tab shimmer wave & spring feedback */
+.dept-link.active {
+  animation: tabSelectPulse 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.32) !important;
+}
+
+.dept-link.active .dept-nav-img-icon svg,
+.dept-link.active .dept-nav-img-icon {
+  transform: scale(1.1) !important;
+  filter: drop-shadow(0 2px 6px rgba(212, 175, 55, 0.45)) !important;
+}
+
+.dept-link.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 242, 178, 0.45), transparent);
+  animation: tabShimmerSweep 3s infinite 1s ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes tabSelectPulse {
+  0% { transform: scale(0.94); }
+  55% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes tabShimmerSweep {
+  0% { left: -100%; }
+  45% { left: 140%; }
+  100% { left: 140%; }
+}
+
+/* B. Department Content Tab Switch Transition */
+.dept-tab-animate {
+  animation: deptTabContentEntrance 0.42s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  will-change: transform, opacity;
+}
+
+@keyframes deptTabContentEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* C. Mobile Bottom Navigation Tabs */
+.bottom-nav-tab {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.22s ease, opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.bottom-nav-tab:active {
+  transform: scale(0.92) !important;
+}
+
+.bottom-nav-tab .tab-icon {
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease !important;
+}
+
+.bottom-nav-tab.active .tab-icon {
+  animation: bottomTabIconBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+.bottom-nav-tab.active .tab-icon svg {
+  stroke: var(--color-gold, #C59B27) !important;
+  filter: drop-shadow(0 2px 10px rgba(197, 155, 39, 0.55)) !important;
+}
+
+/* Radiant glow behind active mobile tab icon */
+.bottom-nav-tab.active .tab-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, transparent 75%);
+  pointer-events: none;
+  animation: tabAuraPulse 2.6s infinite ease-in-out;
+  z-index: -1;
+}
+
+@keyframes bottomTabIconBounce {
+  0% { transform: scale(0.85); }
+  50% { transform: scale(1.22); }
+  75% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes tabAuraPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* D. Mobile Drawer Department Tabs */
+.mobile-dept-btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.22s ease,
+              border-color 0.22s ease,
+              box-shadow 0.22s ease !important;
+}
+
+.mobile-dept-btn:hover {
+  transform: translateX(6px) !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+
+.mobile-dept-btn:active {
+  transform: scale(0.96) !important;
+}
+
+.mobile-dept-btn.active {
+  border-color: var(--color-gold, #D4AF37) !important;
+  box-shadow: 0 3px 12px rgba(212, 175, 55, 0.25) !important;
+  animation: tabSelectPulse 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+.mobile-dept-btn .drawer-dept-icon svg,
+.mobile-dept-btn .drawer-dept-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.mobile-dept-btn:hover .drawer-dept-icon,
+.mobile-dept-btn.active .drawer-dept-icon {
+  transform: scale(1.15) rotate(4deg) !important;
+}
+
+/* E. Coupon & Filter Tabs */
+.coupon-filter-tab {
+  transition: all 0.26s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.coupon-filter-tab:hover {
+  transform: translateY(-2.5px) !important;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.3) !important;
+}
+
+.coupon-filter-tab:active {
+  transform: scale(0.93) !important;
+}
+
+.coupon-filter-tab.active {
+  animation: tabPopIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35) !important;
+}
+
+@keyframes tabPopIn {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* F. Admin Console Sidebar Tabs & Content Panes */
+.admin-menu-item {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.22s ease,
+              border-color 0.22s ease,
+              box-shadow 0.22s ease !important;
+}
+
+.admin-menu-item:hover {
+  transform: translateX(5px) !important;
+}
+
+.admin-menu-item:active {
+  transform: scale(0.97) !important;
+}
+
+.admin-menu-item.active {
+  animation: adminTabPop 0.36s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2) !important;
+}
+
+.admin-menu-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #FFF2B2, #D4AF37, #9E163E);
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+  animation: adminTabLaserGrow 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes adminTabLaserGrow {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes adminTabPop {
+  0% { transform: scale(0.96); }
+  60% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.admin-menu-item .menu-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.admin-menu-item:hover .menu-icon,
+.admin-menu-item.active .menu-icon {
+  transform: scale(1.18) !important;
+}
+
+/* Admin Tab Pane Entrance Animation */
+.admin-tab-pane:not(.active) {
+  display: none !important;
+}
+
+.admin-tab-pane.active.admin-tab-animating {
+  animation: adminPaneEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+@keyframes adminPaneEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.992);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-tab-pane.active .admin-card,
+.admin-tab-pane.active .stat-kpi-card,
+.admin-tab-pane.active .admin-table-wrapper {
+  animation: adminSubCardSlide 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.admin-tab-pane.active .admin-card:nth-child(1),
+.admin-tab-pane.active .stat-kpi-card:nth-child(1) { animation-delay: 0.04s; }
+.admin-tab-pane.active .admin-card:nth-child(2),
+.admin-tab-pane.active .stat-kpi-card:nth-child(2) { animation-delay: 0.08s; }
+.admin-tab-pane.active .admin-card:nth-child(3),
+.admin-tab-pane.active .stat-kpi-card:nth-child(3) { animation-delay: 0.12s; }
+
+@keyframes adminSubCardSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* G. Admin Status Filter Tabs & Chips */
+.admin-status-tabs button,
+.admin-tab-btn,
+.status-filter-chip {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease !important;
+}
+
+.admin-status-tabs button:hover,
+.admin-tab-btn:hover,
+.status-filter-chip:hover {
+  transform: translateY(-2px) !important;
+}
+
+.admin-status-tabs button:active,
+.admin-tab-btn:active,
+.status-filter-chip:active {
+  transform: scale(0.94) !important;
+}
+
+.admin-status-tabs button.active,
+.admin-tab-btn.active,
+.status-filter-chip.active {
+  animation: tabPopIn 0.34s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  box-shadow: 0 3px 12px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* H. Universal Interactive Tab Ripple & Click Feedback */
+.st-tab-ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.5) 0%, rgba(212, 175, 55, 0.2) 45%, transparent 70%);
+  transform: scale(0);
+  animation: stTabRippleExpand 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 10;
+}
+
+@keyframes stTabRippleExpand {
+  0% {
+    transform: scale(0);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.tab-just-clicked {
+  animation: stTabSpringPress 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes stTabSpringPress {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.94); }
+  70% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+.st-tab-icon-bounce {
+  animation: stTabIconBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+@keyframes stTabIconBounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.26) rotate(-5deg); }
+  65% { transform: scale(0.96) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* I. Header Action Buttons & Icon Triggers */
+.feedback-nav-btn,
+.search-trigger-btn,
+.wishlist-btn,
+.cart-btn,
+.theme-toggle-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease !important;
+}
+
+.feedback-nav-btn:hover,
+.search-trigger-btn:hover,
+.wishlist-btn:hover,
+.cart-btn:hover,
+.theme-toggle-btn:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.3) !important;
+}
+
+.feedback-nav-btn:active,
+.search-trigger-btn:active,
+.wishlist-btn:active,
+.cart-btn:active,
+.theme-toggle-btn:active {
+  transform: scale(0.92) !important;
+}
+
+/* J. Badge Counts Heartbeat Pulse */
+.badge-count,
+.tab-badge {
+  animation: badgeHeartbeat 3s infinite ease-in-out !important;
+}
+
+@keyframes badgeHeartbeat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.18); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.12); }
+  48% { transform: scale(1); }
+}
+
+/* K. Filter Bottom Sheet Chips & Color Buttons */
+.sheet-filter-chip,
+.sheet-color-btn {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease !important;
+}
+
+.sheet-filter-chip:hover {
+  transform: translateY(-2px) !important;
+}
+
+.sheet-filter-chip:active,
+.sheet-color-btn:active {
+  transform: scale(0.93) !important;
+}
+
+.sheet-filter-chip.active {
+  animation: tabPopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* G. Mobile Fabric Grid Items Micro-Interactions */
+.mobile-fabric-item {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s ease,
+              border-color 0.2s ease !important;
+}
+
+.mobile-fabric-item:hover,
+.mobile-fabric-item:active {
+  transform: scale(0.96) !important;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.28) !important;
+}
+
+.mobile-fabric-item .mobile-fabric-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.mobile-fabric-item:hover .mobile-fabric-icon {
+  transform: scale(1.22) rotate(6deg) !important;
+}
+
+/* H. Festival Countdown Clock Boxes Dynamic Hover Pulse */
+.sf-festive-timer .timer-box {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sf-festive-timer .timer-box:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4) !important;
+}
+
+.sf-timer-secs {
+  animation: secTickPulse 1s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes secTickPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(0.97); }
 }
 
 /* Accessibility: Respect Reduced Motion */
@@ -253,7 +853,13 @@ html {
   .reveal-fade-right,
   .reveal-zoom-in,
   .stagger-reveal > *,
-  .product-card.animate-in {
+  .product-card.animate-in,
+  body,
+  body::before,
+  .badge-count,
+  .tab-badge,
+  .dept-link.active::after,
+  .sf-timer-secs {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;

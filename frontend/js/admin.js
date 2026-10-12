@@ -5,6 +5,14 @@ class AdminController {
   constructor() {
     this.currentTab = "overview";
     this.uploadedImages = [];
+    if (!window.storefront) {
+      window.storefront = {
+        showToast: (msg, type, dur) => this.showToast(msg, type, dur)
+      };
+    } else if (typeof window.storefront.showToast !== "function") {
+      window.storefront.showToast = (msg, type, dur) => this.showToast(msg, type, dur);
+    }
+    window.showToast = (msg, type, dur) => this.showToast(msg, type, dur);
     this.init();
   }
 
@@ -25,7 +33,122 @@ class AdminController {
     try { this.renderCollection01MasterSwitch(); } catch (e) { console.error("renderCollection01MasterSwitch error:", e); }
     try { this.renderFamilyCombosTab(); } catch (e) { console.error("renderFamilyCombosTab error:", e); }
     try { this.updateFestiveBadges(); } catch (e) { console.error("updateFestiveBadges error:", e); }
+    try { this.updateCouponMasterBadges(); } catch (e) { console.error("updateCouponMasterBadges error:", e); }
     try { this.initFestiveCountdownPreview(); } catch (e) { console.error("initFestiveCountdownPreview error:", e); }
+
+    // Cross-tab real-time sync for Master Coupon, Bulk Orders, and Family Combos
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      try {
+        const fc = new BroadcastChannel("st_festive_channel_v1");
+        fc.onmessage = (event) => {
+          if (event.data && event.data.type === "FESTIVE_CAMPAIGN_UPDATED") {
+            this.updateFestiveBadges();
+            this.updateCouponMasterBadges();
+          }
+        };
+      } catch (e) { }
+
+      try {
+        const invChannel = new BroadcastChannel("st_inventory_channel_v2");
+        invChannel.onmessage = (event) => {
+          const data = event.data;
+          if (!data) return;
+          if (data.type === "BULK_ORDERS_UPDATED") {
+            this.renderBulkOrdersSession();
+            this.renderBulkOrderKPIs();
+          } else if (data.type === "FAMILY_COMBO_ORDERS_UPDATED") {
+            this.renderFamilyCombosTab();
+            this.renderFamilyComboOrdersTable();
+          } else if (data.type === "ORDERS_UPDATED") {
+            this.renderOrdersTable();
+            this.renderDashboardKPIs();
+          } else if (data.type === "COLLECTION01_UPDATED") {
+            this.renderCollection01MasterSwitch();
+          } else if (data.type === "FAMILY_COMBOS_UPDATED") {
+            this.renderFamilyCombosTab();
+          }
+        };
+      } catch (e) { }
+    }
+
+    window.addEventListener("festiveCampaignUpdated", () => {
+      this.updateFestiveBadges();
+      this.updateCouponMasterBadges();
+    });
+
+    window.addEventListener("bulkOrdersUpdated", () => {
+      this.renderBulkOrdersSession();
+      this.renderBulkOrderKPIs();
+    });
+
+    window.addEventListener("familyComboOrdersUpdated", () => {
+      this.renderFamilyCombosTab();
+      this.renderFamilyComboOrdersTable();
+    });
+
+    window.addEventListener("ordersUpdated", () => {
+      this.renderOrdersTable();
+      this.renderDashboardKPIs();
+    });
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === "st_festive_campaign_v1") {
+        this.updateFestiveBadges();
+        this.updateCouponMasterBadges();
+      } else if (e.key === "st_bulk_orders_data_v2" || e.key === "st_bulk_settings_data_v2") {
+        this.renderBulkOrdersSession();
+        this.renderBulkOrderKPIs();
+      } else if (e.key === "st_family_combo_orders_v1" || e.key === "st_family_combos_v1") {
+        this.renderFamilyCombosTab();
+        this.renderFamilyComboOrdersTable();
+      } else if (e.key === "st_orders_data_v2") {
+        this.renderOrdersTable();
+        this.renderDashboardKPIs();
+      }
+    });
+
+    // Start persistent live real-time sync engine
+    this.setupRealtimeSyncEngine();
+
+    // Ensure only the default active tab pane is displayed initially
+    try {
+      this.switchTab(this.currentTab || "overview");
+    } catch (e) {
+      console.warn("Initial switchTab error:", e);
+    }
+  }
+
+  setupRealtimeSyncEngine() {
+    if (this._realtimeTimer) clearInterval(this._realtimeTimer);
+    this._realtimeTimer = setInterval(() => {
+      if (!window.store) return;
+      try {
+        if (this.currentTab === "bulk-orders") {
+          this.renderBulkOrderKPIs();
+          const searchInput = document.getElementById("bulkOrderSearchInput");
+          if (document.activeElement !== searchInput) {
+            this.renderBulkOrdersSession();
+          }
+        } else if (this.currentTab === "family-combos") {
+          const searchInput = document.getElementById("famOrderSearchInput");
+          if (document.activeElement !== searchInput) {
+            this.renderFamilyComboOrdersTable();
+          }
+        } else if (this.currentTab === "orders") {
+          const searchInput = document.getElementById("orderSearchInput");
+          if (document.activeElement !== searchInput) {
+            this.renderOrdersTable();
+          }
+          this.renderDashboardKPIs();
+        } else if (this.currentTab === "overview") {
+          this.renderDashboardKPIs();
+        } else if (this.currentTab === "inventory") {
+          this.renderInventoryKPIs();
+        }
+      } catch (e) {
+        console.warn("[Admin Realtime Polling] notice:", e);
+      }
+    }, 2500);
   }
 
   setupMobileSidebar() {
@@ -296,7 +419,7 @@ class AdminController {
       toggleCatalogSyncBtn.addEventListener("click", () => {
         const isHidden = catalogSyncContainer.style.display === "none";
         catalogSyncContainer.style.display = isHidden ? "block" : "none";
-        toggleCatalogSyncBtn.innerHTML = isHidden ? "<span>📦</span> Master Catalog SKU Sync ▴" : "<span>📦</span> Master Catalog SKU Sync ▾";
+        toggleCatalogSyncBtn.innerHTML = isHidden ? `<span data-icon="box"></span> Master Catalog SKU Sync ▴` : `<span data-icon="box"></span> Master Catalog SKU Sync ▾`; if (window.Icons) window.Icons.init(toggleCatalogSyncBtn);
       });
     }
 
@@ -409,7 +532,7 @@ class AdminController {
         });
         this.renderInventoryTable();
         if (window.storefront) {
-          window.storefront.showToast(`⚡ Restocked +5 units for ${count} low-stock items! (Live on Website)`, "success");
+          window.storefront.showToast(`Restocked +5 units for ${count} low-stock items! (Live on Website)`, "success");
         }
       });
     }
@@ -423,7 +546,7 @@ class AdminController {
             });
             this.renderInventoryTable();
             if (window.storefront) {
-              window.storefront.showToast("🔄 Catalog stock reset to default weaver units!", "info");
+              window.storefront.showToast("Catalog stock reset to default weaver units!", "info");
             }
           }
         }
@@ -457,7 +580,15 @@ class AdminController {
     document.querySelectorAll(".admin-tab-pane").forEach(pane => {
       const paneId = pane.getAttribute("id");
       const isActive = paneId === `adminTab-${normTab}` || paneId === `adminTab-${tabName}`;
+      pane.classList.remove("admin-tab-animating");
       pane.classList.toggle("active", isActive);
+      if (isActive) {
+        pane.style.setProperty("display", "block", "important");
+        void pane.offsetWidth;
+        pane.classList.add("admin-tab-animating");
+      } else {
+        pane.style.setProperty("display", "none", "important");
+      }
     });
 
     if (normTab === "orders") {
@@ -530,9 +661,9 @@ class AdminController {
     if (mobileSidebarFbBadge) mobileSidebarFbBadge.textContent = `${totalFeedbacks} Reviews`;
     if (fbBadge) fbBadge.textContent = `${totalFeedbacks} Reviews`;
     if (btnFbCount) btnFbCount.textContent = `(${totalFeedbacks})`;
-    if (avgRatingEl) avgRatingEl.textContent = `${avgRating} ★`;
+    if (avgRatingEl) avgRatingEl.textContent = `${avgRating}`;
     if (totalFbEl) totalFbEl.textContent = totalFeedbacks;
-    if (fbAvgVal) fbAvgVal.textContent = `${avgRating} ★`;
+    if (fbAvgVal) fbAvgVal.textContent = `${avgRating}`;
     if (fbTotalVal) fbTotalVal.textContent = totalFeedbacks;
   }
 
@@ -609,7 +740,7 @@ class AdminController {
     this.renderMediaPreviews(this.uploadedImages);
 
     if (window.storefront) {
-      window.storefront.showToast(`📸 ${imageFiles.length} photo(s) added & ready to publish!`, "success");
+      window.storefront.showToast(`${imageFiles.length} photo(s) added & ready to publish!`, "success");
     }
   }
 
@@ -662,7 +793,7 @@ class AdminController {
       <div class="preview-thumb">
         <img src="${imgSrc}" alt="Product Image ${idx + 1}" />
         <span class="tag">${idx === 0 ? "⭐ Main Cover" : `#${idx + 1}`}</span>
-        <button type="button" class="remove-img-btn" data-index="${idx}" title="Remove photo">✕</button>
+        <button type="button" class="remove-img-btn" data-index="${idx}" title="Remove photo"><span data-icon="close"></span></button>
       </div>
     `).join("");
 
@@ -723,10 +854,10 @@ class AdminController {
       ? [...this.uploadedImages]
       : [mainImage];
 
-    const badges = ["✨ Silk Mark (SMOI) Certified"];
+    const badges = ["Silk Mark (SMOI) Certified"];
     const safetyBadges = [];
-    if (hasSoftLining) safetyBadges.push("🛡️ Soft Inner-Lining Guarantee");
-    if (hasOrganicCotton) safetyBadges.push("🌿 100% Skin-Friendly Organic Cotton");
+    if (hasSoftLining) safetyBadges.push("Soft Inner-Lining Guarantee");
+    if (hasOrganicCotton) safetyBadges.push("100% Skin-Friendly Organic Cotton");
 
     const deptPrefix = department.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, "") || "ST";
     const productId = `ST-${deptPrefix}-${Date.now().toString().slice(-4)}`;
@@ -787,7 +918,7 @@ class AdminController {
     this.renderMediaPreviews([]);
 
     if (window.storefront) {
-      window.storefront.showToast(`✅ Product "${title}" published live to storefront & home page!`, "success");
+      window.storefront.showToast(`Product "${title}" published live to storefront & home page!`, "success");
     }
 
     this.renderInventoryKPIs();
@@ -854,7 +985,7 @@ class AdminController {
       tbody.innerHTML = `
         <tr>
           <td colspan="6" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
-            <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🔍</div>
+            <div style="margin-bottom: 0.5rem;"><span data-icon="search" data-icon-size="28"></span></div>
             <strong style="color: var(--text-heading);">No inventory items match your search/filter</strong>
             <p style="font-size: 0.8rem; margin-top: 0.25rem;">Try clearing your search query or resetting filters.</p>
           </td>
@@ -889,7 +1020,7 @@ class AdminController {
                 <button type="button" class="btn-stock-step btn-stock-dec" data-id="${product.id}" title="Decrease 1 unit">−</button>
                 <input type="number" class="stock-inline-edit" data-id="${product.id}" value="${product.stock}" min="0" />
                 <button type="button" class="btn-stock-step btn-stock-inc" data-id="${product.id}" title="Increase 1 unit">+</button>
-                <span class="stock-sync-indicator" id="sync-ind-${product.id}">✓ Live</span>
+                <span class="stock-sync-indicator" id="sync-ind-${product.id}"><span data-icon="check" data-icon-size="12"></span> Live</span>
               </div>
               <div class="stock-quick-pills">
                 <button type="button" class="stock-pill-btn pill-zero" data-id="${product.id}" data-set="0" title="Set to 0 (Mark Sold Out on Live Website)">0 (Sold Out)</button>
@@ -900,11 +1031,11 @@ class AdminController {
           </td>
           <td id="stock-badge-cell-${product.id}">
             ${isOutOfStock ? `
-              <span class="status-badge" style="background:#FEE2E2; color:#DC2626; border: 1px solid #FCA5A5; font-weight: 700;">🔒 Out of Stock</span>
+              <span class="status-badge" style="background:#FEE2E2; color:#DC2626; border: 1px solid #FCA5A5; font-weight: 700;"><span data-icon="lock" data-icon-size="12"></span> Out of Stock</span>
             ` : isLowStock ? `
-              <span class="status-badge" style="background:#FEF3C7; color:#D97706; border: 1px solid #FCD34D; font-weight: 700;">🔥 Low Stock (${product.stock})</span>
+              <span class="status-badge" style="background:#FEF3C7; color:#D97706; border: 1px solid #FCD34D; font-weight: 700;"><span data-icon="flame" data-icon-size="12"></span> Low Stock (${product.stock})</span>
             ` : `
-              <span class="status-badge paid" style="background:#DCFCE7; color:#166534; border: 1px solid #86EFAC; font-weight: 700;">✓ In Stock (${product.stock})</span>
+              <span class="status-badge paid" style="background:#DCFCE7; color:#166534; border: 1px solid #86EFAC; font-weight: 700;"><span data-icon="check" data-icon-size="12"></span> In Stock (${product.stock})</span>
             `}
           </td>
           <td>
@@ -944,11 +1075,11 @@ class AdminController {
       const isLow = clampedQty > 0 && clampedQty <= (updatedProduct.lowStockThreshold || 2);
       const isOOS = clampedQty <= 0;
       badgeCell.innerHTML = isOOS ? `
-        <span class="status-badge" style="background:#FEE2E2; color:#DC2626; border: 1px solid #FCA5A5; font-weight: 700;">🔒 Out of Stock</span>
+        <span class="status-badge" style="background:#FEE2E2; color:#DC2626; border: 1px solid #FCA5A5; font-weight: 700;"><span data-icon="lock" data-icon-size="12"></span> Out of Stock</span>
       ` : isLow ? `
-        <span class="status-badge" style="background:#FEF3C7; color:#D97706; border: 1px solid #FCD34D; font-weight: 700;">🔥 Low Stock (${clampedQty})</span>
+        <span class="status-badge" style="background:#FEF3C7; color:#D97706; border: 1px solid #FCD34D; font-weight: 700;"><span data-icon="flame" data-icon-size="12"></span> Low Stock (${clampedQty})</span>
       ` : `
-        <span class="status-badge paid" style="background:#DCFCE7; color:#166534; border: 1px solid #86EFAC; font-weight: 700;">✓ In Stock (${clampedQty})</span>
+        <span class="status-badge paid" style="background:#DCFCE7; color:#166534; border: 1px solid #86EFAC; font-weight: 700;"><span data-icon="check" data-icon-size="12"></span> In Stock (${clampedQty})</span>
       `;
     }
 
@@ -965,7 +1096,7 @@ class AdminController {
 
     // 5. Toast confirmation
     if (window.storefront && typeof window.storefront.showToast === "function") {
-      window.storefront.showToast(`✅ SKU ${id} stock set to ${clampedQty} units (Live on Website)`, "success");
+      window.storefront.showToast(`SKU ${id} stock set to ${clampedQty} units (Live on Website)`, "success");
     }
   }
 
@@ -1313,7 +1444,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     }
 
     const stateDesc = autoRotate ? `Auto-rotating every ${intervalSeconds}s` : `Slideshow paused (Manual arrows only)`;
-    this.showToast(`✅ Slideshow updated live! ${stateDesc}.`, "success");
+    this.showToast(`Slideshow updated live! ${stateDesc}.`, "success");
   }
 
   setRotationInterval(seconds) {
@@ -1390,7 +1521,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (combos.length === 0) {
       container.innerHTML = `
         <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); background: rgba(255,255,255,0.02); border-radius: 8px;">
-          <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">👨‍👩‍👧‍👦</span>
+          <span data-icon="family" data-icon-size="38" style="display:block;margin-bottom:0.5rem;"></span>
           <h4 style="color: var(--color-gold); margin-bottom: 0.25rem;">No Family Combos Added Yet</h4>
           <p style="font-size: 0.85rem; margin: 0;">Use the form above to publish your first grand big poster family ensemble.</p>
         </div>
@@ -1424,16 +1555,16 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
                   ${combo.id}
                 </span>
                 <span style="font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; ${isLive ? 'background: rgba(16, 185, 129, 0.9); color: #FFF;' : 'background: rgba(239, 68, 68, 0.9); color: #FFF;'}">
-                  ${isLive ? '🟢 LIVE' : '⏸️ HIDDEN'}
+                  ${isLive ? '<span data-icon="statusLive"></span> LIVE' : '<span data-icon="pause"></span> HIDDEN'}
                 </span>
               </div>
 
               <!-- Bottom Overlay Bar -->
               <div style="position: absolute; bottom: 8px; left: 8px; right: 8px; background: rgba(0,0,0,0.82); backdrop-filter: blur(4px); padding: 5px 8px; border-radius: 5px; border: 1px solid rgba(212, 175, 55, 0.35); display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.68rem; color: #FFF2B2; font-weight: 700;">✨ 4-Piece Matching Set</span>
+                <span style="font-size: 0.68rem; color: #FFF2B2; font-weight: 700;"><span data-icon="sparkle"></span> 4-Piece Matching Set</span>
                 <a href="${poster}" target="_blank"
                   style="font-size: 0.68rem; color: var(--color-gold); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
-                  <span>🔍</span> Full View
+                  <span data-icon="search"></span> Full View
                 </a>
               </div>
             </div>
@@ -1444,7 +1575,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
                   <div>
                     <span style="font-size: 0.725rem; font-weight: 800; color: var(--color-gold); letter-spacing: 0.05em; text-transform: uppercase;">
-                      ${combo.badge || '👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE'}
+                      ${combo.badge || 'HIGH VALUE FAMILY BUNDLE'}
                     </span>
                     <h3 style="margin: 0.2rem 0 0.3rem 0; font-size: 1.25rem; color: #FFF; font-weight: 800; font-family: var(--font-serif-display); line-height: 1.25;">
                       ${combo.title}
@@ -1465,22 +1596,22 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
                 <!-- 4 Inclusions Neat 2x2 Grid -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.65rem; margin: 0.85rem 0; background: rgba(0,0,0,0.3); padding: 0.85rem; border-radius: 8px; border-left: 3.5px solid var(--color-gold);">
                   <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
-                    <span>🥻</span> <div><strong style="color: var(--color-gold);">Mother:</strong> <span style="color: #DDD;">${mother}</span></div>
+                    <span data-icon="ladies"></span> <div><strong style="color: var(--color-gold);">Mother:</strong> <span style="color: #DDD;">${mother}</span></div>
                   </div>
                   <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
-                    <span>👔</span> <div><strong style="color: var(--color-gold);">Father:</strong> <span style="color: #DDD;">${father}</span></div>
+                    <span data-icon="mens"></span> <div><strong style="color: var(--color-gold);">Father:</strong> <span style="color: #DDD;">${father}</span></div>
                   </div>
                   <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
-                    <span>👧</span> <div><strong style="color: var(--color-gold);">Daughter:</strong> <span style="color: #DDD;">${daughter}</span></div>
+                    <span data-icon="girls"></span> <div><strong style="color: var(--color-gold);">Daughter:</strong> <span style="color: #DDD;">${daughter}</span></div>
                   </div>
                   <div style="font-size: 0.8rem; color: #EEE; display: flex; align-items: flex-start; gap: 0.4rem;">
-                    <span>👦</span> <div><strong style="color: var(--color-gold);">Son:</strong> <span style="color: #DDD;">${son}</span></div>
+                    <span data-icon="boys"></span> <div><strong style="color: var(--color-gold);">Son:</strong> <span style="color: #DDD;">${son}</span></div>
                   </div>
                 </div>
 
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem; font-size: 0.775rem;">
-                  <span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);">🧵 ${combo.fabric || 'Pure Kanchipuram Silk'}</span>
-                  <span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);">🎨 ${combo.colorTheme || 'Festive Ensemble'}</span>
+                  <span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);"><span data-icon="thread"></span> ${combo.fabric || 'Pure Kanchipuram Silk'}</span>
+                  <span style="background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);"><span data-icon="palette"></span> ${combo.colorTheme || 'Festive Ensemble'}</span>
                 </div>
               </div>
 
@@ -1489,7 +1620,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                   <button type="button" class="btn btn-outline btn-xs" style="border-color: ${isLive ? 'var(--color-success)' : '#EF4444'}; color: ${statusColor}; font-weight: 700;"
                     onclick="window.admin && window.admin.toggleFamilyComboLiveStatus('${combo.id}')">
-                    ${isLive ? '🟢 ' + statusText : '🔴 ' + statusText}
+                    ${isLive ? '<span data-icon="statusLive"></span> ' + statusText : '<span data-icon="statusOff"></span> ' + statusText}
                   </button>
                   <span style="font-size: 0.75rem; color: var(--text-muted);">Click to pause/publish</span>
                 </div>
@@ -1497,11 +1628,11 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                   <button type="button" class="btn btn-gold btn-xs" onclick="window.admin && window.admin.editFamilyCombo('${combo.id}')"
                     style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
-                    ✏️ Alter / Edit
+                    <span data-icon="edit"></span> Alter / Edit
                   </button>
                   <button type="button" class="btn btn-outline btn-xs" onclick="window.admin && window.admin.deleteFamilyCombo('${combo.id}')"
                     style="border-color: #EF4444; color: #EF4444; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    🗑️ Remove
+                    <span data-icon="trash"></span> Remove
                   </button>
                 </div>
               </div>
@@ -1519,7 +1650,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     const id = document.getElementById("famComboFormId")?.value?.trim();
     const title = document.getElementById("famComboFormTitle")?.value?.trim();
     const subtitle = document.getElementById("famComboFormSubtitle")?.value?.trim();
-    const badge = document.getElementById("famComboFormBadge")?.value?.trim() || "👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE";
+    const badge = document.getElementById("famComboFormBadge")?.value?.trim() || "HIGH VALUE FAMILY BUNDLE";
     const colorTheme = document.getElementById("famComboFormColorTheme")?.value?.trim() || "Traditional Festive Harmony";
     const originalPrice = parseFloat(document.getElementById("famComboFormOriginalPrice")?.value) || 0;
     const price = parseFloat(document.getElementById("famComboFormPrice")?.value) || 0;
@@ -1611,10 +1742,10 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     this.updateFamilyPosterPreview(combo.posterImage);
 
     const heading = document.getElementById("famComboFormHeading");
-    if (heading) heading.innerHTML = `<span>✏️</span> Alter Family Combo: <em style="color:#FFF;">${combo.title}</em>`;
+    if (heading) heading.innerHTML = `<span data-icon="edit"></span> Alter Family Combo: <em style="color:#FFF;">${combo.title}</em>`;
 
     const submitBtn = document.getElementById("famComboFormSubmitBtn");
-    if (submitBtn) submitBtn.innerHTML = `💾 Save &amp; Update Combo`;
+    if (submitBtn) submitBtn.innerHTML = `<span data-icon="save"></span> Save &amp; Update Combo`;
 
     const formCard = document.getElementById("famComboFormCard");
     if (formCard) formCard.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1657,10 +1788,10 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (idInput) idInput.value = "";
 
     const heading = document.getElementById("famComboFormHeading");
-    if (heading) heading.innerHTML = `<span>➕</span> Add New Family Combo Set`;
+    if (heading) heading.innerHTML = `<span data-icon="plus"></span> Add New Family Combo Set`;
 
     const submitBtn = document.getElementById("famComboFormSubmitBtn");
-    if (submitBtn) submitBtn.innerHTML = `➕ Publish Family Combo`;
+    if (submitBtn) submitBtn.innerHTML = `<span data-icon="plus"></span> Publish Family Combo`;
 
     const posterInput = document.getElementById("famComboFormPoster");
     if (posterInput) posterInput.value = "assets/images/family_matching_combo.jpg";
@@ -1736,7 +1867,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <!-- Order ID & Date -->
           <td style="vertical-align: top; padding: 1rem 0.75rem;">
             <strong style="color: var(--color-gold); font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
-            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">📅 ${dateStr}</span>
+            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;"><span data-icon="calendar"></span> ${dateStr}</span>
             <span style="display: inline-block; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; background: rgba(212,175,55,0.15); color: var(--color-gold); margin-top: 0.35rem;">
               ${o.paymentMode || 'COD'}
             </span>
@@ -1746,11 +1877,11 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td style="vertical-align: top; padding: 1rem 0.75rem;">
             <strong style="color: #FFF; font-size: 0.95rem; display: block;">${o.customerName}</strong>
             <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
-              📞 <a href="tel:${cleanPhone}" style="color: var(--color-gold); text-decoration: none;">${o.customerPhone}</a>
+              <span data-icon="phone"></span> <a href="tel:${cleanPhone}" style="color: var(--color-gold); text-decoration: none;">${o.customerPhone}</a>
             </div>
             ${o.deliveryAddress ? `
               <div style="font-size: 0.75rem; color: #AAA; margin-top: 0.35rem; line-height: 1.35; max-width: 250px;">
-                📍 ${o.deliveryAddress}
+                <span data-icon="mapPin"></span> ${o.deliveryAddress}
               </div>
             ` : ''}
           </td>
@@ -1760,17 +1891,17 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
             <strong style="color: #FFF; font-size: 0.9rem; display: block;">${o.comboTitle}</strong>
             ${o.specialNotes ? `
               <div style="font-size: 0.75rem; color: #F59E0B; margin-top: 0.4rem; font-style: italic; background: rgba(245, 158, 11, 0.08); padding: 4px 6px; border-radius: 4px;">
-                💬 Note: ${o.specialNotes}
+                <span data-icon="whatsapp"></span> Note: ${o.specialNotes}
               </div>
             ` : ''}
           </td>
 
           <!-- Configured Sizes -->
           <td style="vertical-align: top; padding: 1rem 0.75rem; font-size: 0.8rem; line-height: 1.5; color: #DDD;">
-            <div>👨 <strong>Father:</strong> ${o.fatherSize || 'N/A'}</div>
-            <div>✨ <strong>Mother:</strong> ${o.motherSize || 'Standard Saree'}</div>
-            <div>👦 <strong>Son:</strong> ${o.sonAgeSize || 'N/A'}</div>
-            <div>👧 <strong>Daughter:</strong> ${o.daughterAgeSize || 'N/A'}</div>
+            <div><span data-icon="mens"></span> <strong>Father:</strong> ${o.fatherSize || 'N/A'}</div>
+            <div><span data-icon="ladies"></span> <strong>Mother:</strong> ${o.motherSize || 'Standard Saree'}</div>
+            <div><span data-icon="boys"></span> <strong>Son:</strong> ${o.sonAgeSize || 'N/A'}</div>
+            <div><span data-icon="girls"></span> <strong>Daughter:</strong> ${o.daughterAgeSize || 'N/A'}</div>
           </td>
 
           <!-- Amount -->
@@ -1782,21 +1913,21 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td style="vertical-align: top; padding: 1rem 0.75rem; text-align: center;">
             <select class="admin-input" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; margin-bottom: 0.5rem; width: 100%; border-color: ${currentColor}; color: ${currentColor}; font-weight: 700;"
               onchange="window.admin && window.admin.updateFamilyComboOrderStatus('${o.orderId}', this.value)">
-              <option value="Pending" ${o.status === "Pending" ? "selected" : ""}>⏳ Pending</option>
-              <option value="Confirmed" ${o.status === "Confirmed" ? "selected" : ""}>✓ Confirmed</option>
-              <option value="In Weaving / Packing" ${o.status === "In Weaving / Packing" ? "selected" : ""}>🧵 In Weaving</option>
-              <option value="Dispatched" ${o.status === "Dispatched" ? "selected" : ""}>🚚 Dispatched</option>
-              <option value="Delivered" ${o.status === "Delivered" ? "selected" : ""}>✅ Delivered</option>
+              <option value="Pending" ${o.status === "Pending" ? "selected" : ""}>Pending</option>
+              <option value="Confirmed" ${o.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+              <option value="In Weaving / Packing" ${o.status === "In Weaving / Packing" ? "selected" : ""}>In Weaving</option>
+              <option value="Dispatched" ${o.status === "Dispatched" ? "selected" : ""}>Dispatched</option>
+              <option value="Delivered" ${o.status === "Delivered" ? "selected" : ""}>Delivered</option>
             </select>
 
             <div style="display: flex; gap: 0.35rem; justify-content: center;">
               <button type="button" class="btn btn-outline btn-xs" style="border-color: #10B981; color: #10B981; padding: 0.25rem 0.5rem;" title="1-Click WhatsApp Update"
                 onclick="window.admin && window.admin.handleFamilyOrderWhatsAppNotify('${o.orderId}')">
-                💬 WhatsApp
+                <span data-icon="whatsapp"></span> WhatsApp
               </button>
               <button type="button" class="btn btn-outline btn-xs" style="border-color: #EF4444; color: #EF4444; padding: 0.25rem 0.5rem;" title="Delete Order"
                 onclick="window.admin && window.admin.deleteFamilyComboOrder('${o.orderId}')">
-                🗑️
+                <span data-icon="trash"></span>
               </button>
             </div>
           </td>
@@ -1839,7 +1970,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     }
 
     const message = encodeURIComponent(
-      `Vanakkam ${order.customerName} 🙏\n\n` +
+      `Vanakkam ${order.customerName}\n\n` +
       `Greetings from Srinivasa Textiles (Since 1978, Kanchipuram).\n\n` +
       `Regarding your Family Combo Order #${order.orderId} (${order.comboTitle}):\n` +
       `Current Status: ${order.status}\n` +
@@ -1895,7 +2026,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (packages.length === 0) {
       container.innerHTML = `
         <div style="text-align: center; padding: 2.5rem; color: var(--text-muted); background: var(--bg-surface-alt); border-radius: 8px;">
-          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>
+          <div style="margin-bottom: 0.5rem;"><span data-icon="box" data-icon-size="36"></span></div>
           <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Products Created Yet</h4>
           <p style="font-size: 0.825rem; margin: 0;">Use the form above to add your first wholesale bulk product for the website.</p>
         </div>
@@ -1907,8 +2038,8 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
       const wholesalePrice = Number(pkg.wholesalePrice || 0).toLocaleString("en-IN");
       const retailMrp = Number(pkg.retailMrp || 0).toLocaleString("en-IN");
       const statusBadge = pkg.isActive !== false
-        ? `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; font-size: 0.72rem;">🟢 Live on Website</span>`
-        : `<span class="status-badge" style="background: rgba(156, 163, 175, 0.15); color: #9CA3AF; border: 1px solid #9CA3AF; font-size: 0.72rem;">⚪ Paused (Hidden)</span>`;
+        ? `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; font-size: 0.72rem;"><span data-icon="statusLive"></span> Live on Website</span>`
+        : `<span class="status-badge" style="background: rgba(156, 163, 175, 0.15); color: #9CA3AF; border: 1px solid #9CA3AF; font-size: 0.72rem;"><span data-icon="pause"></span> Paused (Hidden)</span>`;
 
       return `
         <div class="admin-bulk-pkg-card" data-pkg-id="${pkg.id}">
@@ -1925,7 +2056,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               ${statusBadge}
             </div>
 
-            ${pkg.subtitle ? `<div style="font-size: 0.8rem; color: var(--color-gold); font-weight: 600;">✦ ${pkg.subtitle}</div>` : ""}
+            ${pkg.subtitle ? `<div style="font-size: 0.8rem; color: var(--color-gold); font-weight: 600;">${pkg.subtitle}</div>` : ""}
 
             <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
               ${pkg.description || 'Authentic pure handloom wholesale package.'}
@@ -1935,21 +2066,21 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               <span><strong>MOQ:</strong> <span style="color: var(--color-gold); font-weight: 800;">${pkg.moq} ${pkg.unitLabel || 'Pcs'}</span></span>
               <span><strong>Wholesale:</strong> <span style="color: var(--text-heading); font-weight: 800;">₹${wholesalePrice}</span> <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.75rem;">₹${retailMrp}</span></span>
               <span style="color: #10B981; font-weight: 700;">${pkg.discountPercent || 50}% OFF Wholesale</span>
-              <span style="color: var(--text-muted);">⏳ ${pkg.timeline || '10-14 Days'}</span>
-              ${pkg.fabric ? `<span style="color: var(--text-muted); font-size: 0.75rem;">🧵 ${pkg.fabric}</span>` : ""}
+              <span style="color: var(--text-muted);"><span data-icon="hourglass"></span> ${pkg.timeline || '10-14 Days'}</span>
+              ${pkg.fabric ? `<span style="color: var(--text-muted); font-size: 0.75rem;"><span data-icon="thread"></span> ${pkg.fabric}</span>` : ""}
             </div>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; min-width: 150px;">
             <button type="button" class="btn ${pkg.isActive !== false ? 'btn-outline' : 'btn-outline-gold'} btn-xs" onclick="window.admin && window.admin.handleToggleBulkPackage('${pkg.id}')">
-              ${pkg.isActive !== false ? '⏸️ Pause on Website' : '▶️ Publish on Website'}
+              ${pkg.isActive !== false ? '<span data-icon="pause"></span> Pause on Website' : '<span data-icon="statusLive"></span> Publish on Website'}
             </button>
             <div style="display: flex; gap: 0.35rem;">
               <button type="button" class="btn btn-outline btn-xs" style="flex: 1;" onclick="window.admin && window.admin.handleEditBulkPackage('${pkg.id}')">
-                ✏️ Edit
+                <span data-icon="edit"></span> Edit
               </button>
               <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: #FECDD3;" onclick="window.admin && window.admin.handleDeleteBulkPackage('${pkg.id}')" title="Delete Bulk Product">
-                🗑️
+                <span data-icon="trash"></span>
               </button>
             </div>
           </div>
@@ -2035,9 +2166,9 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     const editIdInput = document.getElementById("bulkPkgEditId");
     if (editIdInput) editIdInput.value = "";
     const heading = document.getElementById("bulkPackageFormHeading");
-    if (heading) heading.innerHTML = `<span>➕</span> Add New Bulk Product SKU`;
+    if (heading) heading.innerHTML = `<span data-icon="plus"></span> Add New Bulk Product SKU`;
     const btn = document.getElementById("saveBulkPkgSubmitBtn");
-    if (btn) btn.innerHTML = `<span>🚀</span> Publish Bulk Product to Website`;
+    if (btn) btn.innerHTML = `<span data-icon="rocket"></span> Publish Bulk Product to Website`;
     const imgThumb = document.getElementById("bulkPkgPreviewImg");
     if (imgThumb) imgThumb.src = "assets/images/family_matching_combo.jpg";
     const urlInput = document.getElementById("bulkPkgImageURL");
@@ -2095,9 +2226,9 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
     if (activeCheck) activeCheck.checked = pkg.isActive !== false;
 
     const heading = document.getElementById("bulkPackageFormHeading");
-    if (heading) heading.innerHTML = `<span>✏️</span> Edit Bulk Product SKU: [${pkg.sku || pkg.id}] ${pkg.title}`;
+    if (heading) heading.innerHTML = `<span data-icon="edit"></span> Edit Bulk Product SKU: [${pkg.sku || pkg.id}] ${pkg.title}`;
     const btn = document.getElementById("saveBulkPkgSubmitBtn");
-    if (btn) btn.innerHTML = `<span>💾</span> Update Bulk Product`;
+    if (btn) btn.innerHTML = `<span data-icon="save"></span> Update Bulk Product`;
 
     this.recalcBulkSavings();
     document.getElementById("adminAddBulkPackageForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2203,7 +2334,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
       tbody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📭</div>
+            <div style="margin-bottom: 0.5rem;"><span data-icon="box" data-icon-size="38"></span></div>
             <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary);">No Bulk Orders Found</h4>
             <p style="font-size: 0.825rem; margin: 0 0 1rem 0;">No wholesale orders matched your search or filter criteria.</p>
             <button type="button" class="btn btn-gold btn-sm" onclick="document.getElementById('openAddBulkOrderModalBtn')?.click()">+ Book First Bulk Order</button>
@@ -2222,11 +2353,11 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
       const isDelivered = order.orderStatus === "Delivered";
 
       const priorityBadge = order.orderStatus === "New Inquiry"
-        ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid #FDE68A;">✨ New Inquiry</span>`
+        ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid #FDE68A;"><span data-icon="sparkle"></span> New Inquiry</span>`
         : order.priority === "Urgent"
-          ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);">🔥 Urgent</span>`
+          ? `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; font-weight: 800; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(220,38,38,0.3);"><span data-icon="warning"></span> Urgent</span>`
           : order.priority === "High Priority"
-            ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);">⚡ High</span>`
+            ? `<span class="status-badge" style="background: #FEF3C7; color: #D97706; font-weight: 700; font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid rgba(217,119,6,0.3);"><span data-icon="bolt"></span> High</span>`
             : `<span class="status-badge" style="background: var(--bg-surface-alt); color: var(--text-muted); font-size: 0.65rem; padding: 0.15rem 0.45rem; border: 1px solid var(--border-color);">Standard</span>`;
 
       const typeBadgeStyle =
@@ -2236,7 +2367,7 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
               "background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;";
 
       const paymentBadge = order.paymentStatus === "Fully Paid"
-        ? `<span class="status-badge paid" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">✓ Paid</span>`
+        ? `<span class="status-badge paid" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;"><span data-icon="check"></span> Paid</span>`
         : order.paymentStatus === "Advance Received"
           ? `<span class="status-badge" style="background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; font-size: 0.7rem; padding: 0.15rem 0.5rem;">⏳ Advance Recd</span>`
           : `<span class="status-badge" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; font-size: 0.7rem; padding: 0.15rem 0.5rem;">Pending</span>`;
@@ -2250,24 +2381,24 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
                 ${priorityBadge}
               </div>
               <div style="font-size: 0.735rem; color: var(--text-muted); line-height: 1.35;">
-                <div>📅 <span style="color: var(--text-main);">Booked:</span> ${order.orderDate}</div>
-                <div style="color: var(--color-danger); font-weight: 700; margin-top: 0.15rem;">🎯 Due: ${order.deliveryDeadline}</div>
+                <div><span data-icon="calendar"></span> <span style="color: var(--text-main);">Booked:</span> ${order.orderDate}</div>
+                <div style="color: var(--color-danger); font-weight: 700; margin-top: 0.15rem;"><span data-icon="target"></span> Due: ${order.deliveryDeadline}</div>
               </div>
             </div>
           </td>
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
               <strong style="font-size: 0.885rem; color: var(--color-primary); line-height: 1.3;">${order.clientCompany}</strong>
-              <span style="font-size: 0.785rem; color: var(--text-main); font-weight: 600;">👤 ${order.contactPerson}</span>
-              <span style="font-size: 0.735rem; color: var(--text-muted);">📞 ${order.phone}</span>
-              ${order.email ? `<span style="font-size: 0.715rem; color: var(--text-muted);">✉️ ${order.email}</span>` : ""}
+              <span style="font-size: 0.785rem; color: var(--text-main); font-weight: 600;"><span data-icon="user"></span> ${order.contactPerson}</span>
+              <span style="font-size: 0.735rem; color: var(--text-muted);"><span data-icon="phone"></span> ${order.phone}</span>
+              ${order.email ? `<span style="font-size: 0.715rem; color: var(--text-muted);"><span data-icon="mail"></span> ${order.email}</span>` : ""}
               ${order.gstin && order.gstin !== 'URP-CUSTOMER-INQUIRY' ? `<span style="display: inline-block; font-size: 0.7rem; color: var(--text-muted); font-family: monospace; background: var(--bg-surface-alt); padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid var(--border-color); width: fit-content; margin-top: 0.15rem;">GST: ${order.gstin}</span>` : ""}
             </div>
           </td>
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
               <span class="status-badge" style="${typeBadgeStyle} font-size: 0.72rem; padding: 0.2rem 0.55rem; white-space: nowrap;">${order.orderType}</span>
-              <span style="font-size: 0.725rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">🏭 ${order.productionUnit || 'Kanchipuram Sheds'}</span>
+              <span style="font-size: 0.725rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;"><span data-icon="building"></span> ${order.productionUnit || 'Kanchipuram Sheds'}</span>
             </div>
           </td>
           <td>
@@ -2291,25 +2422,25 @@ ST-KDG-SAMPLE,Girls Pure Silk Pattu Pavadai,Kids Wear (Girls),Pattu Pavadai,4-5 
           <td>
             <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
               <select class="bulk-status-dropdown form-control" data-id="${order.bulkOrderId}" style="font-size: 0.775rem; padding: 0.35rem 0.55rem; border-radius: var(--radius-sm); font-weight: 700; width: 100%; min-width: 140px; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
-                <option value="New Inquiry" ${isNewInquiry ? "selected" : ""}>✨ New Inquiry</option>
-                <option value="Quote Sent" ${isQuoteSent ? "selected" : ""}>💬 Quote Sent</option>
+                <option value="New Inquiry" ${isNewInquiry ? "selected" : ""}>New Inquiry</option>
+                <option value="Quote Sent" ${isQuoteSent ? "selected" : ""}>Quote Sent</option>
                 <option value="Under Production" ${isUnderProd ? "selected" : ""}>⏳ Under Production</option>
-                <option value="Ready to Ship" ${isReady ? "selected" : ""}>📦 Ready to Ship</option>
-                <option value="Dispatched" ${isDispatched ? "selected" : ""}>🚚 Dispatched</option>
-                <option value="Delivered" ${isDelivered ? "selected" : ""}>✅ Delivered</option>
+                <option value="Ready to Ship" ${isReady ? "selected" : ""}>Ready to Ship</option>
+                <option value="Dispatched" ${isDispatched ? "selected" : ""}>Dispatched</option>
+                <option value="Delivered" ${isDelivered ? "selected" : ""}>Delivered</option>
               </select>
             </div>
           </td>
           <td style="text-align: right;">
             <div style="display: flex; gap: 0.35rem; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
               <button type="button" class="btn btn-outline btn-xs print-bulk-invoice-btn" data-id="${order.bulkOrderId}" title="Print B2B Wholesale GST Tax Invoice" style="font-size: 0.735rem; padding: 0.3rem 0.55rem; white-space: nowrap;">
-                🧾 Invoice
+                <span data-icon="receipt"></span> Invoice
               </button>
               <button type="button" class="btn btn-outline-gold btn-xs whatsapp-bulk-btn" data-id="${order.bulkOrderId}" title="Send WhatsApp Update to Client" style="font-size: 0.735rem; padding: 0.3rem 0.55rem; white-space: nowrap;">
-                💬 WhatsApp
+                <span data-icon="whatsapp"></span> WhatsApp
               </button>
               <button type="button" class="btn btn-outline btn-xs delete-bulk-btn" data-id="${order.bulkOrderId}" title="Delete Bulk Order" style="color: #DC2626; border-color: #FECDD3; font-size: 0.735rem; padding: 0.3rem 0.45rem;">
-                🗑️
+                <span data-icon="trash"></span>
               </button>
             </div>
           </td>
@@ -2510,15 +2641,15 @@ ST-BLK-SAMPLE-02,Sri Krishna Mandapam Wedding Troupe,V. Radhakrishnan,9197890123
 Greetings from *Srinivasa Textiles (Master Weavers Since 1978)*.
 
 Here is the current status of your Wholesale Bulk Order:
-📋 *Bulk Order ID:* ${order.bulkOrderId}
-📦 *Order Category:* ${order.orderType}
-🧵 *Items:* ${order.itemsDescription}
-🔢 *Total Volume:* ${order.totalPieces} Units
+*Bulk Order ID:* ${order.bulkOrderId}
+*Order Category:* ${order.orderType}
+*Items:* ${order.itemsDescription}
+*Total Volume:* ${order.totalPieces} Units
 ⏳ *Production Status:* ${order.orderStatus}
-🎯 *Target Delivery Date:* ${order.deliveryDeadline}
-💰 *Total Order Value:* ₹${Number(order.totalAmountINR).toLocaleString("en-IN")}
-💵 *Advance Received:* ₹${Number(order.advancePaidINR || 0).toLocaleString("en-IN")}
-${order.balanceDueINR > 0 ? `⚠️ *Balance Due:* ₹${Number(order.balanceDueINR).toLocaleString("en-IN")}` : "✅ *Payment Status:* Fully Cleared"}
+*Target Delivery Date:* ${order.deliveryDeadline}
+*Total Order Value:* ₹${Number(order.totalAmountINR).toLocaleString("en-IN")}
+*Advance Received:* ₹${Number(order.advancePaidINR || 0).toLocaleString("en-IN")}
+${order.balanceDueINR > 0 ? `*Balance Due:* ₹${Number(order.balanceDueINR).toLocaleString("en-IN")}` : "*Payment Status:* Fully Cleared"}
 
 Our master weaving artisan team is ensuring strict Silk Mark certified handloom quality. Please feel free to reply here for any dispatch coordination.
 
@@ -2588,7 +2719,7 @@ Warm regards,
       </head>
       <body>
         <div class="no-print" style="text-align: center; margin-bottom: 15px;">
-          <button onclick="window.print()" style="background: #7A0C2E; color: #FFF; border: none; padding: 8px 20px; font-weight: 700; border-radius: 4px; cursor: pointer; font-size: 14px;">🖨️ Print / Save as PDF</button>
+          <button onclick="window.print()" style="background: #7A0C2E; color: #FFF; border: none; padding: 8px 20px; font-weight: 700; border-radius: 4px; cursor: pointer; font-size: 14px;"><span data-icon="printer"></span> Print / Save as PDF</button>
         </div>
         <div class="invoice-card">
           <div class="header">
@@ -2767,8 +2898,8 @@ Warm regards,
           <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
             <button class="btn btn-outline btn-sm gen-invoice-btn" data-order-id="${order.orderId}" title="Print official GST Invoice PDF"><span data-icon="printer" data-icon-size="14"></span> PDF Invoice</button>
             ${order.customer && (order.customer.phone || order.mobile_number) ? `
-              <a href="tel:${order.customer.phone || order.mobile_number}" class="btn btn-sm btn-outline" style="padding: 0.25rem 0.5rem; text-decoration: none;" title="Call Customer">📞 Call</a>
-              <a href="https://wa.me/91${(order.customer.phone || order.mobile_number || '').replace(/[^0-9]/g, '').slice(-10)}?text=Namaste%20${encodeURIComponent(order.customer.name || 'Customer')}%2C%20regarding%20your%20Srinivasa%20Textiles%20Order%20%23${order.orderId}..." target="_blank" class="btn btn-sm btn-outline" style="padding: 0.25rem 0.5rem; color: #25D366; border-color: #25D366; text-decoration: none;" title="WhatsApp Customer">💬 Chat</a>
+              <a href="tel:${order.customer.phone || order.mobile_number}" class="btn btn-sm btn-outline" style="padding: 0.25rem 0.5rem; text-decoration: none;" title="Call Customer"><span data-icon="phone"></span> Call</a>
+              <a href="https://wa.me/91${(order.customer.phone || order.mobile_number || '').replace(/[^0-9]/g, '').slice(-10)}?text=Namaste%20${encodeURIComponent(order.customer.name || 'Customer')}%2C%20regarding%20your%20Srinivasa%20Textiles%20Order%20%23${order.orderId}..." target="_blank" class="btn btn-sm btn-outline" style="padding: 0.25rem 0.5rem; color: #25D366; border-color: #25D366; text-decoration: none;" title="WhatsApp Customer"><span data-icon="whatsapp"></span> Chat</a>
             ` : ""}
           </div>
         </td>
@@ -2785,7 +2916,7 @@ Warm regards,
         }
         this.renderOrdersTable();
         this.renderDashboardKPIs();
-        if (window.storefront) window.storefront.showToast(`✅ Payment approved for order ${orderId}!`, "success");
+        if (window.storefront) window.storefront.showToast(`Payment approved for order ${orderId}!`, "success");
       });
     });
 
@@ -2915,7 +3046,7 @@ Warm regards,
                 </td>
                 <td>
                   <strong>${ord.customer ? ord.customer.name : "N/A"}</strong><br>
-                  <span style="font-size: 11px; color: #555;">📞 ${ord.customer ? ord.customer.phone : "N/A"}</span><br>
+                  <span style="font-size: 11px; color: #555;"><span data-icon="phone"></span> ${ord.customer ? ord.customer.phone : "N/A"}</span><br>
                   <span style="font-size: 10px; color: #777;">${ord.customer ? ord.customer.address : ""}</span>
                 </td>
                 <td>
@@ -3071,7 +3202,7 @@ Warm regards,
         </style>
       </head>
       <body>
-        <button class="btn-print-floating" onclick="window.print()">🖨️ Print Master PDF / Save</button>
+        <button class="btn-print-floating" onclick="window.print()"><span data-icon="printer"></span> Print Master PDF / Save</button>
 
         <!-- =================================================================
              PAGE 1: MASTER CONSOLIDATED FINANCIAL CALCULATION LEDGER
@@ -3091,7 +3222,7 @@ Warm regards,
             <div class="report-badge">MASTER GST INVOICES &amp; FINANCIAL LEDGER</div>
             <div><strong>Report Date:</strong> ${currentDate}</div>
             <div><strong>Total Active Bills:</strong> ${totalBillsCount} Invoices</div>
-            <div style="color: #047857; font-weight: 700;">✓ 100% Tax Compliant</div>
+            <div style="color: #047857; font-weight: 700;"><span data-icon="check"></span> 100% Tax Compliant</div>
           </div>
         </div>
 
@@ -3133,7 +3264,7 @@ Warm regards,
 
         <!-- CONSOLIDATED INVOICES CALCULATION TABLE -->
         <div class="section-heading">
-          <span>📊 Master Invoices Calculation Breakdown</span>
+          <span><span data-icon="chart"></span> Master Invoices Calculation Breakdown</span>
           <span style="font-size: 11px; font-weight: 600; color: #475569;">Consolidated Sales, GST &amp; Revenue</span>
         </div>
 
@@ -3162,7 +3293,7 @@ Warm regards,
                 </td>
                 <td>
                   <strong>${inv.customer ? inv.customer.name : "Customer"}</strong><br>
-                  <span style="font-size: 10.5px; color: #475569;">📞 ${inv.customer ? inv.customer.phone : "N/A"}</span>
+                  <span style="font-size: 10.5px; color: #475569;"><span data-icon="phone"></span> ${inv.customer ? inv.customer.phone : "N/A"}</span>
                   ${inv.customer && inv.customer.gstin ? `<br><span style="font-size: 10px; color: #7A0C2E; font-weight: 700;">GSTIN: ${inv.customer.gstin}</span>` : ""}
                 </td>
                 <td>
@@ -3200,7 +3331,7 @@ Warm regards,
 
         <div style="font-size: 10.5px; color: #64748B; display: flex; justify-content: space-between; border-top: 1px solid #CBD5E1; padding-top: 8px;">
           <span>Official Cumulative Financial Report • Srinivasa Textiles Kanchipuram Hub</span>
-          <span>Individual Invoices detailed on subsequent pages ➔</span>
+          <span>Individual Invoices detailed on subsequent pages <span data-icon="arrowRight"></span></span>
         </div>
 
         <!-- =================================================================
@@ -3239,7 +3370,7 @@ Warm regards,
                 <div style="font-size: 11.5px; margin-top: 2px;"><strong>Courier Partner:</strong> ${inv.courier || "BlueDart Express"}</div>
                 <div style="font-size: 11.5px; margin-top: 2px;"><strong>AWB Tracking:</strong> ${inv.trackingNumber || 'Pending Generation'}</div>
                 <div style="font-size: 11.5px; margin-top: 2px;"><strong>Fulfillment Status:</strong> ${inv.fulfillmentStatus || 'Processing'}</div>
-                ${inv.giftWrap ? `<div style="color: #047857; font-weight: 700; font-size: 10.5px; margin-top: 3px;">🎁 Festive Gift Wrap Included</div>` : ""}
+                ${inv.giftWrap ? `<div style="color: #047857; font-weight: 700; font-size: 10.5px; margin-top: 3px;"><span data-icon="gift"></span> Festive Gift Wrap Included</div>` : ""}
               </div>
             </div>
 
@@ -3376,7 +3507,7 @@ Warm regards,
         </style>
       </head>
       <body>
-        <button class="btn-print-floating" onclick="window.print()">🖨️ Print All Shipping Labels</button>
+        <button class="btn-print-floating" onclick="window.print()"><span data-icon="printer"></span> Print All Shipping Labels</button>
 
         <div class="manifest-header">
           <div>
@@ -3419,7 +3550,7 @@ Warm regards,
         </table>
 
         <div class="manifest-title" style="font-size: 16px; margin-bottom: 12px; border-bottom: 1.5px solid #000; padding-bottom: 4px;">
-          📦 Individual Shipping Labels (${orders.length} Packages)
+          <span data-icon="box"></span> Individual Shipping Labels (${orders.length} Packages)
         </div>
 
         <div class="label-grid">
@@ -3471,17 +3602,17 @@ Warm regards,
     const totalTax = cgst + sgst;
     const finalAmount = taxableAmount + totalTax + (order.shippingINR || 0);
 
-    const waOrderMsg = encodeURIComponent(`Namaste ${order.customer ? order.customer.name : 'Customer'}! 🙏 Here is your official GST Tax Invoice from Srinivasa Textiles for Order #${order.orderId} (Total: ₹${finalAmount.toLocaleString("en-IN")}). Courier: ${order.courier || 'BlueDart Express'} (AWB: ${order.trackingNumber}).`);
+    const waOrderMsg = encodeURIComponent(`Namaste ${order.customer ? order.customer.name : "Customer"}! Here is your official GST Tax Invoice from Srinivasa Textiles for Order #${order.orderId} (Total: ₹${finalAmount.toLocaleString("en-IN")}). Courier: ${order.courier || 'BlueDart Express'} (AWB: ${order.trackingNumber}).`);
     const waLink = `https://wa.me/${(order.customer && order.customer.phone ? order.customer.phone.replace(/[^0-9]/g, '') : '918778503021')}?text=${waOrderMsg}`;
 
     if (isEditMode) {
       // RENDER EDIT MODE
       container.innerHTML = `
-        <button class="pdp-close-btn" id="invoiceCloseBtn" style="top: 1rem; right: 1rem;">✕</button>
+        <button class="pdp-close-btn" id="invoiceCloseBtn" style="top: 1rem; right: 1rem;"><span data-icon="close"></span></button>
 
         <div style="border-bottom: 2px solid var(--color-gold); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
           <h3 style="font-family: var(--font-serif-display); font-size: 1.3rem; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-            <span>✏️</span> Edit GST Tax Invoice &amp; Customer Order Details
+            <span data-icon="edit"></span> Edit GST Tax Invoice &amp; Customer Order Details
           </h3>
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Modify invoice fields, consignee info, shipping partner, and tracking number.</p>
         </div>
@@ -3541,8 +3672,8 @@ Warm regards,
           </div>
 
           <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-            <button type="button" class="btn btn-outline" id="cancelEditInvoiceBtn">✕ Cancel</button>
-            <button type="submit" class="btn btn-gold" style="font-weight: 700;">💾 Save &amp; Recalculate Invoice</button>
+            <button type="button" class="btn btn-outline" id="cancelEditInvoiceBtn"><span data-icon="close"></span> Cancel</button>
+            <button type="submit" class="btn btn-gold" style="font-weight: 700;"><span data-icon="save"></span> Save &amp; Recalculate Invoice</button>
           </div>
         </form>
       `;
@@ -3581,13 +3712,13 @@ Warm regards,
 
         this.renderOrdersTable();
         this.openGSTInvoiceModal(orderId, false);
-        if (window.storefront) window.storefront.showToast("✅ GST Invoice details updated successfully!", "success");
+        if (window.storefront) window.storefront.showToast("GST Invoice details updated successfully!", "success");
       });
 
     } else {
       // RENDER VIEW MODE
       container.innerHTML = `
-        <button class="pdp-close-btn" id="invoiceCloseBtn" style="top: 1rem; right: 1rem;">✕</button>
+        <button class="pdp-close-btn" id="invoiceCloseBtn" style="top: 1rem; right: 1rem;"><span data-icon="close"></span></button>
 
         <div class="invoice-header">
           <div class="invoice-brand">
@@ -3612,7 +3743,7 @@ Warm regards,
             <p>${order.customer ? order.customer.address : "N/A"}</p>
             <p><strong>Phone:</strong> ${order.customer ? order.customer.phone : "N/A"} | <strong>Email:</strong> ${(order.customer && order.customer.email) || "N/A"}</p>
             ${(order.customer && order.customer.gstin) ? `<p><strong>Buyer GSTIN:</strong> ${order.customer.gstin}</p>` : ""}
-            ${order.giftWrap ? `<p style="color: var(--color-success); font-weight:700; margin-top:0.25rem;">🎁 Festive Gift Wrap with Handwritten Message Included</p>` : ""}
+            ${order.giftWrap ? `<p style="color: var(--color-success); font-weight:700; margin-top:0.25rem;"><span data-icon="gift"></span> Festive Gift Wrap with Handwritten Message Included</p>` : ""}
           </div>
           <div>
             <strong style="color: var(--color-primary-dark); text-transform: uppercase;">Shipping Partner:</strong>
@@ -3668,10 +3799,10 @@ Warm regards,
         </div>
 
         <div class="invoice-actions" style="margin-top: 1.5rem; display: flex; gap: 0.6rem; justify-content: flex-end; flex-wrap: wrap;">
-          <button class="btn btn-outline btn-sm" id="editInvoiceBtn" style="color: var(--color-primary); font-weight: 700;">✏️ Edit Invoice Details</button>
-          <button class="btn btn-outline-gold btn-sm" onclick="window.admin.openShippingLabelModal('${order.orderId}')">📦 View Shipping Label</button>
-          <a href="${waLink}" target="_blank" class="btn btn-sm" style="background: #25D366; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;">💬 WhatsApp Invoice</a>
-          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+          <button class="btn btn-outline btn-sm" id="editInvoiceBtn" style="color: var(--color-primary); font-weight: 700;"><span data-icon="edit"></span> Edit Invoice Details</button>
+          <button class="btn btn-outline-gold btn-sm" onclick="window.admin.openShippingLabelModal('${order.orderId}')"><span data-icon="box"></span> View Shipping Label</button>
+          <a href="${waLink}" target="_blank" class="btn btn-sm" style="background: #25D366; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;"><span data-icon="whatsapp"></span> WhatsApp Invoice</a>
+          <button class="btn btn-primary btn-sm" onclick="window.print()"><span data-icon="printer"></span> Print / Save PDF</button>
         </div>
       `;
 
@@ -3693,10 +3824,10 @@ Warm regards,
     if (isEditMode) {
       // RENDER EDIT LABEL MODE
       container.innerHTML = `
-        <button class="pdp-close-btn" id="labelCloseBtn" style="top: 1rem; right: 1rem;">✕</button>
+        <button class="pdp-close-btn" id="labelCloseBtn" style="top: 1rem; right: 1rem;"><span data-icon="close"></span></button>
         <div style="border-bottom: 2px solid var(--color-gold); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
           <h3 style="font-family: var(--font-serif-display); font-size: 1.3rem; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-            <span>✏️</span> Edit Courier Shipping Label
+            <span data-icon="edit"></span> Edit Courier Shipping Label
           </h3>
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Update courier partner, AWB number, consignee name, and delivery address.</p>
         </div>
@@ -3736,8 +3867,8 @@ Warm regards,
           </div>
 
           <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-            <button type="button" class="btn btn-outline" id="cancelEditLabelBtn">✕ Cancel</button>
-            <button type="submit" class="btn btn-gold" style="font-weight: 700;">💾 Save &amp; Update Label</button>
+            <button type="button" class="btn btn-outline" id="cancelEditLabelBtn"><span data-icon="close"></span> Cancel</button>
+            <button type="submit" class="btn btn-gold" style="font-weight: 700;"><span data-icon="save"></span> Save &amp; Update Label</button>
           </div>
         </form>
       `;
@@ -3764,13 +3895,13 @@ Warm regards,
 
         this.renderOrdersTable();
         this.openShippingLabelModal(orderId, false);
-        if (window.storefront) window.storefront.showToast("✅ Shipping Label updated successfully!", "success");
+        if (window.storefront) window.storefront.showToast("Shipping Label updated successfully!", "success");
       });
 
     } else {
       // RENDER VIEW LABEL MODE
       container.innerHTML = `
-        <button class="pdp-close-btn" id="labelCloseBtn" style="top: 1rem; right: 1rem;">✕</button>
+        <button class="pdp-close-btn" id="labelCloseBtn" style="top: 1rem; right: 1rem;"><span data-icon="close"></span></button>
         <div class="shipping-label-card">
           <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 0.5rem; margin-bottom: 0.75rem;">
             <h2 style="font-size: 1.25rem; font-family: var(--font-sans); font-weight: 800;">${(order.courier || "BLUEDART EXPRESS").toUpperCase()}</h2>
@@ -3786,9 +3917,9 @@ Warm regards,
           </div>
         </div>
         <div class="invoice-actions" style="max-width: 500px; margin: 1.5rem auto 0; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-outline btn-sm" id="editLabelBtn" style="color: var(--color-primary); font-weight: 700;">✏️ Edit Label</button>
-          <button class="btn btn-outline-gold btn-sm" onclick="window.admin.openGSTInvoiceModal('${order.orderId}')">🧾 View GST Invoice</button>
-          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Label (4x6 format)</button>
+          <button class="btn btn-outline btn-sm" id="editLabelBtn" style="color: var(--color-primary); font-weight: 700;"><span data-icon="edit"></span> Edit Label</button>
+          <button class="btn btn-outline-gold btn-sm" onclick="window.admin.openGSTInvoiceModal('${order.orderId}')"><span data-icon="receipt"></span> View GST Invoice</button>
+          <button class="btn btn-primary btn-sm" onclick="window.print()"><span data-icon="printer"></span> Print Label (4x6 format)</button>
         </div>
       `;
 
@@ -3819,7 +3950,7 @@ Warm regards,
       tbody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
-            🔔 No pending restock waitlist requests. Customers clicking "Notify Me When Available" on the storefront will appear here in real time.
+            <span data-icon="bell"></span> No pending restock waitlist requests. Customers clicking "Notify Me When Available" on the storefront will appear here in real time.
           </td>
         </tr>
       `;
@@ -3828,7 +3959,7 @@ Warm regards,
 
     tbody.innerHTML = subscribers.map(sub => {
       const cleanPhone = (sub.phone || "").replace(/[^0-9]/g, "");
-      const waMsg = encodeURIComponent(`Namaste ${sub.customerName}! 🙏 Good news from Srinivasa Textiles: Your requested pure handloom piece "${sub.productTitle}" (SKU: ${sub.productId}) is now back in stock! Visit our store or reply here to reserve your order.`);
+      const waMsg = encodeURIComponent(`Namaste ${sub.customerName}! Good news from Srinivasa Textiles: Your requested pure handloom piece "${sub.productTitle}" (SKU: ${sub.productId}) is now back in stock! Visit our store or reply here to reserve your order.`);
       const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
       const isAlerted = (sub.status === "Alert Sent" || sub.status === "Customer Alerted" || sub.status === "Notified");
 
@@ -3888,7 +4019,7 @@ Warm regards,
       this.renderInventoryTable();
       this.renderDashboardKPIs();
       if (window.storefront) {
-        window.storefront.showToast(`✨ Restock Alert Sent! SKU ${sub.productId} is now Available in store collections!`, "success");
+        window.storefront.showToast(`Restock Alert Sent! SKU ${sub.productId} is now Available in store collections!`, "success");
       }
     }
   }
@@ -3906,7 +4037,7 @@ Warm regards,
 
     if (window.storefront) {
       if (newStatus === "Alert Sent") {
-        window.storefront.showToast(`✨ Restock Alert Sent! SKU ${sub.productId} is now Available in store collections!`, "success");
+        window.storefront.showToast(`Restock Alert Sent! SKU ${sub.productId} is now Available in store collections!`, "success");
       } else {
         window.storefront.showToast(`Request ${subId} marked as Pending Alert.`, "info");
       }
@@ -3976,7 +4107,7 @@ Warm regards,
       tbody.innerHTML = `
         <tr>
           <td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌟</div>
+            <div style="margin-bottom: 0.5rem;"><span data-icon="star" data-icon-size="32"></span></div>
             <strong style="color: var(--text-heading); display: block; margin-bottom: 0.25rem;">No Customer Feedbacks Match Current Filters</strong>
             <span>Clear filters or search criteria to view all submitted customer reviews.</span>
           </td>
@@ -3987,9 +4118,9 @@ Warm regards,
 
     tbody.innerHTML = feedbacks.map(fb => {
       const ratingNum = parseInt(fb.rating, 10) || 5;
-      const starsDisplay = "★".repeat(ratingNum) + "☆".repeat(Math.max(0, 5 - ratingNum));
+      const starsDisplay = (window.Icons ? window.Icons.get("star", { size: 14 }) : "").repeat(ratingNum);
       const cleanPhone = "918778503021"; // Store care line or patron reference
-      const waMsg = encodeURIComponent(`Namaste ${fb.author}! 🙏 Thank you for your wonderful ${ratingNum}★ review with Srinivasa Textiles. We are honored to serve your family.`);
+      const waMsg = encodeURIComponent(`Namaste ${fb.author}! Thank you for your wonderful ${ratingNum}-star review with Srinivasa Textiles. We are honored to serve your family.`);
       const waLink = `https://wa.me/?text=${waMsg}`;
       const resolvedDept = this.getFeedbackDept(fb);
 
@@ -4144,6 +4275,7 @@ Warm regards,
     if (!tbody) return;
 
     this.renderCouponKPIs();
+    this.updateCouponMasterBadges();
 
     const searchVal = (document.getElementById("couponSearchInput")?.value || "").trim().toLowerCase();
     const statusVal = document.getElementById("couponStatusFilter")?.value || "ALL";
@@ -4177,10 +4309,10 @@ Warm regards,
       tbody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏷️</div>
+            <div style="margin-bottom: 0.5rem;"><span data-icon="tag" data-icon-size="36"></span></div>
             <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-heading); margin-bottom: 0.25rem;">No Promotional Coupons Found</div>
             <p style="font-size: 0.85rem; margin: 0 0 1rem 0;">No coupons match your filter or none have been created yet.</p>
-            <button class="btn btn-gold btn-sm" onclick="window.admin.openCouponModal()">➕ Create New Coupon</button>
+            <button class="btn btn-gold btn-sm" onclick="window.admin.openCouponModal()"><span data-icon="plus"></span> Create New Coupon</button>
           </td>
         </tr>
       `;
@@ -4191,11 +4323,11 @@ Warm regards,
       const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
       let statusBadge = "";
       if (isExpired) {
-        statusBadge = `<span class="status-badge" style="background: rgba(239, 68, 68, 0.12); color: var(--color-danger); border: 1px solid rgba(239, 68, 68, 0.3);">⚠️ Expired</span>`;
+        statusBadge = `<span class="status-badge" style="background: rgba(239, 68, 68, 0.12); color: var(--color-danger); border: 1px solid rgba(239, 68, 68, 0.3);"><span data-icon="warning"></span> Expired</span>`;
       } else if (!c.isActive) {
         statusBadge = `<span class="status-badge" style="background: rgba(107, 114, 128, 0.15); color: var(--text-muted); border: 1px solid rgba(107, 114, 128, 0.3);">⏸️ Inactive</span>`;
       } else {
-        statusBadge = `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.35);">🟢 Live Active</span>`;
+        statusBadge = `<span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.35);"><span data-icon="statusLive"></span> Live Active</span>`;
       }
 
       const discountDisplay = c.discountType === "flat"
@@ -4218,12 +4350,12 @@ Warm regards,
                 ${c.code}
               </span>
               <button type="button" class="btn btn-outline btn-xs" style="padding: 0.15rem 0.4rem; font-size: 0.7rem;" onclick="window.admin.copyCouponCode('${c.code}')" title="Copy coupon code">
-                📋 Copy
+                <span data-icon="copy"></span> Copy
               </button>
             </div>
             <div style="font-weight: 700; color: var(--text-heading); font-size: 0.85rem; margin-top: 0.3rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
               <span>${c.title}</span>
-              ${c.badge ? `<span style="font-size: 0.65rem; background: rgba(212, 175, 55, 0.2); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.5); padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;">🏷️ ${c.badge}</span>` : ""}
+              ${c.badge ? `<span style="font-size: 0.65rem; background: rgba(212, 175, 55, 0.2); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.5); padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;"><span data-icon="tag"></span> ${c.badge}</span>` : ""}
             </div>
             ${c.description ? `<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.3;">${c.description}</div>` : ""}
           </td>
@@ -4246,10 +4378,10 @@ Warm regards,
           <td>
             <div style="display: flex; gap: 0.4rem; justify-content: flex-end;">
               <button type="button" class="btn btn-outline btn-xs" onclick="window.admin.openCouponModal('${c.id}')" title="Alter or edit coupon">
-                ✏️ Alter
+                <span data-icon="edit"></span> Alter
               </button>
               <button type="button" class="btn btn-outline btn-xs" style="color: #DC2626; border-color: rgba(239, 68, 68, 0.4);" onclick="window.admin.deleteCoupon('${c.id}')" title="Delete coupon">
-                🗑️
+                <span data-icon="trash"></span>
               </button>
             </div>
           </td>
@@ -4408,23 +4540,59 @@ Warm regards,
   copyCouponCode(code) {
     if (!code) return;
     navigator.clipboard.writeText(code).then(() => {
-      this.showToast(`📋 Code "${code}" copied to clipboard!`, "success");
+      this.showToast(`Code "${code}" copied to clipboard!`, "success");
     }).catch(() => {
       prompt("Copy coupon code:", code);
     });
   }
 
-  showToast(message, type = "info") {
-    if (window.storefront && typeof window.storefront.showToast === "function") {
-      window.storefront.showToast(message, type);
-    } else {
-      const toast = document.createElement("div");
-      toast.className = `admin-toast ${type}`;
-      toast.style.cssText = "position: fixed; bottom: 2rem; right: 2rem; z-index: 999999; background: #14161D; color: #F3F4F6; border: 1.5px solid #D4AF37; padding: 0.85rem 1.4rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: 600; font-size: 0.875rem;";
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3500);
+  showToast(message, type = "info", duration = 3500) {
+    let container = document.getElementById("toastContainer");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "toastContainer";
+      container.className = "toast-container admin-toast-container";
+      document.body.appendChild(container);
     }
+
+    const toast = document.createElement("div");
+    toast.className = `toast-card toast-${type} admin-toast ${type}`;
+    toast.setAttribute("role", "alert");
+
+    const icon = window.Icons ? window.Icons.get(type === "success" ? "check" : type === "warning" ? "warning" : "bell", { size: 14 }) : "";
+
+    toast.innerHTML = `
+      <div class="toast-icon-wrap">${icon}</div>
+      <div class="toast-body">
+        <div class="toast-text">${message}</div>
+      </div>
+      <button type="button" class="toast-close-btn" aria-label="Dismiss notification" title="Dismiss">&times;</button>
+      <div class="toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
+    `;
+
+    const closeBtn = toast.querySelector(".toast-close-btn");
+    const dismiss = () => {
+      if (toast.classList.contains("toast-closing")) return;
+      toast.classList.add("toast-closing");
+      setTimeout(() => toast.remove(), 240);
+    };
+
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        dismiss();
+      };
+    }
+    toast.onclick = (e) => {
+      if (e.target === closeBtn) return;
+      dismiss();
+    };
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      dismiss();
+    }, duration);
   }
 
   // ==========================================================================
@@ -4456,7 +4624,7 @@ Warm regards,
     // Dashboard shortcut subtitle
     const dashSub = document.getElementById("dashFestiveStatusSub");
     if (dashSub) {
-      dashSub.textContent = isLive ? "🟢 Active & Visible on Site" : "🔴 Hidden from Storefront";
+      dashSub.textContent = isLive ? "Active & Visible on Site" : "Hidden from Storefront";
       dashSub.style.color = isLive ? "var(--color-success)" : "#EF4444";
     }
 
@@ -4476,13 +4644,50 @@ Warm regards,
     if (statusPill) {
       if (isLive) {
         statusPill.className = "festive-status-pill live";
-        statusPill.innerHTML = '<span class="admin-pulse-dot"></span> 🟢 LIVE ON STOREFRONT';
+        statusPill.innerHTML = '<span class="admin-pulse-dot"></span> <span data-icon="statusLive"></span> LIVE ON STOREFRONT'; if (window.Icons) window.Icons.init(statusPill);
         statusPill.style.background = "rgba(16, 185, 129, 0.15)";
         statusPill.style.color = "#10B981";
         statusPill.style.border = "1px solid rgba(16, 185, 129, 0.4)";
       } else {
         statusPill.className = "festive-status-pill disabled";
-        statusPill.innerHTML = '🔴 DISABLED &amp; HIDDEN FROM STOREFRONT';
+        statusPill.innerHTML = '<span data-icon="statusOff"></span> DISABLED &amp; HIDDEN FROM STOREFRONT'; if (window.Icons) window.Icons.init(statusPill);
+        statusPill.style.background = "rgba(239, 68, 68, 0.15)";
+        statusPill.style.color = "#EF4444";
+        statusPill.style.border = "1px solid rgba(239, 68, 68, 0.4)";
+      }
+    }
+
+    // Keep Master Coupon Switch in sync
+    this.updateCouponMasterBadges();
+  }
+
+  updateCouponMasterBadges() {
+    if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+    const campaign = window.store.getFestiveCampaign();
+    const isLive = Boolean(campaign && campaign.enabled !== false);
+
+    const masterToggle = document.getElementById("couponMasterToggle");
+    if (masterToggle) {
+      masterToggle.checked = isLive;
+    }
+
+    const toggleLabel = document.getElementById("couponMasterToggleLabel");
+    if (toggleLabel) {
+      toggleLabel.textContent = isLive ? "SESSION ON" : "SESSION OFF";
+      toggleLabel.style.color = isLive ? "var(--color-success)" : "#EF4444";
+    }
+
+    const statusPill = document.getElementById("couponMasterStatusPill");
+    if (statusPill) {
+      if (isLive) {
+        statusPill.className = "festive-status-pill live";
+        statusPill.innerHTML = '<span class="admin-pulse-dot"></span> <span data-icon="statusLive"></span> LIVE ON STOREFRONT'; if (window.Icons) window.Icons.init(statusPill);
+        statusPill.style.background = "rgba(16, 185, 129, 0.15)";
+        statusPill.style.color = "#10B981";
+        statusPill.style.border = "1px solid rgba(16, 185, 129, 0.4)";
+      } else {
+        statusPill.className = "festive-status-pill disabled";
+        statusPill.innerHTML = '<span data-icon="statusOff"></span> DISABLED &amp; HIDDEN FROM STOREFRONT'; if (window.Icons) window.Icons.init(statusPill);
         statusPill.style.background = "rgba(239, 68, 68, 0.15)";
         statusPill.style.color = "#EF4444";
         statusPill.style.border = "1px solid rgba(239, 68, 68, 0.4)";
@@ -4490,14 +4695,27 @@ Warm regards,
     }
   }
 
+  handleMasterCouponToggle(checked) {
+    if (!window.store) return;
+    window.store.toggleFestiveCampaign(checked);
+    this.updateFestiveBadges();
+    this.updateCouponMasterBadges();
+    if (checked) {
+      this.showToast("Coupon session & Floating Popup are now LIVE on the website in real-time!", "success");
+    } else {
+      this.showToast("Coupon session & Floating Popup are now HIDDEN from the website in real-time.", "warning");
+    }
+  }
+
   handleMasterFestiveToggle(checked) {
     if (!window.store) return;
     window.store.toggleFestiveCampaign(checked);
     this.updateFestiveBadges();
+    this.updateCouponMasterBadges();
     if (checked) {
-      this.showToast("🎉 Festive Special 2026 session is now LIVE in real-time on the storefront!", "success");
+      this.showToast("Festive Special 2026 session is now LIVE in real-time on the storefront!", "success");
     } else {
-      this.showToast("🛑 Festive Special 2026 session is now HIDDEN in real-time from the website.", "warning");
+      this.showToast("Festive Special 2026 session is now HIDDEN in real-time from the website.", "warning");
     }
   }
 
@@ -4512,7 +4730,7 @@ Warm regards,
     if (titleInput) titleInput.value = campaign.title || "LIMITED TIME FESTIVE SPECIAL 2026";
 
     const badgeInput = document.getElementById("festiveBadgeInput");
-    if (badgeInput) badgeInput.value = campaign.badge || "🎉 LIMITED TIME FESTIVE SPECIAL 2026";
+    if (badgeInput) badgeInput.value = campaign.badge || "LIMITED TIME FESTIVE SPECIAL 2026";
 
     const headlineInput = document.getElementById("festiveHeadlineInput");
     if (headlineInput) headlineInput.value = campaign.headline || "Grand Festive & Wedding Handloom Offers";
@@ -4608,10 +4826,10 @@ Warm regards,
               ${isAct ? "Pause" : "Activate"}
             </button>
             <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.admin.openEditOfferModal('${o.id}')">
-              ✏️ Edit
+              <span data-icon="edit"></span> Edit
             </button>
             <button type="button" class="btn btn-outline btn-xs" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.4);" onclick="window.admin.deleteFestiveOffer('${o.id}')">
-              🗑️
+              <span data-icon="trash"></span>
             </button>
           </div>
         </div>
@@ -4675,10 +4893,10 @@ Warm regards,
               ${isAct ? "Pause" : "Activate"}
             </button>
             <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.admin.openEditDealModal('${d.id}')">
-              ✏️ Edit
+              <span data-icon="edit"></span> Edit
             </button>
             <button type="button" class="btn btn-outline btn-xs" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.4);" onclick="window.admin.deleteFestiveDeal('${d.id}')">
-              🗑️
+              <span data-icon="trash"></span>
             </button>
           </div>
         </div>
@@ -4691,7 +4909,7 @@ Warm regards,
     if (!window.store) return;
 
     const title = document.getElementById("festiveTitleInput")?.value.trim() || "LIMITED TIME FESTIVE SPECIAL 2026";
-    const badge = document.getElementById("festiveBadgeInput")?.value.trim() || "🎉 LIMITED TIME FESTIVE SPECIAL 2026";
+    const badge = document.getElementById("festiveBadgeInput")?.value.trim() || "LIMITED TIME FESTIVE SPECIAL 2026";
     const headline = document.getElementById("festiveHeadlineInput")?.value.trim() || "Grand Festive & Wedding Handloom Offers";
     const subtitle = document.getElementById("festiveSubtitleInput")?.value.trim() || "";
     const topBannerText = document.getElementById("festiveTickerTextInput")?.value.trim() || "";
@@ -4706,7 +4924,7 @@ Warm regards,
       topBannerEnabled
     });
 
-    this.showToast("✅ Campaign headlines & announcement banner saved successfully!", "success");
+    this.showToast("Campaign headlines & announcement banner saved successfully!", "success");
   }
 
   handleSaveCountdown() {
@@ -4756,7 +4974,7 @@ Warm regards,
     const modal = document.getElementById("festiveOfferModal");
     const title = document.getElementById("festiveOfferModalTitle");
     if (!modal) return;
-    if (title) title.textContent = "🏷️ Add Festive Voucher";
+    if (title) title.innerHTML = '<span data-icon="tag"></span> Add Festive Voucher'; if (window.Icons) window.Icons.init(title);
 
     document.getElementById("formOfferId").value = "";
     document.getElementById("formOfferCode").value = "FESTIVE" + Math.floor(10 + Math.random() * 90);
@@ -4778,7 +4996,7 @@ Warm regards,
     const modal = document.getElementById("festiveOfferModal");
     const title = document.getElementById("festiveOfferModalTitle");
     if (!modal) return;
-    if (title) title.textContent = "🏷️ Edit Festive Voucher: " + offer.code;
+    if (title) { title.innerHTML = '<span data-icon="tag"></span> Edit Festive Voucher: ' + offer.code; if (window.Icons) window.Icons.init(title); }
 
     document.getElementById("formOfferId").value = offer.id;
     document.getElementById("formOfferCode").value = offer.code || "";
@@ -4815,10 +5033,10 @@ Warm regards,
 
     if (id) {
       window.store.updateFestiveOffer(id, { code, badge, title, discount, isActive, description });
-      this.showToast(`✅ Voucher ${code} updated successfully!`, "success");
+      this.showToast(`Voucher ${code} updated successfully!`, "success");
     } else {
       window.store.addFestiveOffer({ code, badge, title, discount, isActive, description });
-      this.showToast(`🎉 New Voucher ${code} added to festive session!`, "success");
+      this.showToast(`New Voucher ${code} added to festive session!`, "success");
     }
 
     this.closeFestiveOfferModal();
@@ -4901,9 +5119,9 @@ Warm regards,
     if (orig > fest && orig > 0) {
       const savings = orig - fest;
       const pct = Math.round((savings / orig) * 100);
-      badgeInput.value = `🔥 Save ₹${savings.toLocaleString("en-IN")} (${pct}% OFF)`;
+      badgeInput.value = `Save ₹${savings.toLocaleString("en-IN")} (${pct}% OFF)`;
     } else {
-      badgeInput.value = "✨ Festive Exclusive";
+      badgeInput.value = "Festive Exclusive";
     }
   }
 
@@ -4912,14 +5130,14 @@ Warm regards,
     const modal = document.getElementById("festiveDealModal");
     const title = document.getElementById("festiveDealModalTitle");
     if (!modal) return;
-    if (title) title.textContent = "🧵 Add Festival Collection Deal";
+    if (title) { title.innerHTML = '<span data-icon="thread"></span> Add Festival Collection Deal'; if (window.Icons) window.Icons.init(title); }
 
     document.getElementById("formDealId").value = "";
     document.getElementById("formDealSku").value = "ST-FEST-" + Math.floor(100 + Math.random() * 900);
     document.getElementById("formDealTitle").value = "";
     document.getElementById("formDealOrigPrice").value = "50000";
     document.getElementById("formDealFestivePrice").value = "42000";
-    document.getElementById("formDealBadge").value = "🔥 Save ₹8,000 (16% OFF)";
+    document.getElementById("formDealBadge").value = "Save ₹8,000 (16% OFF)";
     document.getElementById("formDealImage").value = "assets/images/family_matching_combo.jpg";
     document.getElementById("formDealDesc").value = "";
     document.getElementById("formDealActive").checked = true;
@@ -4937,7 +5155,7 @@ Warm regards,
     const modal = document.getElementById("festiveDealModal");
     const title = document.getElementById("festiveDealModalTitle");
     if (!modal) return;
-    if (title) title.textContent = "🧵 Edit Festival Deal: " + deal.title;
+    if (title) { title.innerHTML = '<span data-icon="thread"></span> Edit Festival Deal: ' + deal.title; if (window.Icons) window.Icons.init(title); }
 
     document.getElementById("formDealId").value = deal.id;
     document.getElementById("formDealSku").value = deal.productId || "";
@@ -4999,7 +5217,7 @@ Warm regards,
         description,
         isActive
       });
-      this.showToast(`✅ Festival deal "${title}" updated!`, "success");
+      this.showToast(`Festival deal "${title}" updated!`, "success");
     } else {
       window.store.addFestiveDeal({
         productId,
@@ -5012,7 +5230,7 @@ Warm regards,
         description,
         isActive
       });
-      this.showToast(`🎉 New Festival Deal "${title}" added to collection!`, "success");
+      this.showToast(`New Festival Deal "${title}" added to collection!`, "success");
     }
 
     this.closeFestiveDealModal();
@@ -5044,21 +5262,21 @@ Warm regards,
 
     const perks = [];
     for (let i = 0; i < 4; i++) {
-      const icon = document.getElementById(`perkIcon${i}`)?.value.trim() || "✨";
+      const icon = document.getElementById(`perkIcon${i}`)?.value.trim() || "sparkle";
       const title = document.getElementById(`perkTitle${i}`)?.value.trim() || "Trust Badge";
       const desc = document.getElementById(`perkDesc${i}`)?.value.trim() || "";
       perks.push({ icon, title, desc });
     }
 
     window.store.saveFestiveCampaign({ perks });
-    this.showToast("🎁 Festive perks strip saved successfully!", "success");
+    this.showToast("Festive perks strip saved successfully!", "success");
   }
 
   handleResetFestiveDefaults() {
     if (!confirm("Restore Festive Special 2026 campaign to default festive vouchers and deals?")) return;
     window.store.resetFestiveCampaign();
     this.renderFestivePanel();
-    this.showToast("🔄 Festive Special 2026 restored to default template!", "success");
+    this.showToast("Festive Special 2026 restored to default template!", "success");
   }
 }
 

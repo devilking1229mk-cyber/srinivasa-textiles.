@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Immediate Theme Engine: Guaranteed Default Light Theme across entire website -->
   <script>
     (function () {
       try {
@@ -18,30 +17,54 @@
         var savedTheme = localStorage.getItem("st_active_theme_v4");
         var theme = (hasChosen === "true" && savedTheme === "dark") ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
+
+        // Clear all persistent intro locks so opening animation always plays on fresh start and refresh
+        sessionStorage.removeItem("st_intro_seen");
+        localStorage.removeItem("st_intro_seen");
+
+        // Single-use skip: ONLY skip if user just clicked "Home" internally.
+        // Consume and delete the token IMMEDIATELY so it never lingers on refresh!
+        var skipOnce = false;
+        if (sessionStorage.getItem("st_skip_intro_once") === "true") {
+          skipOnce = true;
+          sessionStorage.removeItem("st_skip_intro_once");
+        }
+
+        if (skipOnce) {
+          document.documentElement.classList.add("st-preloader-skip");
+        } else {
+          document.documentElement.classList.remove("st-preloader-skip");
+        }
       } catch (e) {
         document.documentElement.setAttribute("data-theme", "light");
       }
     })();
   </script>
 
-  <!-- Primary SEO Metadata -->
   <title>Srinivasa Textiles | Master Weavers &amp; Complete Family Textile Store Since 1978</title>
   <meta name="description"
     content="Discover pure Kanchipuram silk sarees, family matching combos, kids pattu pavadai, men's silk wedding dhotis, and newborn organic cotton jhablas. 100% Silk Mark certified." />
   <meta name="keywords"
     content="Family matching silk sets, Kanchipuram silk saree, kids pattu pavadai, men silk dhoti shirt, baby organic muslin, Silk Mark certified, Srinivasa Textiles" />
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
 
-  <!-- Stylesheets -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <script src="js/security.js"></script>
+
+  <!-- Instant Speculative Prefetch for Zero-Lag Store Navigation -->
+  <link rel="prefetch" href="shop.html" as="document" />
+  <link rel="prefetch" href="css/storefront.css" as="style" />
+  <link rel="prefetch" href="js/storefront.js" as="script" />
+
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/storefront.css" />
-  <link rel="stylesheet" href="css/admin.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/mobile-ui.css" />
   <link rel="stylesheet" href="css/scroll-animations.css" />
@@ -49,9 +72,6 @@
 
 <body class="home-page">
 
-  <!-- ==========================================================================
-       ROYAL HERITAGE OPENING LOGO ANIMATION & SPLASH SCREEN
-       ========================================================================== -->
   <div id="sitePreloader" class="site-preloader" aria-label="Loading Srinivasa Textiles" role="status">
     <div class="preloader-curtain preloader-curtain-left"></div>
     <div class="preloader-curtain preloader-curtain-right"></div>
@@ -60,13 +80,11 @@
     <div class="preloader-pattern-overlay"></div>
 
     <div class="preloader-content">
-      <!-- Animated Golden Silk Crest Logo -->
       <div class="preloader-logo-wrap">
         <div class="preloader-aura-ring ring-outer"></div>
         <div class="preloader-aura-ring ring-mid"></div>
         <div class="preloader-logo-crest">
           <svg class="preloader-crest-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background Mandala & Traditional Weave Geometry -->
             <circle class="svg-orbit" cx="50" cy="50" r="44" stroke="url(#preloaderGoldGrad)" stroke-width="1.5"
               stroke-dasharray="6 4" />
             <circle class="svg-orbit-inner" cx="50" cy="50" r="36" stroke="url(#preloaderGoldGrad)" stroke-width="1.2"
@@ -76,7 +94,6 @@
             <polygon points="50,14 86,50 50,86 14,50" stroke="url(#preloaderGoldGradLight)" stroke-width="1"
               opacity="0.4" fill="none" />
 
-            <!-- Traditional Handloom Warp & Weft Threads -->
             <path class="svg-thread t1" d="M20 50 L80 50" stroke="url(#preloaderGoldGrad)" stroke-width="2"
               stroke-linecap="round" />
             <path class="svg-thread t2" d="M50 20 L50 80" stroke="url(#preloaderGoldGrad)" stroke-width="2"
@@ -86,7 +103,6 @@
             <path class="svg-thread t4" d="M72 28 L28 72" stroke="url(#preloaderGoldGradLight)" stroke-width="1.5"
               stroke-linecap="round" />
 
-            <!-- Central Royal Core & Weaving Shuttle -->
             <circle class="svg-core-pulse" cx="50" cy="50" r="14" fill="url(#preloaderCrimsonGrad)"
               stroke="url(#preloaderGoldGrad)" stroke-width="2" />
             <path d="M41 50 Q50 37 59 50 Q50 63 41 50 Z" fill="url(#preloaderGoldGrad)" />
@@ -111,7 +127,6 @@
         </div>
       </div>
 
-      <!-- Royal Typography -->
       <div class="preloader-brand-text">
         <h1 class="preloader-brand-title">SRINIVASA</h1>
         <div class="preloader-brand-divider">
@@ -123,7 +138,6 @@
         <span class="preloader-since">ESTD 1978 • KANCHIPURAM HERITAGE</span>
       </div>
 
-      <!-- Silk Thread Weaving Progress Line -->
       <div class="preloader-progress-box">
         <div class="preloader-progress-bar">
           <div class="preloader-progress-fill" id="preloaderProgressFill"></div>
@@ -131,13 +145,11 @@
         <span class="preloader-status-text" id="preloaderStatusText">Weaving Pure Heritage Silk...</span>
       </div>
 
-      <!-- Certification Badge -->
       <div class="preloader-cert-badge">
         <span class="cert-icon">✨</span>
         <span>100% Certified Pure Silk Mark Guaranteed</span>
       </div>
 
-      <!-- Grand Enter Store Action Button -->
       <div class="preloader-action-wrap">
         <button class="preloader-enter-btn" id="preloaderEnterBtn" aria-label="Enter Srinivasa Textiles Store">
           <span>ENTER STORE</span>
@@ -148,15 +160,11 @@
     </div>
   </div>
 
-
-  <!-- ==========================================================================
-       TOP ANNOUNCEMENT BAR & THEME SWITCHER
-       ========================================================================== -->
   <aside class="announcement-bar" aria-label="Heritage Quote & Announcement">
     <div class="container">
-      <div class="announcement-content" style="justify-content: center; text-align: center;">
+      <div class="announcement-content">
         <div class="top-quote-banner" id="topQuoteBanner">
-          <span class="gold-icon" style="font-size: 0.95rem; margin-right: 0.35rem;">✨</span>
+          <span class="gold-icon">✨</span>
           <span class="gold-quote-mark">“</span>
           <span class="quote-text" id="topQuoteText">
             Every thread woven with pure devotion, every saree a timeless family legacy of love &amp; tradition.
@@ -168,17 +176,12 @@
     </div>
   </aside>
 
-  <!-- ==========================================================================
-       MAIN STOREFRONT VIEW
-       ========================================================================== -->
   <div id="storefrontView">
 
-    <!-- MAIN HEADER NAVIGATION -->
     <header class="main-header" id="mainHeader">
       <div class="container">
         <div class="nav-inner">
 
-          <!-- Global Brand Logo Header (Always Navigates to Home) -->
           <a href="#home" class="brand-logo" id="globalBrandLogo" aria-label="Srinivasa Textiles Home">
             <div class="brand-symbol">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -196,38 +199,53 @@
             </div>
           </a>
 
-          <!-- Nav Actions -->
           <div class="header-actions">
 
-            <!-- Customer Feedback & Feedback Trigger (Desktop) -->
             <button class="feedback-nav-btn" id="feedbackTriggerBtn" title="Share Your Feedback & Reviews">
               <span data-icon="feedback" class="feedback-btn-icon"></span> Share Feedback
             </button>
 
-            <!-- Clean Predictive Search Trigger -->
             <button class="search-trigger-btn" id="searchTriggerBtn" title="Search Textiles">
               <span data-icon="search" class="st-icon-search"></span>
             </button>
 
-            <!-- Favourites / Wishlist Trigger -->
             <button class="wishlist-btn favourites-trigger-btn" id="wishlistTriggerBtn" title="Saved Favourites"
               aria-label="Open Saved Favourites">
               <span data-icon="favourite" class="st-icon-favourite"></span>
               <span class="badge-count" id="headerWishlistBadge">0</span>
             </button>
 
-            <!-- Slide-Over Cart Trigger -->
             <button class="cart-btn" id="cartTriggerBtn" title="Shopping Bag">
               <span data-icon="cart" class="st-icon-cart"></span>
               <span class="badge-count" id="headerCartBadge">0</span>
             </button>
 
-            <!-- Dark / Light Mode Switcher -->
-            <button id="themeToggleBtn" class="theme-toggle-btn" title="Current: Light Mode (Click for Dark Mode 🌙)">
-              <span class="theme-icon" data-icon="themeSun"></span><span class="theme-label"> Light</span>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Current: Light Mode (Click for Dark Mode 🌙)"
+              aria-label="Toggle Theme">
+              <span class="theme-icon">
+                <svg class="theme-svg-icon theme-icon-sun" width="20" height="20" viewBox="0 0 24 24"
+                  fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="theme-svg-icon theme-icon-moon" width="20" height="20" viewBox="0 0 24 24"
+                  fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  <path d="M19 4v3M20.5 5.5h-3" stroke-width="1.8"></path>
+                </svg>
+              </span>
+              <span class="theme-label"> Light</span>
             </button>
 
-            <!-- Mobile 3-Lines (☰) Navigation & Departments Menu -->
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Departments Menu"
               title="Browse Departments &amp; Feedback">
               <span data-icon="menu"></span>
@@ -237,9 +255,6 @@
       </div>
     </header>
 
-    <!-- ==========================================================================
-         HOME SECTION 1: HERO SPOTLIGHT (Brand Heritage & Trust)
-         ========================================================================== -->
     <section class="hero-section home-only-section" aria-label="Hero Spotlight">
       <div class="hero-overlay"></div>
       <div class="container">
@@ -283,13 +298,12 @@
       </div>
     </section>
 
-    <!-- ==========================================================================
-         MOBILE VIDEO REELS & FABRIC SHINE PREVIEW STRIP
-         ========================================================================== -->
     <section class="mobile-reels-section" aria-label="Live Loom Video Reels">
-      <div class="container" style="padding: 0 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+      <div class="container"
+        style="padding: 0 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
         <span class="section-tag" style="margin: 0; font-size: 0.7rem;">🎥 Live Loom Sheen &amp; Fall</span>
-        <a href="shop.html" style="font-size: 0.78rem; font-weight: 700; color: var(--color-gold); text-decoration: none;">View All ➔</a>
+        <a href="shop.html"
+          style="font-size: 0.78rem; font-weight: 700; color: var(--color-gold); text-decoration: none;">View All ➔</a>
       </div>
       <div class="mobile-reels-track">
         <div class="mobile-reel-card" onclick="window.location.href='shop.html?dept=women'">
@@ -338,13 +352,12 @@
       </div>
     </section>
 
-    <!-- ==========================================================================
-         SHOP BY FABRIC MOBILE GRID
-         ========================================================================== -->
     <section class="mobile-fabric-grid-section" aria-label="Shop by Fabric Type">
       <div class="section-header" style="margin-bottom: 1.25rem;">
         <span class="section-tag" style="font-size: 0.7rem;">🧵 Master Weaver Looms</span>
-        <h3 style="font-family: var(--font-serif-display); font-size: 1.35rem; color: var(--color-primary); margin: 0.25rem 0;">Shop by Fabric</h3>
+        <h3
+          style="font-family: var(--font-serif-display); font-size: 1.35rem; color: var(--color-primary); margin: 0.25rem 0;">
+          Shop by Fabric</h3>
       </div>
       <div class="mobile-fabric-grid">
         <div class="mobile-fabric-item" onclick="window.location.href='shop.html?fabric=Kanchipuram Silk'">
@@ -380,9 +393,6 @@
       </div>
     </section>
 
-    <!-- ==========================================================================
-         TRUST & GUARANTEE 3-COLUMN MOBILE ROW
-         ========================================================================== -->
     <div class="mobile-trust-badges" aria-label="Customer Guarantees">
       <div class="mobile-trust-badge-item">
         <span class="mobile-trust-icon">🚚</span>
@@ -401,10 +411,6 @@
       </div>
     </div>
 
-
-    <!-- ==========================================================================
-         HOME SECTION 2: TEXTILE'S BUILDING & SHOWROOM ARCHITECTURE
-         ========================================================================== -->
     <section class="section home-only-section"
       style="background: var(--bg-surface); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
       <div class="container">
@@ -465,9 +471,6 @@
       </div>
     </section>
 
-    <!-- ==========================================================================
-         HOME SECTION 3: TEXTILE OWNER & MASTER WEAVER SHOWCASE
-         ========================================================================== -->
     <section class="section home-only-section" style="background: var(--bg-surface-alt);">
       <div class="container">
         <div class="section-header">
@@ -515,9 +518,6 @@
       </div>
     </section>
 
-    <!-- ==========================================================================
-         HOME SECTION 4: ABOUT THE TEXTILE & LIVING WEAVING HERITAGE
-         ========================================================================== -->
     <section class="section home-only-section"
       style="background: var(--bg-surface); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
       <div class="container">
@@ -558,11 +558,6 @@
       </div>
     </section>
 
-
-
-    <!-- ==========================================================================
-         HOME SECTION 5: FINAL EXPLORE & VIDEO SHOPPING CTA BANNER (At the bottom of Home page)
-         ========================================================================== -->
     <section class="explore-cta-section home-only-section" aria-label="Explore Collections & Video Shopping Banner">
       <div class="container">
         <div class="explore-cta-card">
@@ -593,7 +588,6 @@
       </div>
     </section>
 
-    <!-- FOOTER WITH SECURE OWNER PORTAL ACCESS -->
     <footer class="site-footer">
       <div class="container">
         <div class="footer-grid">
@@ -672,11 +666,7 @@
 
   </div>
 
-  <!-- ==========================================================================
-       MODALS & DRAWERS
-       ========================================================================== -->
 
-  <!-- Mobile Navigation & Department Drawer (3-Line Menu for Mobile UI) -->
   <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
     <div class="mobile-nav-header">
       <div class="mobile-nav-title">
@@ -719,7 +709,6 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <!-- Saved Favourites Session inside Mobile Drawer -->
       <div class="mobile-nav-section-title">❤️ SAVED FAVOURITES</div>
       <button class="mobile-drawer-action-btn favourites-trigger-btn" id="mobileWishlistBtn"
         style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -731,7 +720,6 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <!-- Shopping Bag Session inside Mobile Drawer -->
       <div class="mobile-nav-section-title">🛍️ SHOPPING BAG</div>
       <button class="mobile-drawer-action-btn" id="mobileCartBtn"
         style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -744,10 +732,22 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <!-- Customer Feedback Session inside Mobile Drawer -->
       <div class="mobile-nav-section-title">🌟 CUSTOMER REVIEWS &amp; FEEDBACK</div>
       <button class="mobile-drawer-action-btn mobile-feedback-trigger-btn" id="mobileFeedbackBtn">
         <span data-icon="feedback" class="drawer-icon-img"></span> Share Your Review &amp; Feedback
+      </button>
+
+      <div class="mobile-nav-divider"></div>
+
+      <div class="mobile-nav-section-title">🌓 DISPLAY THEME</div>
+      <button type="button" class="mobile-drawer-action-btn" id="mobileDrawerThemeBtn"
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span style="display: flex; align-items: center; gap: 0.65rem;">
+          <span class="drawer-theme-icon" id="mobileDrawerThemeIcon" style="font-size: 1.15rem;">🌙</span>
+          <span id="mobileDrawerThemeLabel" style="font-weight: 700;">Dark Theme</span>
+        </span>
+        <span class="badge-count theme-status-pill" id="mobileDrawerThemeStatus"
+          style="position: static; display: inline-flex; background: rgba(212, 175, 55, 0.15); color: var(--color-gold); font-weight: 800; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--color-gold); font-size: 0.72rem;">Light</span>
       </button>
 
       <div class="mobile-nav-divider"></div>
@@ -769,7 +769,6 @@
   </div>
   <div class="drawer-overlay" id="mobileNavOverlay"></div>
 
-  <!-- PREDICTIVE SEARCH OVERLAY MODAL (Hidden by default, shown ONLY when search button is clicked) -->
   <div class="search-bar-modal" id="searchBarModal" role="dialog" aria-modal="true">
     <div class="search-modal-container">
       <div class="search-input-wrapper">
@@ -782,44 +781,43 @@
     </div>
   </div>
 
-  <!-- Store Owner Strict Authentication Modal (Royal Luxury Theme) -->
   <div class="owner-auth-modal" id="ownerAuthModal" role="dialog" aria-modal="true">
     <div class="owner-auth-box">
-      <button class="pdp-close-btn" id="ownerAuthCloseBtn" title="Close">✕</button>
-      <div class="owner-auth-emblem">👑</div>
+      <button class="pdp-close-btn" id="ownerAuthCloseBtn" title="Close"><span data-icon="close"></span></button>
+      <div class="owner-auth-emblem" data-icon="crown"></div>
       <h3>Store Owner Console</h3>
       <p class="owner-auth-subtitle">
         Restricted Security Gateway • Handloom Master Management Hub
       </p>
 
-      <!-- Error Alert Banner -->
       <div id="ownerAuthErrorMsg" class="owner-auth-error" style="display: none;"></div>
 
       <div class="owner-input-group">
         <label for="ownerUsernameInput">Owner Username / ID:</label>
         <div class="owner-input-wrapper">
-          <span class="owner-input-icon">👤</span>
-          <input type="text" id="ownerUsernameInput" class="owner-input-field" placeholder="e.g. admin"
-            autocomplete="username" />
+          <span class="owner-input-icon"><span data-icon="user"></span></span>
+          <input type="text" id="ownerUsernameInput" class="owner-input-field" placeholder="Enter Owner ID"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other"
+            readonly onfocus="this.removeAttribute('readonly');" />
         </div>
       </div>
 
       <div class="owner-input-group">
         <label for="ownerPasswordInput">Master Security PIN / Password:</label>
         <div class="owner-input-wrapper">
-          <span class="owner-input-icon">🔒</span>
+          <span class="owner-input-icon"><span data-icon="lock"></span></span>
           <input type="password" id="ownerPasswordInput" class="owner-input-field"
-            placeholder="Enter Security Password or PIN" autocomplete="current-password" />
+            placeholder="Enter Security Password or PIN" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other"
+            readonly onfocus="this.removeAttribute('readonly');" />
           <button type="button" id="toggleOwnerPassBtn" class="owner-pass-toggle"
-            title="Show/Hide Password">👁️</button>
+            title="Show/Hide Password"><span data-icon="eye"></span></button>
         </div>
       </div>
 
-      <button class="owner-submit-btn" id="ownerAuthSubmitBtn">Unlock Owner Console ➔</button>
+      <button class="owner-submit-btn" id="ownerAuthSubmitBtn">Unlock Owner Console <span data-icon="arrowRight"></span></button>
     </div>
   </div>
 
-  <!-- Interactive Customer Feedback & Review Session Modal -->
   <div class="feedback-modal" id="feedbackModal" role="dialog" aria-modal="true">
     <div class="feedback-box">
       <button class="pdp-close-btn" id="feedbackCloseBtn" title="Close"><span data-icon="close"></span></button>
@@ -860,7 +858,6 @@
         <button class="btn btn-gold btn-lg" id="submitFeedbackBtn" style="width: 100%;">Submit Feedback ➔</button>
       </div>
 
-      <!-- SUCCESS SCREEN -->
       <div id="feedbackSuccessContainer" style="display: none;" class="feedback-success-card">
         <div class="success-icon">🎉</div>
         <h3 style="font-family: var(--font-serif-display); color: var(--color-primary); margin-bottom: 0.5rem;">Thank
@@ -885,7 +882,6 @@
     </div>
   </div>
 
-  <!-- Customer Bulk Order Inquiry Modal (Royal Luxury Theme) -->
   <div class="pdp-modal" id="bulkInquiryModal" role="dialog" aria-modal="true">
     <div class="bulk-inquiry-dialog">
       <div class="bulk-inquiry-header">
@@ -902,9 +898,7 @@
           title="Close Inquiry Modal">✕</button>
       </div>
 
-      <!-- 2-Column Responsive Layout: Left = Product Details, Right = Live Calculator & Order Form -->
       <div class="bulk-modal-grid" id="bulkModalMainGrid">
-        <!-- Left: Full Product Details Showcase -->
         <div class="bulk-modal-details-col" id="bulkModalDetailsCol">
           <div class="bulk-modal-img-wrap">
             <img id="bulkModalImg" src="assets/images/hero_banner.jpg" alt="Bulk Package" />
@@ -915,39 +909,43 @@
           <div class="bulk-modal-meta">
             <span class="bulk-card-category" id="bulkModalCategory">WEDDING TROUPE</span>
             <h3 class="bulk-modal-product-title" id="bulkModalTitle">Grand Muhurtham Wedding Bridal Trousseau Lot</h3>
-            <p class="bulk-modal-product-desc" id="bulkModalDesc">Authentic Kanchipuram bridal silk sarees with heavy contrast zari pallu and rich borders directly from our master handlooms.</p>
+            <p class="bulk-modal-product-desc" id="bulkModalDesc">Authentic Kanchipuram bridal silk sarees with heavy
+              contrast zari pallu and rich borders directly from our master handlooms.</p>
           </div>
 
           <div class="bulk-modal-specs-list">
             <div class="bulk-spec-item">
               <span class="spec-icon">🧵</span>
-              <div><strong>Master Weave:</strong> <span id="bulkModalFabric">100% Pure Kanchipuram Mulberry Silk with Korvai Interlocking Weave</span></div>
+              <div><strong>Master Weave:</strong> <span id="bulkModalFabric">100% Pure Kanchipuram Mulberry Silk with
+                  Korvai Interlocking Weave</span></div>
             </div>
             <div class="bulk-spec-item">
               <span class="spec-icon">📦</span>
-              <div><strong>Set Inclusions:</strong> <span id="bulkModalInclusions">Assorted Bridal Palette &amp; Matching Unstitched Blouse</span></div>
+              <div><strong>Set Inclusions:</strong> <span id="bulkModalInclusions">Assorted Bridal Palette &amp;
+                  Matching Unstitched Blouse</span></div>
             </div>
             <div class="bulk-spec-item">
               <span class="spec-icon">⏱️</span>
-              <div><strong>Dispatch &amp; Delivery:</strong> <span id="bulkModalTimeline">Express 7-10 Days Direct Dispatch</span></div>
+              <div><strong>Dispatch &amp; Delivery:</strong> <span id="bulkModalTimeline">Express 7-10 Days Direct
+                  Dispatch</span></div>
             </div>
             <div class="bulk-spec-item">
               <span class="spec-icon">🏛️</span>
-              <div><strong>Authenticity:</strong> <span>Certified Silk Mark Organisation of India (SMOI) 100% Pure Tested Silk</span></div>
+              <div><strong>Authenticity:</strong> <span>Certified Silk Mark Organisation of India (SMOI) 100% Pure
+                  Tested Silk</span></div>
             </div>
             <div class="bulk-spec-item">
               <span class="spec-icon">🛡️</span>
-              <div><strong>Quality Assurance:</strong> <span>Zero middleman markup, weaver direct testing certificate &amp; insurance in transit</span></div>
+              <div><strong>Quality Assurance:</strong> <span>Zero middleman markup, weaver direct testing certificate
+                  &amp; insurance in transit</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Right: Interactive Live Calculator & Order Form -->
         <div class="bulk-modal-order-col">
           <form id="customerBulkInquiryForm" class="bulk-order-form">
             <input type="hidden" id="bulkInquiryPackageId" value="" />
 
-            <!-- Live Price Calculator Card -->
             <div class="bulk-live-calc-card">
               <div class="bulk-rates-row">
                 <div class="rate-item">
@@ -961,13 +959,13 @@
                 <span class="bulk-moq-pill" id="calcMoqBadge">MOQ: 10 Sets</span>
               </div>
 
-              <!-- Interactive Stepper -->
               <div class="bulk-qty-selector-group">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <label for="bulkCustPieces" class="bulk-form-label" style="margin: 0; font-weight: 700;">
                     <span>🔢</span> Order Quantity (Units):
                   </label>
-                  <small style="color: var(--color-gold); font-size: 0.75rem;" id="calcUnitLabel">Min Order Quantity: 10</small>
+                  <small style="color: var(--color-gold); font-size: 0.75rem;" id="calcUnitLabel">Min Order Quantity:
+                    10</small>
                 </div>
                 <div class="bulk-stepper-control">
                   <button type="button" class="stepper-btn" id="bulkQtyMinus" title="Decrease Quantity">-</button>
@@ -976,7 +974,6 @@
                 </div>
               </div>
 
-              <!-- Cost Breakdown -->
               <div class="bulk-cost-breakdown">
                 <div class="cost-row">
                   <span>Subtotal (<span id="calcPiecesLabel">10</span> units):</span>
@@ -997,13 +994,13 @@
               </div>
             </div>
 
-            <!-- Customer & Delivery Details -->
             <div class="bulk-form-grid-2">
               <div class="bulk-form-field">
                 <label for="bulkCustName" class="bulk-form-label">
                   <span>👤</span> Your Name / Contact Person *
                 </label>
-                <input type="text" id="bulkCustName" required class="bulk-form-input" placeholder="e.g. S. Vijayaraghavan" />
+                <input type="text" id="bulkCustName" required class="bulk-form-input"
+                  placeholder="e.g. S. Vijayaraghavan" />
               </div>
               <div class="bulk-form-field">
                 <label for="bulkCustPhone" class="bulk-form-label">
@@ -1018,13 +1015,15 @@
                 <label for="bulkCustCompany" class="bulk-form-label">
                   <span>🏛️</span> Occasion / Boutique Name *
                 </label>
-                <input type="text" id="bulkCustCompany" required class="bulk-form-input" placeholder="e.g. Wedding Troupe or Boutique Name" />
+                <input type="text" id="bulkCustCompany" required class="bulk-form-input"
+                  placeholder="e.g. Wedding Troupe or Boutique Name" />
               </div>
               <div class="bulk-form-field">
                 <label for="bulkCustCity" class="bulk-form-label">
                   <span>📍</span> Delivery City / State *
                 </label>
-                <input type="text" id="bulkCustCity" required class="bulk-form-input" placeholder="e.g. Chennai, Tamil Nadu" />
+                <input type="text" id="bulkCustCity" required class="bulk-form-input"
+                  placeholder="e.g. Chennai, Tamil Nadu" />
               </div>
             </div>
 
@@ -1053,38 +1052,42 @@
               <label for="bulkCustNotes" class="bulk-form-label">
                 <span>📝</span> Special Weaving / Color / Customization Notes:
               </label>
-              <textarea id="bulkCustNotes" rows="2" class="bulk-form-textarea" placeholder="Specify color combinations, zari preferences, blouse fabric options..."></textarea>
+              <textarea id="bulkCustNotes" rows="2" class="bulk-form-textarea"
+                placeholder="Specify color combinations, zari preferences, blouse fabric options..."></textarea>
             </div>
 
-            <!-- Action Buttons -->
             <div class="bulk-form-actions-stack">
               <button type="submit" class="btn btn-gold btn-md bulk-submit-order-btn" id="submitBulkInquiryBtn">
                 <span>🛍️</span> Place Wholesale Order Now
               </button>
-              <button type="button" class="btn btn-outline btn-md bulk-whatsapp-order-btn" id="bulkDirectWhatsAppBtn" style="border-color: #25D366; color: #25D366;">
+              <button type="button" class="btn btn-outline btn-md bulk-whatsapp-order-btn" id="bulkDirectWhatsAppBtn"
+                style="border-color: #25D366; color: #25D366;">
                 <span>💬</span> Place Order on WhatsApp
               </button>
             </div>
           </form>
 
-          <!-- Order Confirmation Screen -->
           <div id="bulkInquirySuccessContainer" style="display: none; padding: 1.5rem 1rem;">
             <div style="text-align: center; margin-bottom: 1.25rem;">
               <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
-              <h3 style="font-family: var(--font-serif-display); color: var(--color-gold); margin-bottom: 0.35rem; font-size: 1.4rem;">
+              <h3
+                style="font-family: var(--font-serif-display); color: var(--color-gold); margin-bottom: 0.35rem; font-size: 1.4rem;">
                 Wholesale Order Confirmed!
               </h3>
-              <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 480px; margin: 0 auto; line-height: 1.5;">
-                Your order <strong id="bulkInquiryConfirmId" style="color: var(--color-gold);"></strong> has been received and entered directly into our Master Weavers Loom Schedule.
+              <p
+                style="color: var(--text-muted); font-size: 0.88rem; max-width: 480px; margin: 0 auto; line-height: 1.5;">
+                Your order <strong id="bulkInquiryConfirmId" style="color: var(--color-gold);"></strong> has been
+                received and entered directly into our Master Weavers Loom Schedule.
               </p>
             </div>
 
-            <div id="bulkOrderReceiptCard" style="background: var(--bg-surface-alt); border: 1.5px solid var(--color-gold); border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.88rem;">
-              <!-- Dynamically populated with order receipt breakdown -->
+            <div id="bulkOrderReceiptCard"
+              style="background: var(--bg-surface-alt); border: 1.5px solid var(--color-gold); border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.88rem;">
             </div>
 
             <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
-              <a id="bulkInquiryWhatsAppChatBtn" href="#" target="_blank" class="btn btn-gold btn-md" style="font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;">
+              <a id="bulkInquiryWhatsAppChatBtn" href="#" target="_blank" class="btn btn-gold btn-md"
+                style="font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;">
                 <span>💬</span> Connect with Master Weaver on WhatsApp
               </a>
               <button type="button" class="btn btn-outline btn-md" id="bulkInquiryCloseSuccessBtn">
@@ -1097,7 +1100,6 @@
     </div>
   </div>
 
-  <!-- Fullscreen Image Lightbox Modal -->
   <div class="lightbox-modal" id="lightboxModal">
     <div class="lightbox-content">
       <span class="lightbox-close-btn" id="lightboxCloseBtn">✕</span>
@@ -1106,7 +1108,6 @@
     </div>
   </div>
 
-  <!-- Slide-Over Favourites / Wishlist Drawer (Like Shopping Bag) -->
   <div class="wishlist-drawer-overlay" id="wishlistDrawerOverlay"></div>
   <aside class="wishlist-drawer" id="wishlistDrawer" aria-label="My Favourites">
     <div class="wishlist-drawer-header">
@@ -1135,7 +1136,6 @@
     </div>
   </aside>
 
-  <!-- Slide-Over Cart Drawer with Gift Wrap -->
   <div class="cart-drawer-overlay" id="cartDrawerOverlay"></div>
   <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping Bag">
     <div class="cart-drawer-header">
@@ -1157,6 +1157,10 @@
         <input type="text" id="cartCouponInput" placeholder="ENTER A PROMO CODE (OPTIONAL)" />
         <button class="btn btn-gold btn-sm" id="applyCouponBtn">Apply</button>
       </div>
+      <button type="button" class="cart-view-coupons-link" id="cartViewAllCouponsBtn"
+        onclick="window.storefront && window.storefront.openCouponPopup()">
+        🏷️ Browse All Available Coupons &amp; Offers
+      </button>
       <div id="cartActiveCouponBox" style="display: none; margin-bottom: 0.65rem;"></div>
 
       <div class="cart-summary-line"><span>Subtotal:</span> <strong id="cartSubtotal">₹0</strong></div>
@@ -1170,20 +1174,15 @@
     </div>
   </aside>
 
-  <!-- Product Detail Page (PDP) Clean View Modal -->
   <div class="pdp-modal" id="pdpModal" role="dialog" aria-modal="true">
     <div class="pdp-modal-content" id="pdpModalContent"></div>
   </div>
 
-  <!-- ==========================================================================
-       NOTIFY ME WHEN AVAILABLE (RESTOCK WAITLIST) MODAL
-       ========================================================================== -->
   <div class="pdp-modal" id="notifyModal" role="dialog" aria-modal="true">
     <div class="search-modal-container notify-modal-container"
       style="max-width: 520px; padding: 2rem 2.2rem; position: relative;">
       <button class="pdp-close-btn" id="notifyModalCloseBtn">✕</button>
 
-      <!-- Form View -->
       <div id="notifyFormView">
         <div style="text-align: center; margin-bottom: 1.25rem;">
           <div
@@ -1197,7 +1196,6 @@
             instant WhatsApp alert when this handloom piece is back on the loom.</p>
         </div>
 
-        <!-- Product Preview Box -->
         <div class="notify-product-card" id="notifyProductPreview"
           style="display: flex; gap: 1rem; align-items: center; background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem;">
           <img id="notifyProductImg" src="assets/images/banarasi_blue.jpg" alt="Garment"
@@ -1253,7 +1251,6 @@
         </form>
       </div>
 
-      <!-- Done / Success View -->
       <div id="notifySuccessView" style="display: none; text-align: center; padding: 1.5rem 0.5rem;">
         <div class="notify-success-icon"
           style="width: 64px; height: 64px; background: rgba(37, 211, 102, 0.15); border: 2px solid #25D366; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; color: #25D366; margin-bottom: 1rem;">
@@ -1278,7 +1275,6 @@
     </div>
   </div>
 
-  <!-- Express Checkout Modal -->
   <div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true">
     <div class="checkout-modal-content">
       <button class="pdp-close-btn" id="checkoutCloseBtn">✕</button>
@@ -1327,7 +1323,6 @@
         </div>
       </div>
 
-      <!-- UPI QR Simulation Box with Real-Time Automatic Payment Detection -->
       <div id="upiPaymentBox" class="upi-qr-box">
         <div class="upi-qr-header">
           <span class="upi-live-badge"><span class="admin-pulse-dot"></span> Live UPI QR Gateway</span>
@@ -1342,7 +1337,6 @@
           <strong id="upiQrAmountDisplay">₹0</strong>
         </div>
 
-        <!-- Dynamic QR Code Container Wrapped in Clickable UPI Deep Link for Google Pay -->
         <a id="upiQrLink" href="upi://pay?pa=srinivasatextiles@hdfcbank&pn=Srinivasa%20Textiles&am=1&cu=INR&tn=Order_ST"
           class="upi-qr-img-link" title="Click to Pay directly via Google Pay / Any UPI App">
           <div class="upi-qr-img" id="upiQrContainer">
@@ -1357,7 +1351,6 @@
           </span>
         </div>
 
-        <!-- Supported UPI Apps Display (Visual badges, not buttons) -->
         <div class="upi-supported-apps-strip">
           <span class="upi-supported-label">Scan with Any UPI App</span>
           <div class="upi-apps-badges">
@@ -1373,7 +1366,6 @@
           <button type="button" class="btn-copy-upi" id="copyUpiIdBtn" title="Copy UPI ID">📋 Copy</button>
         </div>
 
-        <!-- Verified Success Banner (Shown automatically when payment is completed) -->
         <div id="paymentVerifiedBadge" class="payment-verified-banner" style="display: none;">
           <div style="display: flex; align-items: center; gap: 0.65rem;">
             <span class="badge-icon">✅</span>
@@ -1406,26 +1398,20 @@
     </div>
   </div>
 
-  <!-- 1-Click GST Tax Invoice & Shipping Label Modal -->
   <div class="pdp-modal" id="invoiceModal" role="dialog" aria-modal="true">
     <div class="invoice-modal-content" id="invoiceModalContent"></div>
   </div>
 
-  <!-- ==========================================================================
-       FAMILY COMBO BOOKING MODAL (DIRECT ORDERING WITH SIZES)
-       ========================================================================== -->
   <div class="pdp-modal" id="familyComboBookingModal" role="dialog" aria-modal="true"
     style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.8); z-index: 9999;">
     <div
       style="background: var(--bg-surface, #1A050D); border: 2px solid var(--color-gold, #D4AF37); border-radius: var(--radius-lg, 12px); max-width: 650px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); color: var(--text-main, #FFF);">
 
-      <!-- Close Button -->
       <button type="button" onclick="window.storefront && window.storefront.closeFamilyComboBookingModal()"
         style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--color-gold); cursor: pointer; line-height: 1;">
         &times;
       </button>
 
-      <!-- Modal Header -->
       <div style="border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 1rem; margin-bottom: 1.25rem;">
         <span class="combo-badge-tag" id="fcModalBadge" style="margin-bottom: 0.5rem; font-size: 0.7rem;">👨‍👩‍👧‍👦
           HIGH VALUE FAMILY BUNDLE</span>
@@ -1438,7 +1424,6 @@
         </p>
       </div>
 
-      <!-- Pricing Summary Bar -->
       <div
         style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.3); padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <div>
@@ -1454,14 +1439,12 @@
         </span>
       </div>
 
-      <!-- Booking Form -->
       <form id="familyComboOrderForm"
         onsubmit="window.storefront && window.storefront.handleFamilyComboOrderSubmit(event)">
         <input type="hidden" id="fcFormComboId" value="" />
         <input type="hidden" id="fcFormComboTitle" value="" />
         <input type="hidden" id="fcFormTotalPrice" value="" />
 
-        <!-- 4-Member Size Selection -->
         <h4
           style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
           <span>📏</span> Select Family Member Sizing &amp; Tailoring
@@ -1469,7 +1452,6 @@
 
         <div
           style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          <!-- Father Size -->
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               👨 Father's Shirt Size *
@@ -1484,7 +1466,6 @@
             </select>
           </div>
 
-          <!-- Mother Saree -->
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               ✨ Mother's Saree &amp; Blouse *
@@ -1498,7 +1479,6 @@
             </select>
           </div>
 
-          <!-- Son Age/Size -->
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               👦 Son's Age &amp; Kurta Size *
@@ -1514,7 +1494,6 @@
             </select>
           </div>
 
-          <!-- Daughter Age/Size -->
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #FFF;">
               👧 Daughter's Age &amp; Pavadai Size *
@@ -1530,7 +1509,6 @@
           </div>
         </div>
 
-        <!-- Customer Contact & Shipping Details -->
         <h4
           style="font-size: 0.95rem; color: var(--color-gold); margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.4rem;">
           <span>📦</span> Delivery &amp; Contact Details
@@ -1597,7 +1575,6 @@
           </div>
         </div>
 
-        <!-- Submit & Guarantees -->
         <div
           style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(212, 175, 55, 0.3); padding-top: 1.25rem; flex-wrap: wrap; gap: 1rem;">
           <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
@@ -1620,7 +1597,74 @@
     </div>
   </div>
 
-  <!-- Floating WhatsApp Concierge Widget -->
+  <div class="floating-coupon-pill-container" id="floatingCouponPillContainer">
+    <button type="button" class="floating-coupon-pill" id="floatingCouponPill" aria-label="View Active Coupons"
+      title="Active Coupons">
+      <span class="pill-icon" aria-hidden="true">🏷️</span>
+      <span class="pill-badge" id="floatingCouponCount">4</span>
+    </button>
+  </div>
+
+  <div class="coupon-popup-overlay" id="couponPopupModal" role="dialog" aria-modal="true"
+    aria-labelledby="couponPopupTitle" style="display: none;">
+    <div class="coupon-popup-backdrop" id="couponPopupBackdrop"></div>
+    <div class="coupon-popup-dialog" id="couponPopupDialog">
+      <div class="coupon-panel-drag-handle" id="couponPanelDragHandle" aria-hidden="true">
+        <span class="coupon-drag-bar"></span>
+      </div>
+
+      <div class="coupon-popup-header">
+        <div class="coupon-popup-title-area">
+          <div class="coupon-popup-icon-badge">🏷️</div>
+          <div>
+            <h3 class="coupon-popup-title" id="couponPopupTitle">Festive Offers &amp; Coupons</h3>
+            <p class="coupon-popup-subtitle">Exclusive savings on handlooms &amp; family collections</p>
+          </div>
+        </div>
+        <button type="button" class="coupon-popup-close-btn" id="couponPopupCloseBtn"
+          aria-label="Close coupons panel">✕</button>
+      </div>
+
+      <div class="coupon-panel-apply-box">
+        <div class="coupon-panel-input-wrap">
+          <span class="coupon-input-icon">🎟️</span>
+          <input type="text" id="couponPanelDirectInput" placeholder="Enter coupon or promo code..." autocomplete="off"
+            autocorrect="off" autocapitalize="characters" />
+          <button type="button" id="couponPanelDirectApplyBtn" class="coupon-panel-apply-btn">Apply</button>
+        </div>
+      </div>
+
+      <div class="coupon-panel-tabs" id="couponPanelTabs" role="tablist">
+        <button type="button" class="coupon-filter-tab active" data-filter="all">All Offers (<span
+            id="couponTabCountAll">0</span>)</button>
+        <button type="button" class="coupon-filter-tab" data-filter="flat">Flat ₹ OFF</button>
+        <button type="button" class="coupon-filter-tab" data-filter="percent">% Discount</button>
+        <button type="button" class="coupon-filter-tab" data-filter="festive">Festive Specials</button>
+      </div>
+
+      <div class="coupon-popup-meta">
+        <span class="coupon-popup-count-chip">
+          <span class="coupon-chip-dot"></span>
+          <span id="couponPopupAvailableText">Active Festive Coupons</span>
+        </span>
+        <span class="coupon-popup-hint">Tap code to copy or apply directly</span>
+      </div>
+
+      <div class="coupon-popup-body custom-scrollbar" id="couponPopupBody">
+      </div>
+
+      <div class="coupon-popup-footer">
+        <button type="button" class="coupon-popup-view-cart-btn" id="couponPopupViewCartBtn">
+          <span>🛍️ View Shopping Bag</span>
+        </button>
+        <button type="button" class="coupon-popup-view-all-btn" id="couponPopupScrollBtn">
+          <span>View Festive Showcase</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="whatsapp-widget-container" id="whatsappWidget">
     <div class="whatsapp-chat-popup" id="whatsappPopup">
       <div class="wa-header">
@@ -1647,53 +1691,73 @@
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- Supabase Database SDK & Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/supabase-client.js"></script>
 
-  <!-- ==========================================================================
-       STICKY BOTTOM NAVIGATION BAR (5 Core Tabs)
-       ========================================================================== -->
   <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
-    <a href="index.html" class="bottom-nav-tab active" data-tab-action="home">
-      <span class="tab-icon">🏠</span>
+    <a href="index.html" class="bottom-nav-tab active" data-tab-action="home" aria-label="Home">
+      <span class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-5a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+        </svg>
+      </span>
       <span>Home</span>
     </a>
-    <a href="shop.html" class="bottom-nav-tab" data-tab-action="shop">
-      <span class="tab-icon">🛍️</span>
+    <a href="shop.html" class="bottom-nav-tab" data-tab-action="shop" aria-label="Shop">
+      <span class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+      </span>
       <span>Shop</span>
     </a>
-    <button type="button" class="bottom-nav-tab" data-tab-action="search">
-      <span class="tab-icon">🔍</span>
+    <button type="button" class="bottom-nav-tab" data-tab-action="search" aria-label="Search">
+      <span class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7.5" />
+          <path d="M21 21l-4.5-4.5" />
+        </svg>
+      </span>
       <span>Search</span>
     </button>
-    <button type="button" class="bottom-nav-tab" data-tab-action="wishlist">
+    <button type="button" class="bottom-nav-tab" data-tab-action="wishlist" aria-label="Wishlist">
       <span class="tab-icon">
-        🤍
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
         <span class="tab-badge" id="bottomNavWishlistBadge" style="display: none;">0</span>
       </span>
       <span>Wishlist</span>
     </button>
-    <button type="button" class="bottom-nav-tab" data-tab-action="cart">
+    <button type="button" class="bottom-nav-tab" data-tab-action="cart" aria-label="Bag">
       <span class="tab-icon">
-        🛒
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="3" y="7" width="18" height="14" rx="2" />
+          <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+        </svg>
         <span class="tab-badge" id="bottomNavCartBadge" style="display: none;">0</span>
       </span>
       <span>Bag</span>
     </button>
   </nav>
 
-  <!-- Application Scripts -->
   <script src="js/icons.js"></script>
   <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
   <script src="js/storefront.js"></script>
-  <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
   <script src="js/scroll-animations.js"></script>
   <script src="js/mobile-ui.js"></script>

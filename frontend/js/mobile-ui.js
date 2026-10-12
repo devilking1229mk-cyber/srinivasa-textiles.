@@ -84,18 +84,35 @@ class MobileUIController {
 
         switch (action) {
           case "home":
-            if (window.storefront && typeof window.storefront.navigateToPage === "function") {
-              window.storefront.navigateToPage("home");
-            } else {
-              window.location.href = "index.html";
+            e.preventDefault();
+            {
+              const isHomePage = !window.location.pathname.includes("shop.html") && !window.location.pathname.endsWith("/shop");
+              if (isHomePage) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                if (window.storefront && typeof window.storefront.navigateToPage === "function") {
+                  window.storefront.navigateToPage("home");
+                }
+              } else {
+                sessionStorage.setItem("st_skip_intro_once", "true");
+                document.body.classList.add("page-transitioning");
+                window.location.href = "index.html";
+              }
             }
             break;
 
           case "shop":
-            if (window.storefront && typeof window.storefront.navigateToPage === "function") {
-              window.storefront.navigateToPage("explore");
-            } else {
-              window.location.href = "shop.html";
+            e.preventDefault();
+            {
+              const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+              if (isShopPage) {
+                if (window.storefront && typeof window.storefront.navigateToPage === "function") {
+                  window.storefront.navigateToPage("explore");
+                }
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              } else {
+                document.body.classList.add("page-transitioning");
+                window.location.href = "shop.html";
+              }
             }
             break;
 

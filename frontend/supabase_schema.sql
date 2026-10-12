@@ -117,7 +117,8 @@ EXCEPTION
 END $$;
 
 -- ==========================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- ==========================================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES (Hardened Production Security)
 -- ==========================================================================
 
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
@@ -125,30 +126,64 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE feedbacks ENABLE ROW LEVEL SECURITY;
 
--- Allow Public Inserts, Selects, Updates for Seamless Realtime Flow
+-- 1. ORDERS POLICIES
 DROP POLICY IF EXISTS "Allow public insert on orders" ON orders;
 DROP POLICY IF EXISTS "Allow public select on orders" ON orders;
 DROP POLICY IF EXISTS "Allow public update on orders" ON orders;
 
-CREATE POLICY "Allow public insert on orders" ON orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public select on orders" ON orders FOR SELECT USING (true);
-CREATE POLICY "Allow public update on orders" ON orders FOR UPDATE USING (true);
+-- Allow storefront customers to insert new orders
+CREATE POLICY "Allow public insert on orders" ON orders 
+  FOR INSERT WITH CHECK (true);
 
+-- Deny public scraping of all orders: Public can only view their specific order if they know the order_id or tracking_number
+CREATE POLICY "Allow public select own order" ON orders 
+  FOR SELECT USING (
+    (auth.role() = 'authenticated') OR 
+    (auth.role() = 'service_role') OR
+    (order_id IS NOT NULL AND order_id = current_setting('request.headers', true)::json->>'x-order-id')
+  );
+
+-- Only backend service_role or authenticated admin can update orders (e.g. mark paid / change status)
+CREATE POLICY "Allow admin/service update on orders" ON orders 
+  FOR UPDATE USING (
+    auth.role() = 'service_role' OR auth.role() = 'authenticated'
+  );
+
+-- 2. PRODUCTS POLICIES
 DROP POLICY IF EXISTS "Allow public select on products" ON products;
 DROP POLICY IF EXISTS "Allow public upsert on products" ON products;
-CREATE POLICY "Allow public select on products" ON products FOR SELECT USING (true);
-CREATE POLICY "Allow public upsert on products" ON products FOR ALL USING (true);
 
+-- Everyone can view products catalog
+CREATE POLICY "Allow public select on products" ON products 
+  FOR SELECT USING (true);
+
+-- Only backend service role or authenticated admin can modify catalog
+CREATE POLICY "Allow admin write on products" ON products 
+  FOR ALL USING (
+    auth.role() = 'service_role' OR auth.role() = 'authenticated'
+  );
+
+-- 3. SUBSCRIBERS POLICIES
 DROP POLICY IF EXISTS "Allow public insert on subscribers" ON subscribers;
 DROP POLICY IF EXISTS "Allow public select on subscribers" ON subscribers;
 DROP POLICY IF EXISTS "Allow public update on subscribers" ON subscribers;
-CREATE POLICY "Allow public insert on subscribers" ON subscribers FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public select on subscribers" ON subscribers FOR SELECT USING (true);
-CREATE POLICY "Allow public update on subscribers" ON subscribers FOR UPDATE USING (true);
 
+CREATE POLICY "Allow public insert on subscribers" ON subscribers 
+  FOR INSERT WITH CHECK (true);
+
+-- Protect subscriber emails from public scraping: Only service_role or admin can read
+CREATE POLICY "Allow admin read on subscribers" ON subscribers 
+  FOR SELECT USING (
+    auth.role() = 'service_role' OR auth.role() = 'authenticated'
+  );
+
+-- 4. FEEDBACKS / REVIEWS POLICIES
 DROP POLICY IF EXISTS "Allow public insert on feedbacks" ON feedbacks;
 DROP POLICY IF EXISTS "Allow public select on feedbacks" ON feedbacks;
 DROP POLICY IF EXISTS "Allow public update on feedbacks" ON feedbacks;
-CREATE POLICY "Allow public insert on feedbacks" ON feedbacks FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public select on feedbacks" ON feedbacks FOR SELECT USING (true);
-CREATE POLICY "Allow public update on feedbacks" ON feedbacks FOR UPDATE USING (true);
+
+CREATE POLICY "Allow public insert on feedbacks" ON feedbacks 
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public select on feedbacks" ON feedbacks 
+  FOR SELECT USING (verified = true OR auth.role() = 'service_role');

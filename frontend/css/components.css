@@ -1687,42 +1687,251 @@
 }
 
 /* ==========================================================================
-   TOAST NOTIFICATIONS
+/* ==========================================================================
+   MODERN EXECUTIVE TOAST NOTIFICATIONS (POPUP ALERTS)
+   Glassmorphic, Ultra-Neat Notification Engine with Micro-Animations
    ========================================================================== */
-.toast-container {
+.toast-container,
+#toastContainer,
+.admin-toast-container {
   position: fixed;
-  bottom: 2rem;
-  left: 2rem;
-  z-index: 3000;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: column-reverse;
+  gap: 10px;
+  pointer-events: none;
+  max-width: 440px;
+  width: calc(100vw - 36px);
 }
 
-.toast-message {
-  background: #11141A;
-  color: #FFFFFF;
-  padding: 0.75rem 1.25rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
-  box-shadow: var(--shadow-lg);
-  border-left: 4px solid var(--color-gold);
+.toast-card {
+  pointer-events: auto;
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  animation: slideUp 0.3s ease;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(18, 20, 29, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #F8FAFC;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  animation: toastSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
+[data-theme="dark"] .toast-card {
+  background: rgba(14, 16, 24, 0.97);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+}
 
+.toast-card.toast-closing {
+  animation: toastFadeOut 0.24s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Success Type */
+.toast-card.toast-success {
+  border-left: 4px solid #10B981;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+.toast-card.toast-success .toast-icon-wrap {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10B981;
+}
+
+/* Warning Type */
+.toast-card.toast-warning {
+  border-left: 4px solid #F59E0B;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.toast-card.toast-warning .toast-icon-wrap {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #F59E0B;
+}
+
+/* Info / Royal Gold Type */
+.toast-card.toast-info {
+  border-left: 4px solid var(--color-gold, #D4AF37);
+  border-color: rgba(212, 175, 55, 0.35);
+}
+.toast-card.toast-info .toast-icon-wrap {
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: var(--color-gold, #D4AF37);
+}
+
+/* Error / Danger Type */
+.toast-card.toast-error,
+.toast-card.toast-danger {
+  border-left: 4px solid #EF4444;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.toast-card.toast-error .toast-icon-wrap,
+.toast-card.toast-danger .toast-icon-wrap {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+}
+
+/* Icon Container */
+.toast-icon-wrap {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Toast Text Body */
+.toast-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.toast-text {
+  font-size: 0.865rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #F8FAFC;
+  word-break: break-word;
+}
+
+/* Close Button */
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.toast-close-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Auto-dismissing Progress Bar at bottom of card */
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2.5px;
+  width: 100%;
+  background: rgba(212, 175, 55, 0.6);
+  transform-origin: left;
+  animation: toastProgress linear forwards;
+}
+
+.toast-card.toast-success .toast-progress-bar {
+  background: #10B981;
+}
+
+.toast-card.toast-warning .toast-progress-bar {
+  background: #F59E0B;
+}
+
+.toast-card.toast-info .toast-progress-bar {
+  background: var(--color-gold, #D4AF37);
+}
+
+.toast-card.toast-error .toast-progress-bar,
+.toast-card.toast-danger .toast-progress-bar {
+  background: #EF4444;
+}
+
+/* Backwards compatibility for existing .toast-message */
+.toast-message {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(18, 20, 29, 0.96);
+  backdrop-filter: blur(14px);
+  color: #F8FAFC;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--color-gold, #D4AF37);
+  font-size: 0.865rem;
+  font-weight: 600;
+  animation: toastSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+}
+
+@keyframes toastProgress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .toast-container,
+  #toastContainer,
+  .admin-toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+  }
+  .toast-card,
+  .toast-message {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .toast-text {
+    font-size: 0.825rem;
   }
 }
 
@@ -2439,6 +2648,7 @@
   border: none;
   outline: none;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .bulk-stepper-input::-webkit-outer-spin-button,
@@ -3191,6 +3401,15 @@ body.preloader-active {
   overflow: hidden !important;
 }
 
+/* Immediate preloader suppression on internal Home navigation */
+html.st-preloader-skip #sitePreloader,
+html.st-preloader-skip .site-preloader {
+  display: none !important;
+}
+html.st-preloader-skip body.preloader-active {
+  overflow: auto !important;
+}
+
 .site-preloader {
   position: fixed;
   inset: 0;
@@ -3681,6 +3900,24 @@ body.preloader-active {
 
 .preloader-enter-btn:hover .btn-arrow {
   transform: translateX(4px);
+}
+
+/* Enhanced Golden Halo Pulse when Weave completes, inviting user to click ENTER STORE */
+.preloader-enter-btn.ready-pulse {
+  animation: enterBtnReadyPulse 1.8s infinite ease-in-out !important;
+}
+
+@keyframes enterBtnReadyPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+    border-color: #FFF8D6;
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px rgba(212, 175, 55, 0.95), 0 12px 32px rgba(0, 0, 0, 0.7);
+    border-color: #FFFFFF;
+  }
 }
 
 .preloader-hint-text {

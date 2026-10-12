@@ -153,11 +153,5 @@ window.API = API;
 
 // Check backend status on page load
 document.addEventListener("DOMContentLoaded", () => {
-  API.checkHealth().then(status => {
-    if (status) {
-      console.log("⚡ [Srinivasa API] Connected to Backend REST Engine (" + status.databaseEngine + ")");
-    } else {
-      console.info("ℹ️ [Srinivasa API] Operating in Client Fallback Mode (LocalStorage / Supabase).");
-    }
-  });
+  API.checkHealth();
 });

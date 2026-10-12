@@ -478,6 +478,111 @@
       <line x1="8" y1="2" x2="8" y2="6"></line>
       <line x1="3" y1="10" x2="21" y2="10"></line>
       <rect x="7" y="14" width="3" height="3" fill="currentColor"></rect>
+    </svg>`,
+
+    // 61. Plus / Add New
+    plus: `<svg class="svg-icon svg-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>`,
+
+    // 62. Lightning Bolt / Fast Sync
+    bolt: `<svg class="svg-icon svg-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"></polygon>
+    </svg>`,
+
+    // 63. Hourglass / Pending Orders
+    hourglass: `<svg class="svg-icon svg-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2"></path>
+    </svg>`,
+
+    // 64. Warning Triangle / Re-loom Alert
+    warning: `<svg class="svg-icon svg-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <circle cx="12" cy="17" r="0.75" fill="currentColor"></circle>
+    </svg>`,
+
+    // 65. Rocket / Live Publish Launch
+    rocket: `<svg class="svg-icon svg-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+      <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6.05 11a22.35 22.35 0 0 1-3.95 2z"></path>
+      <circle cx="15.5" cy="8.5" r="1.5" fill="currentColor"></circle>
+      <path d="M9 12l2 2"></path>
+    </svg>`,
+
+    // 66. Namaste / Folded Hands Respect
+    namaste: `<svg class="svg-icon svg-namaste" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3a2.5 2.5 0 0 0-2.5 2.5v7l-2.2-2.2a1.8 1.8 0 0 0-2.5 2.5L9.5 17.5A6.5 6.5 0 0 0 14 19.5h1.5a4.5 4.5 0 0 0 4.5-4.5V9.5a1.8 1.8 0 0 0-3.6 0v2.5"></path>
+      <path d="M12 7.5v5"></path>
+    </svg>`,
+
+    // 67. Commercial Building / Wholesale Hub
+    building: `<svg class="svg-icon svg-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+      <line x1="9" y1="22" x2="9" y2="18"></line>
+      <line x1="15" y1="22" x2="15" y2="18"></line>
+      <line x1="8" y1="6" x2="10" y2="6"></line>
+      <line x1="14" y1="6" x2="16" y2="6"></line>
+      <line x1="8" y1="10" x2="10" y2="10"></line>
+      <line x1="14" y1="10" x2="16" y2="10"></line>
+      <line x1="8" y1="14" x2="10" y2="14"></line>
+      <line x1="14" y1="14" x2="16" y2="14"></line>
+    </svg>`,
+
+    // 68. Status Indicator: Live Active (Emerald)
+    statusLive: `<svg class="svg-icon svg-status-live" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="5" fill="#10B981"></circle>
+      <circle cx="12" cy="12" r="8" stroke="#10B981" stroke-width="1.5" opacity="0.4"></circle>
+    </svg>`,
+
+    // 69. Status Indicator: Offline / Hidden (Crimson)
+    statusOff: `<svg class="svg-icon svg-status-off" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="5" fill="#EF4444"></circle>
+      <circle cx="12" cy="12" r="8" stroke="#EF4444" stroke-width="1.5" opacity="0.4"></circle>
+    </svg>`,
+
+    // 70. Pause / Hold
+    pause: `<svg class="svg-icon svg-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"></rect>
+      <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"></rect>
+    </svg>`,
+
+    // 71. Air Cargo / Express Dispatch
+    plane: `<svg class="svg-icon svg-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 20 3c-1-1-3-1-4.5.5L12 7 3.8 5.2a1.2 1.2 0 0 0-1.4 1.4L4.8 12l-2.4 2.4a1 1 0 0 0 0 1.4l2.4 2.4a1 1 0 0 0 1.4 0L8.6 16l5.4 2.4a1.2 1.2 0 0 0 1.4-1.4l-2.4-5.4"></path>
+    </svg>`,
+
+    // 72. Mail / Customer Inquiry
+    mail: `<svg class="svg-icon svg-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+      <path d="M22 6l-10 7L2 6"></path>
+    </svg>`,
+
+    // 73. Target / Sales Goal
+    target: `<svg class="svg-icon svg-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <circle cx="12" cy="12" r="6"></circle>
+      <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+    </svg>`,
+
+    // 74. Globe / Global Export
+    globe: `<svg class="svg-icon svg-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>`,
+
+    // 75. Arrow Up
+    arrowUp: `<svg class="svg-icon svg-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>`,
+
+    // 76. Arrow Down
+    arrowDown: `<svg class="svg-icon svg-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <polyline points="19 12 12 19 5 12"></polyline>
     </svg>`
   };
 
@@ -502,6 +607,8 @@
     '🌟': 'star',
     '⭐': 'star',
     '★': 'star',
+    '☆': 'star',
+    '✦': 'sparkle',
     '🛡️': 'shield',
     '🛡': 'shield',
     '📦': 'box',
@@ -519,7 +626,7 @@
     '👁': 'eye',
     '🗑️': 'trash',
     '🗑': 'trash',
-    '📋': 'copy',
+    '📋': 'fileText',
     '🖨️': 'printer',
     '🖨': 'printer',
     '🎁': 'gift',
@@ -529,14 +636,22 @@
     '📱': 'phone',
     '📲': 'phone',
     '🏰': 'palace',
-    '🏛️': 'palace',
-    '🏛': 'palace',
-    '🏢': 'palace',
-    '🏬': 'palace',
-    '🏠': 'palace',
+    '🏛️': 'building',
+    '🏛': 'building',
+    '🏢': 'building',
+    '🏬': 'building',
+    '🏠': 'building',
+    '🏭': 'building',
     '👨‍👩‍👧‍👦': 'family',
+    '👨': 'mens',
+    '👩': 'ladies',
+    '👧': 'girls',
+    '👦': 'boys',
+    '🥻': 'ladies',
+    '👔': 'mens',
     '🌙': 'themeMoon',
     '☀️': 'themeSun',
+    '☀': 'themeSun',
     '🔒': 'lock',
     '🔓': 'unlock',
     '🚚': 'truck',
@@ -544,6 +659,7 @@
     '🛍️': 'cart',
     '🛍': 'cart',
     '📊': 'chart',
+    '📈': 'chart',
     '📑': 'receipt',
     '📄': 'fileText',
     '💾': 'save',
@@ -556,16 +672,52 @@
     '🎨': 'palette',
     '📅': 'calendar',
     '🕒': 'clock',
-    '⚡': 'sparkle',
+    '⏰': 'clock',
+    '⚡': 'bolt',
     '☰': 'menu',
     '✕': 'close',
+    '✖': 'close',
+    '❌': 'close',
     '✓': 'check',
     '✅': 'check',
     '⚪': 'shield',
-    '🟢': 'check',
-    '🔴': 'flame',
+    '🟢': 'statusLive',
+    '🔴': 'statusOff',
+    '🛑': 'statusOff',
+    '⏸️': 'pause',
+    '⏸': 'pause',
     '🤍': 'favourite',
-    '👔': 'mens'
+    '➕': 'plus',
+    '+': 'plus',
+    '✏️': 'edit',
+    '✏': 'edit',
+    '✍️': 'edit',
+    '🔍': 'search',
+    '🔄': 'refresh',
+    '⏳': 'hourglass',
+    '⌛': 'hourglass',
+    '⚠': 'warning',
+    '⚠️': 'warning',
+    '🚨': 'warning',
+    '🚀': 'rocket',
+    '🙏': 'namaste',
+    '✈️': 'plane',
+    '✈': 'plane',
+    '✉️': 'mail',
+    '✉': 'mail',
+    '🎯': 'target',
+    '📭': 'box',
+    '🌐': 'globe',
+    '🛋️': 'cart',
+    '🛋': 'cart',
+    '🖼️': 'camera',
+    '🖼': 'camera',
+    '➔': 'arrowRight',
+    '▴': 'arrowUp',
+    '▲': 'arrowUp',
+    '▾': 'arrowDown',
+    '▼': 'arrowDown',
+    '🙈': 'eye'
   };
 
   const Icons = {
@@ -685,8 +837,8 @@
       if (typeof document === 'undefined') return;
       const target = root || document;
 
-      // Scan specific icon containers: .kpi-icon, .admin-shortcut-icon, .gold-icon, .menu-icon, .admin-brand-icon, etc.
-      const selectors = '.kpi-icon, .admin-shortcut-icon, .gold-icon, .admin-brand-icon, .lock-brand-icon, .media-uploader-icon, .admin-owner-avatar, .admin-sidebar-mobile-title > span, .admin-silkmark-widget > span';
+      // Scan specific icon containers: .kpi-icon, .admin-shortcut-icon, .admin-stat-icon, .gold-icon, .menu-icon, etc.
+      const selectors = '.kpi-icon, .admin-shortcut-icon, .admin-stat-icon, .gold-icon, .admin-brand-icon, .lock-brand-icon, .media-uploader-icon, .admin-owner-avatar, .admin-sidebar-mobile-title > span, .admin-silkmark-widget > span, .admin-section-title > span, .admin-card-header h3 > span';
       const containers = target.querySelectorAll(selectors);
 
       containers.forEach(el => {
@@ -694,7 +846,8 @@
         if (text && emojiMap[text]) {
           const iconKey = emojiMap[text];
           const svgMarkup = this.get(iconKey, {
-            size: el.classList.contains('admin-brand-icon') ? 22 :
+            size: el.classList.contains('admin-stat-icon') ? 24 :
+                  el.classList.contains('admin-brand-icon') ? 22 :
                   el.classList.contains('lock-brand-icon') ? 34 :
                   el.classList.contains('kpi-icon') ? 26 :
                   el.classList.contains('admin-shortcut-icon') ? 22 :
@@ -707,6 +860,89 @@
           }
         }
       });
+    },
+
+    /**
+     * Universal DOM walker: Converts ANY raw emoji into clean SVG vector icons in .js format
+     * @param {HTMLElement|Document} root
+     */
+    convertAllEmojis(root) {
+      if (typeof document === 'undefined') return;
+      const target = root || document;
+
+      // 1. Run specific element elevation
+      this.elevateEmojiIcons(target);
+
+      // 2. Walk text nodes to replace raw emojis with vector SVGs
+      try {
+        const rootNode = target.body || target;
+        if (!rootNode) return;
+        const walker = document.createTreeWalker(
+          rootNode,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode(node) {
+              if (!node || !node.nodeValue) return NodeFilter.FILTER_REJECT;
+              const parent = node.parentElement;
+              if (!parent) return NodeFilter.FILTER_REJECT;
+              const tag = parent.tagName ? parent.tagName.toLowerCase() : '';
+              if (['script', 'style', 'textarea', 'input', 'option', 'svg', 'code'].includes(tag)) {
+                return NodeFilter.FILTER_REJECT;
+              }
+              if (parent.closest && (parent.closest('[data-svg-elevated]') || parent.closest('.svg-icon'))) {
+                return NodeFilter.FILTER_REJECT;
+              }
+              return /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA00}-\u{1FAFF}]/u.test(node.nodeValue)
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_REJECT;
+            }
+          }
+        );
+
+        const textNodes = [];
+        let cur = walker.nextNode();
+        while (cur) {
+          textNodes.push(cur);
+          cur = walker.nextNode();
+        }
+
+        const emojiRegex = /([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA00}-\u{1FAFF}]+)/gu;
+        textNodes.forEach(node => {
+          const text = node.nodeValue;
+          const parent = node.parentNode;
+          if (!parent) return;
+
+          const fragment = document.createDocumentFragment();
+          let lastIndex = 0;
+          let match;
+
+          while ((match = emojiRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+              fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+            }
+            const raw = match[0].trim();
+            const iconKey = emojiMap[raw] || emojiMap[match[0]];
+            if (iconKey) {
+              const span = document.createElement('span');
+              span.className = 'svg-icon-wrapper svg-elevated-inline';
+              span.setAttribute('data-svg-elevated', 'true');
+              span.innerHTML = Icons.get(iconKey, { size: 16 });
+              fragment.appendChild(span);
+            } else {
+              fragment.appendChild(document.createTextNode(match[0]));
+            }
+            lastIndex = emojiRegex.lastIndex;
+          }
+
+          if (lastIndex < text.length) {
+            fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+          }
+
+          parent.replaceChild(fragment, node);
+        });
+      } catch (err) {
+        // Safe fallback
+      }
     },
 
     /**
@@ -731,8 +967,8 @@
       // 2. Automatically replace legacy jpeg icons with SVG
       this.replaceLegacyImages(target);
 
-      // 3. Automatically elevate raw emojis in cards and badges into vector SVGs
-      this.elevateEmojiIcons(target);
+      // 3. Automatically elevate raw emojis in cards, badges and text into vector SVGs
+      this.convertAllEmojis(target);
     }
   };
 

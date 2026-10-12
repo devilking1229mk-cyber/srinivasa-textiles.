@@ -23,6 +23,7 @@
     prepareElementsForScrollReveal();
     initIntersectionObserver();
     observeDynamicGrids();
+    setupInteractiveAuraAndTabs();
 
     // Listen for site opening preloader completion
     window.addEventListener('siteOpened', () => {
@@ -334,6 +335,68 @@
       card.style.animationDelay = `${Math.min(index * 0.05, 0.6)}s`;
       card.classList.add('animate-in');
     });
+  }
+
+  // ==========================================================================
+  // 7. INTERACTIVE BACKGROUND AURA & TAB MICRO-FEEDBACK
+  // ==========================================================================
+  function setupInteractiveAuraAndTabs() {
+    let auraTicking = false;
+    window.addEventListener('pointermove', (e) => {
+      if (!auraTicking && window.innerWidth > 768) {
+        window.requestAnimationFrame(() => {
+          const x = (e.clientX / window.innerWidth) * 100;
+          const y = (e.clientY / window.innerHeight) * 100;
+          document.documentElement.style.setProperty('--mouse-x', `${x.toFixed(1)}%`);
+          document.documentElement.style.setProperty('--mouse-y', `${y.toFixed(1)}%`);
+          auraTicking = false;
+        });
+        auraTicking = true;
+      }
+    }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+      const tab = e.target.closest(
+        '.dept-link, .bottom-nav-tab, .admin-menu-item, .coupon-filter-tab, ' +
+        '.mobile-dept-btn, .sheet-filter-chip, .filter-pill, .admin-tab-btn, ' +
+        '.status-filter-chip, .admin-status-tabs button, .mobile-fabric-item'
+      );
+      if (!tab) return;
+
+      // 1. Tactile spring physics
+      tab.classList.remove('tab-just-clicked');
+      void tab.offsetWidth;
+      tab.classList.add('tab-just-clicked');
+      setTimeout(() => tab.classList.remove('tab-just-clicked'), 350);
+
+      // 2. Tab icon playful bounce
+      const icon = tab.querySelector('.tab-icon, .dept-nav-img-icon, .menu-icon, .drawer-dept-icon, svg, [data-icon]');
+      if (icon) {
+        icon.classList.remove('st-tab-icon-bounce');
+        void icon.offsetWidth;
+        icon.classList.add('st-tab-icon-bounce');
+        setTimeout(() => icon.classList.remove('st-tab-icon-bounce'), 450);
+      }
+
+      // 3. Luxurious golden ripple wave radiating outward from click/tap point
+      try {
+        const rect = tab.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'st-tab-ripple-wave';
+        const size = Math.max(rect.width, rect.height) * 1.6;
+        ripple.style.width = `${size}px`;
+        ripple.style.height = `${size}px`;
+        const clientX = e.clientX || (rect.left + rect.width / 2);
+        const clientY = e.clientY || (rect.top + rect.height / 2);
+        ripple.style.left = `${clientX - rect.left - size / 2}px`;
+        ripple.style.top = `${clientY - rect.top - size / 2}px`;
+
+        tab.appendChild(ripple);
+        setTimeout(() => {
+          if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
+        }, 550);
+      } catch (err) {}
+    }, { passive: true });
   }
 
   // Expose global helper if storefront.js needs to refresh animations manually

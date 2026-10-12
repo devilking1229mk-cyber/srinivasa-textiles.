@@ -3,15 +3,15 @@
    Rich Aesthetics, Glowing Gold Shimmer & Dedicated Gender Gateways
    ========================================================================== */
 
-/* Section Spacing & Headers */
+/* Section Spacing & Headers - Compact, Clean & Modern Spacing */
 .section {
-  padding: 4.5rem 0;
+  padding: 2.25rem 0;
   position: relative;
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   position: relative;
 }
 
@@ -23,7 +23,7 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-gold-dark);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   background: rgba(212, 175, 55, 0.12);
   padding: 0.25rem 0.85rem;
   border-radius: var(--radius-full);
@@ -36,9 +36,9 @@
 }
 
 .section-title {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   color: var(--color-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -48,19 +48,19 @@
 }
 
 .section-subtitle {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--text-muted);
   max-width: 700px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .section-divider {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  margin: 1.25rem auto 0;
+  gap: 0.85rem;
+  margin: 0.65rem auto 0;
 }
 
 .section-divider::before,
@@ -81,7 +81,7 @@
    ========================================================================== */
 .hero-section {
   position: relative;
-  min-height: 85vh;
+  min-height: 70vh;
   display: flex;
   align-items: center;
   background: #0E0308 url('../assets/images/hero_banner.jpg') no-repeat center center / cover;
@@ -94,19 +94,17 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(14, 2, 7, 0.95) 0%,
-    rgba(32, 4, 15, 0.82) 45%,
-    rgba(15, 1, 6, 0.45) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(14, 2, 7, 0.95) 0%,
+      rgba(32, 4, 15, 0.82) 45%,
+      rgba(15, 1, 6, 0.45) 100%);
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
   max-width: 820px;
-  padding: 4rem 0;
+  padding: 2rem 0;
 }
 
 .hero-pill {
@@ -129,8 +127,13 @@
 }
 
 @keyframes pulseGold {
-  0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-  100% { box-shadow: 0 0 22px rgba(212, 175, 55, 0.5); }
+  0% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  }
+
+  100% {
+    box-shadow: 0 0 22px rgba(212, 175, 55, 0.5);
+  }
 }
 
 .hero-title {
@@ -154,7 +157,7 @@
 .hero-desc {
   font-size: 1.15rem;
   color: #F1E5D8;
-  margin-bottom: 2.25rem;
+  margin-bottom: 1.25rem;
   line-height: 1.65;
   max-width: 700px;
 }
@@ -164,7 +167,7 @@
   gap: 1.25rem;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .hero-actions .btn {
@@ -207,104 +210,164 @@
 .gender-gateways-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.75rem;
-  margin-bottom: 3.5rem;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
 .gender-gateway-card {
+  display: flex;
+  flex-direction: column;
   position: relative;
-  height: 340px;
-  border-radius: var(--radius-lg);
+  height: auto;
+  border-radius: var(--radius-lg, 16px);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1.5px solid var(--border-color, rgba(212, 175, 55, 0.25));
+  background: var(--bg-surface, #ffffff);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s ease,
+              border-color 0.35s ease;
   cursor: pointer;
-  border: 2px solid var(--border-color);
-  transition: all var(--transition-normal);
-  background: #11141A;
+}
+
+[data-theme="dark"] .gender-gateway-card {
+  background: #151923;
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .gender-gateway-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 36px rgba(122, 12, 46, 0.25);
-  border-color: var(--color-gold);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(122, 12, 46, 0.2);
+  border-color: var(--color-gold, #D4AF37);
 }
 
+/* 1. Pristine Uncluttered Product / Model Photograph */
 .gender-gateway-card img {
   width: 100%;
-  height: 100%;
+  height: 220px;
   object-fit: cover;
+  object-position: top center;
+  display: block;
+  flex-shrink: 0;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.gender-badge-pill {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(14, 2, 7, 0.85);
-  color: #FFF2B2;
-  font-size: 0.725rem;
-  font-weight: 800;
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-gold);
-  z-index: 2;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+.gender-gateway-card:hover img {
+  transform: scale(1.04);
 }
 
+/* 2. Floating Badge Pill at Top Corner (Disabled) */
+.gender-badge-pill,
+.bulk-card-badge,
+.bulk-card-discount-tag {
+  display: none !important;
+}
+
+/* 3. Structured Card Body Below Image - ZERO OVERLAP OVER PHOTO */
 .gender-gateway-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(18, 2, 8, 0.94) 100%);
+  position: static;
+  inset: auto;
+  background: var(--bg-surface, #ffffff);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 1.5rem;
-  color: #fff;
-  z-index: 2;
+  flex-grow: 1;
+  padding: 1.15rem 1.25rem 1.25rem;
+  color: var(--text-primary, #1A1A1A);
+  border-top: 1px solid var(--border-color, rgba(212, 175, 55, 0.2));
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .gender-gateway-overlay {
+  background: #151923;
+  color: #FFFFFF;
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .gender-gateway-overlay h3 {
-  font-size: 1.35rem;
-  color: #FFFFFF;
-  margin-bottom: 0.3rem;
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size: 1.15rem;
+  color: var(--color-primary, #7A0C2E);
+  margin: 0 0 0.4rem 0;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+[data-theme="dark"] .gender-gateway-overlay h3 {
+  color: var(--color-gold-light, #FFF2B2);
 }
 
 .gender-gateway-overlay p {
   font-size: 0.825rem;
-  color: #E2D7CC;
-  line-height: 1.4;
-  margin-bottom: 0.6rem;
+  color: var(--text-secondary, #4B5563);
+  line-height: 1.45;
+  margin: 0 0 0.95rem 0;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .gender-gateway-overlay p {
+  color: #D1D5DB;
 }
 
 .gateway-bottom-action {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 0.6rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  margin-top: auto;
+}
+
+[data-theme="dark"] .gateway-bottom-action {
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 .gateway-price-tag {
   font-size: 0.775rem;
-  color: var(--color-gold-light);
-  font-weight: 700;
+  color: var(--color-primary, #7A0C2E);
+  font-weight: 800;
+  background: rgba(122, 12, 46, 0.07);
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid rgba(122, 12, 46, 0.15);
+}
+
+[data-theme="dark"] .gateway-price-tag {
+  color: var(--color-gold, #D4AF37);
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.3);
 }
 
 .gateway-enter-btn {
   font-size: 0.8rem;
-  font-weight: 800;
-  color: #FFF2B2;
-  display: flex;
+  font-weight: 700;
+  color: var(--color-gold, #B45309);
+  display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: transform var(--transition-fast);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+[data-theme="dark"] .gateway-enter-btn {
+  color: #FCD34D;
 }
 
 .gender-gateway-card:hover .gateway-enter-btn {
   transform: translateX(4px);
-  color: var(--color-gold);
+  color: var(--color-primary, #7A0C2E);
+}
+
+[data-theme="dark"] .gender-gateway-card:hover .gateway-enter-btn {
+  color: #FFE680;
 }
 
 /* ==========================================================================
@@ -317,20 +380,24 @@
   border: 2px solid var(--color-gold);
   box-shadow: var(--shadow-lg);
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   align-items: stretch;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2rem;
   width: 100%;
+  height: 500px;
+  min-height: 500px;
+  max-height: 500px;
+  box-sizing: border-box;
 }
 
 .combo-banner-image {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 320px;
-  max-height: 650px;
+  min-height: 100%;
+  max-height: 100%;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   overflow: hidden;
   background: #0f0a0d;
@@ -345,7 +412,7 @@
   background-size: cover;
   background-position: center;
   filter: blur(28px) brightness(0.35) saturate(1.2);
-  opacity: 0.7;
+  opacity: 0.5;
   transform: scale(1.15);
   pointer-events: none;
   z-index: 1;
@@ -355,20 +422,24 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  height: auto;
-  max-height: 650px;
-  object-fit: contain;
+  height: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center;
   display: block;
-  margin: 0 auto;
+  margin: 0;
   transition: transform 0.4s ease;
 }
 
 .combo-banner-content {
-  padding: 3rem;
+  padding: 2rem 2.25rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: var(--bg-surface);
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .combo-badge-tag {
@@ -510,8 +581,8 @@
 .occasions-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.75rem;
-  margin-bottom: 3.5rem;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
 }
 
 .occasion-card {
@@ -545,7 +616,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1.5rem;
+  padding: 1.25rem;
   color: #fff;
 }
 
@@ -569,13 +640,13 @@
   border-radius: var(--radius-lg);
   border: 2px solid var(--color-gold);
   color: #fff;
-  padding: 3rem;
+  padding: 1.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   box-shadow: var(--shadow-lg);
-  margin-top: 3.5rem;
+  margin-top: 2rem;
 }
 
 [data-theme="dark"] .video-shopping-banner {
@@ -596,29 +667,119 @@
 
 /* Responsive */
 @media (max-width: 992px) {
-  .hero-title { font-size: 2.4rem; }
-  .gender-gateways-grid { grid-template-columns: repeat(2, 1fr); }
-  .occasions-grid { grid-template-columns: 1fr; }
-  .family-combo-banner { grid-template-columns: 1fr; }
-  .heritage-story-grid { grid-template-columns: 1fr; }
-  .video-shopping-banner { flex-direction: column; text-align: center; }
-  .hero-stats-row { grid-template-columns: 1fr 1fr; }
+  .hero-title {
+    font-size: 2.4rem;
+  }
+
+  .gender-gateways-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .occasions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .family-combo-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .heritage-story-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .video-shopping-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 680px) {
-  .section { padding: 1.75rem 0; }
-  .hero-content { padding: 0; }
-  .hero-title { font-size: 1.85rem; }
-  .gender-gateways-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.5rem; }
-  .gender-gateway-card,
-  .gateway-card { height: 160px !important; }
-  .gender-gateway-card h3,
-  .gender-gateway-overlay h3,
-  .gateway-card h3 { font-size: 1rem; }
-  .gender-gateway-card p,
-  .gender-gateway-overlay p,
-  .gateway-card p { font-size: 0.72rem; }
-  .hero-stats-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .section {
+    padding: 1rem 0 !important;
+  }
+
+  .hero-content {
+    padding: 0;
+  }
+
+  .hero-title {
+    font-size: 1.85rem;
+  }
+
+  .gender-gateways-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .gender-gateway-card {
+    height: auto !important;
+    border-radius: 14px !important;
+  }
+
+  .gender-gateway-card img {
+    height: 160px !important;
+    object-fit: cover !important;
+    object-position: top center !important;
+  }
+
+  .gender-badge-pill {
+    top: 8px !important;
+    left: 8px !important;
+    font-size: 0.62rem !important;
+    padding: 0.2rem 0.5rem !important;
+  }
+
+  .gender-gateway-overlay {
+    position: static !important;
+    inset: auto !important;
+    padding: 0.75rem 0.75rem 0.85rem !important;
+  }
+
+  .gender-gateway-overlay h3 {
+    font-size: 0.88rem !important;
+    margin-bottom: 0.25rem !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .gender-gateway-overlay p {
+    font-size: 0.68rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 0.6rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .gateway-bottom-action {
+    padding-top: 0.5rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .gateway-price-tag {
+    font-size: 0.68rem !important;
+    padding: 0.15rem 0.35rem !important;
+    white-space: nowrap !important;
+  }
+
+  .gateway-enter-btn {
+    font-size: 0.68rem !important;
+    white-space: nowrap !important;
+  }
+
+  .hero-stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
 
   /* App-Style 2-Column Mobile Product Grid */
   .products-grid {
@@ -714,10 +875,10 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: transform var(--transition-normal),
-              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -732,7 +893,8 @@
 
 .product-image-box {
   position: relative;
-  height: 240px; /* Medium/small height */
+  height: 240px;
+  /* Medium/small height */
   overflow: hidden;
   cursor: pointer;
 }
@@ -777,10 +939,10 @@
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              transform 0.2s ease;
+    color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.2s ease;
 }
 
 .quick-action-btn:hover {
@@ -891,10 +1053,7 @@
   filter: brightness(1.1);
 }
 
-/* Adjust Gateway Card height */
-.gender-gateway-card {
-  height: 240px !important;
-}
+
 
 /* ==========================================================================
    HOMEPAGE DEDICATED SHOWCASE SECTIONS (Building, Founder, Explore CTA)
@@ -983,7 +1142,7 @@
 }
 
 .explore-cta-section {
-  padding: 5rem 0;
+  padding: 2.25rem 0;
   background: linear-gradient(135deg, #2D0310 0%, #5A0825 50%, #1A0209 100%);
   color: #fff;
   position: relative;
@@ -999,32 +1158,32 @@
 .explore-cta-card {
   max-width: 840px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.75rem 1rem;
 }
 
 .explore-cta-card h2 {
   font-family: var(--font-serif-display);
-  font-size: 2.75rem;
+  font-size: 2.25rem;
   color: #FFF2B2;
-  margin: 0.75rem 0 1rem;
+  margin: 0.5rem 0 0.75rem;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 12px rgba(212, 175, 55, 0.3);
 }
 
 .explore-cta-card p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #E2D7CC;
-  line-height: 1.7;
+  line-height: 1.6;
   max-width: 680px;
-  margin: 0 auto 2.25rem;
+  margin: 0 auto 1.5rem;
 }
 
 .btn-explore-hero {
   background: linear-gradient(135deg, #FDE68A 0%, #D4AF37 50%, #B8860B 100%);
   color: #2D0310;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  padding: 1.1rem 2.5rem;
+  padding: 0.85rem 2rem;
   border-radius: var(--radius-full);
   display: inline-flex;
   align-items: center;
@@ -1044,31 +1203,130 @@
 }
 
 @media (max-width: 900px) {
+
   .building-showcase-grid,
   .owner-showcase-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.25rem;
   }
+
   .explore-cta-card h2 {
-    font-size: 2rem;
+    font-size: 1.85rem;
   }
 }
 
 /* ==========================================================================
    FESTIVAL OFFERS & CELEBRATION DEALS SESSION
    ========================================================================== */
+/* 1. Festive Section Ambient Floating Glow */
 .festive-offers-section {
-  background: var(--bg-surface-alt);
+  background: radial-gradient(circle at 50% 10%, rgba(212, 175, 55, 0.07) 0%, transparent 65%), var(--bg-surface-alt);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
-  padding: 4rem 0;
+  padding: 2.25rem 0;
+  overflow: visible !important;
+  position: relative;
+}
+
+/* 2. Carousel Wrapper with Side Navigation Arrows */
+.festive-vouchers-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  overflow: visible;
 }
 
 .festive-vouchers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.25rem;
-  margin-bottom: 3rem;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+/* Activated Carousel Mode (when > 4 vouchers exist or overflowing) */
+.festive-vouchers-carousel-wrapper.has-carousel .festive-vouchers-grid,
+.festive-vouchers-grid.is-carousel {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory !important;
+  scrollbar-width: none !important;
+  gap: 1.25rem !important;
+  padding: 1rem 0.5rem 1.6rem 0.5rem !important;
+  contain: layout paint;
+  will-change: scroll-position;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.festive-vouchers-carousel-wrapper.has-carousel .festive-vouchers-grid::-webkit-scrollbar,
+.festive-vouchers-grid.is-carousel::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Cards inside Carousel */
+.festive-vouchers-carousel-wrapper.has-carousel .festive-voucher-card,
+.festive-vouchers-grid.is-carousel .festive-voucher-card {
+  flex: 0 0 calc((100% - 3.75rem) / 4) !important;
+  min-width: 270px !important;
+  max-width: 320px !important;
+  scroll-snap-align: center !important;
+  scroll-snap-stop: always !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 1200px) {
+
+  .festive-vouchers-carousel-wrapper.has-carousel .festive-voucher-card,
+  .festive-vouchers-grid.is-carousel .festive-voucher-card {
+    flex: 0 0 calc((100% - 2.5rem) / 3) !important;
+    min-width: 260px !important;
+  }
+}
+
+@media (max-width: 860px) {
+
+  .festive-vouchers-carousel-wrapper.has-carousel .festive-voucher-card,
+  .festive-vouchers-grid.is-carousel .festive-voucher-card {
+    flex: 0 0 calc((100% - 1.25rem) / 2) !important;
+    min-width: 240px !important;
+  }
+}
+
+@media (max-width: 580px) {
+
+  .festive-vouchers-carousel-wrapper.has-carousel .festive-vouchers-grid,
+  .festive-vouchers-grid.is-carousel {
+    padding-left: calc((100vw - 82vw) / 2) !important;
+    padding-right: calc((100vw - 82vw) / 2) !important;
+    scroll-padding: 0 calc((100vw - 82vw) / 2) !important;
+  }
+
+  .festive-vouchers-carousel-wrapper.has-carousel .festive-voucher-card,
+  .festive-vouchers-grid.is-carousel .festive-voucher-card {
+    flex: 0 0 82vw !important;
+    width: 82vw !important;
+    max-width: 82vw !important;
+    min-width: 0 !important;
+  }
+}
+
+/* 60fps GPU Hardware-Accelerated Floating Levitation on Voucher Cards */
+@keyframes voucherFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
 }
 
 .festive-voucher-card {
@@ -1081,16 +1339,1092 @@
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast),
-              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08), 0 0 14px rgba(212, 175, 55, 0.16);
+  animation: voucherFloat 4.6s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+/* Stagger floating rhythm across cards */
+.festive-voucher-card:nth-child(2n) {
+  animation-duration: 5.2s;
+  animation-delay: 0.8s;
+}
+
+.festive-voucher-card:nth-child(3n) {
+  animation-duration: 4.8s;
+  animation-delay: 1.6s;
+}
+
+.festive-voucher-card:nth-child(4n) {
+  animation-duration: 5.5s;
+  animation-delay: 2.3s;
 }
 
 .festive-voucher-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+  animation-play-state: paused;
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 20px 42px rgba(212, 175, 55, 0.32), 0 0 30px rgba(212, 175, 55, 0.52) !important;
+}
+
+/* Luxury Circular Side Navigation Arrows */
+.festive-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--bg-surface, #ffffff);
+  border: 1.5px solid var(--color-gold, #D4AF37);
+  color: var(--color-primary, #7A0C2E);
+  display: none;
+  /* Shown dynamically when has-carousel is active */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 25;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16), 0 0 14px rgba(212, 175, 55, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+  outline: none;
+  user-select: none;
+}
+
+.festive-vouchers-carousel-wrapper.has-carousel .festive-carousel-btn {
+  display: flex;
+}
+
+[data-theme="dark"] .festive-carousel-btn {
+  background: #181B26;
+  color: #F5D061;
+  border-color: #F5D061;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(245, 208, 97, 0.3);
+}
+
+.festive-carousel-btn:hover:not(:disabled):not(.disabled) {
+  background: linear-gradient(135deg, #F5D061 0%, #D4AF37 100%);
+  color: #1A0208;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55), 0 0 20px rgba(212, 175, 55, 0.45);
+}
+
+.festive-carousel-btn:active:not(:disabled):not(.disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.festive-carousel-btn:disabled,
+.festive-carousel-btn.disabled {
+  opacity: 0.22;
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+
+.festive-carousel-prev {
+  left: -24px;
+}
+
+.festive-carousel-next {
+  right: -24px;
+}
+
+@media (max-width: 768px) {
+  .festive-carousel-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .festive-carousel-prev {
+    left: -8px;
+  }
+
+  .festive-carousel-next {
+    right: -8px;
+  }
+}
+
+/* Floating Coupon Quick Launcher Button (Circular Logo Only) */
+.floating-coupon-pill-container {
+  position: fixed;
+  bottom: 26px;
+  left: 24px;
+  z-index: 990;
+  pointer-events: auto;
+}
+
+.floating-coupon-pill-container.coupon-session-disabled,
+.floating-coupon-pill-container[hidden],
+.floating-coupon-pill-container[data-session-active="false"] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transform: scale(0.6) translate3d(0, 20px, 0) !important;
+}
+
+@keyframes pillLevitate {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+.floating-coupon-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  background: linear-gradient(135deg, #7A0C2E 0%, #4A051A 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFF2B2;
+  border: 2px solid var(--color-gold, #D4AF37);
+  border-radius: 50%;
+  cursor: pointer;
+  text-decoration: none;
+  animation: pillLevitate 4s ease-in-out infinite;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  box-shadow: 0 10px 26px rgba(122, 12, 46, 0.45), 0 0 18px rgba(212, 175, 55, 0.35);
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.floating-coupon-pill .pill-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  transition: transform 0.25s ease;
+}
+
+.floating-coupon-pill:hover .pill-icon {
+  transform: rotate(-10deg) scale(1.12);
+}
+
+.floating-coupon-pill .pill-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  background: linear-gradient(135deg, #FEF3C7 0%, #F59E0B 100%);
+  color: #1A0208;
+  font-size: 0.72rem;
+  font-weight: 900;
+  border-radius: 999px;
+  border: 1.5px solid #7A0C2E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  line-height: 1;
+}
+
+[data-theme="dark"] .floating-coupon-pill {
+  background: linear-gradient(135deg, rgba(35, 15, 25, 0.98), rgba(15, 17, 24, 0.98));
+  border-color: #F5D061;
+  color: #FDE68A;
+}
+
+[data-theme="dark"] .floating-coupon-pill .pill-badge {
+  border-color: #2D0512;
+}
+
+.floating-coupon-pill:hover {
+  transform: translateY(-4px) scale(1.08);
+  background: linear-gradient(135deg, #9E163E, #7A0C2E);
+  border-color: #FFF2B2;
+  box-shadow: 0 12px 32px rgba(122, 12, 46, 0.65), 0 0 28px rgba(212, 175, 55, 0.7);
+}
+
+.floating-coupon-pill:active {
+  transform: translateY(-1px) scale(0.96);
+}
+
+.floating-coupon-pill::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 175, 55, 0.6);
+  animation: couponPillPulse 2.5s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes couponPillPulse {
+  0% { transform: scale(0.95); opacity: 0.9; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* ==========================================================================
+   EXCLUSIVE COUPON PANEL ENGINE ("Coupon Pop Panel" - Mobile & Desktop UI)
+   Desktop: Luxury Slide-Over Side Drawer
+   Mobile: Ergonomic Pull-Up Bottom Sheet Panel with Drag Handle
+   ========================================================================== */
+.coupon-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+}
+
+.coupon-popup-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.coupon-popup-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 3, 8, 0.76);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  will-change: opacity;
+}
+
+/* Base Panel Dialog: Desktop Slide-Over Drawer */
+.coupon-popup-dialog {
+  position: relative;
+  z-index: 2;
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  height: 100%;
+  max-height: 100vh;
+  background: var(--bg-surface, #FFFFFF);
+  border-left: 2px solid var(--color-gold, #D4AF37);
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4), 0 0 35px rgba(212, 175, 55, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translate3d(100%, 0, 0);
+  transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  cursor: default;
+}
+
+.coupon-popup-overlay.active .coupon-popup-dialog {
+  transform: translate3d(0, 0, 0);
+}
+
+[data-theme="dark"] .coupon-popup-dialog {
+  background: #161017;
+  border-left-color: #F5D061;
+  box-shadow: -25px 0 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(245, 208, 97, 0.2);
+}
+
+/* Mobile Drag Handle (hidden on desktop) */
+.coupon-panel-drag-handle {
+  display: none;
+}
+
+/* Header */
+.coupon-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.4rem;
+  background: linear-gradient(135deg, rgba(122, 12, 46, 0.08) 0%, rgba(212, 175, 55, 0.08) 100%);
+  border-bottom: 1px solid var(--border-color, rgba(212, 175, 55, 0.2));
+  flex-shrink: 0;
+}
+
+.coupon-popup-title-area {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.coupon-popup-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7A0C2E, #4A051A);
+  color: #FDE68A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  border: 1.5px solid var(--color-gold, #D4AF37);
+  box-shadow: 0 4px 14px rgba(122, 12, 46, 0.35);
+  flex-shrink: 0;
+}
+
+.coupon-popup-title {
+  font-family: var(--font-serif-display, Georgia, serif);
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-heading, #1F2937);
+  letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .coupon-popup-title {
+  color: #F9FAFB;
+}
+
+.coupon-popup-subtitle {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted, #6B7280);
+}
+
+.coupon-popup-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color, rgba(0,0,0,0.12));
+  background: var(--bg-surface-alt, #F3F4F6);
+  color: var(--text-heading, #374151);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.coupon-popup-close-btn:hover {
+  background: #DC2626;
+  color: #FFFFFF;
+  border-color: #DC2626;
+  transform: rotate(90deg);
+}
+
+/* Quick Promo Input inside Panel */
+.coupon-panel-apply-box {
+  padding: 0.85rem 1.35rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(122, 12, 46, 0.04));
+  border-bottom: 1px solid var(--border-color, rgba(212, 175, 55, 0.15));
+  flex-shrink: 0;
+}
+
+.coupon-panel-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface, #FFFFFF);
+  border: 1.5px solid var(--color-gold, #D4AF37);
+  border-radius: 12px;
+  padding: 0.3rem 0.4rem 0.3rem 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  gap: 0.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.coupon-panel-input-wrap:focus-within {
+  border-color: var(--color-crimson, #7A0C2E);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+}
+
+[data-theme="dark"] .coupon-panel-input-wrap {
+  background: #201922;
+  border-color: rgba(245, 208, 97, 0.5);
+}
+
+.coupon-input-icon {
+  font-size: 1.1rem;
+}
+
+.coupon-panel-input-wrap input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: monospace, -apple-system, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-heading, #1F2937);
+  min-width: 0;
+}
+
+[data-theme="dark"] .coupon-panel-input-wrap input {
+  color: #FFF2B2;
+}
+
+.coupon-panel-apply-btn {
+  padding: 0.45rem 1rem;
+  background: linear-gradient(135deg, #7A0C2E, #5A0620);
+  color: #FFF2B2;
+  border: 1px solid var(--color-gold, #D4AF37);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.coupon-panel-apply-btn:hover {
+  background: linear-gradient(135deg, #9E163E, #7A0C2E);
+  transform: translateY(-1px);
+}
+
+/* Category Filter Tabs */
+.coupon-panel-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.35rem;
+  background: var(--bg-surface-alt, #F9FAFB);
+  border-bottom: 1px solid var(--border-color, rgba(212, 175, 55, 0.15));
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+}
+
+.coupon-panel-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.coupon-filter-tab {
+  padding: 0.38rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  background: var(--bg-surface, #FFFFFF);
+  color: var(--text-muted, #4B5563);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.coupon-filter-tab:hover {
+  border-color: var(--color-gold, #D4AF37);
+  color: var(--color-primary, #7A0C2E);
+}
+
+.coupon-filter-tab.active {
+  background: linear-gradient(135deg, #7A0C2E, #5A0620);
+  color: #FFF2B2;
+  border-color: var(--color-gold, #D4AF37);
+  box-shadow: 0 2px 8px rgba(122, 12, 46, 0.25);
+}
+
+[data-theme="dark"] .coupon-panel-tabs {
+  background: #1a131c;
+}
+
+[data-theme="dark"] .coupon-filter-tab {
+  background: #231b25;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #D1D5DB;
+}
+
+[data-theme="dark"] .coupon-filter-tab.active {
+  background: linear-gradient(135deg, #9E163E, #7A0C2E);
+  color: #FFF2B2;
+  border-color: #F5D061;
+}
+
+/* Meta Bar */
+.coupon-popup-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1.35rem;
+  background: rgba(212, 175, 55, 0.05);
+  border-bottom: 1px solid var(--border-color, rgba(212, 175, 55, 0.12));
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+.coupon-popup-count-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 700;
+  color: var(--color-crimson, #7A0C2E);
+}
+
+[data-theme="dark"] .coupon-popup-count-chip {
+  color: #FDE68A;
+}
+
+.coupon-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+}
+
+.coupon-popup-hint {
+  color: var(--text-muted, #9CA3AF);
+  font-size: 0.73rem;
+}
+
+/* Scrollable Body */
+.coupon-popup-body {
+  padding: 1.15rem 1.35rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Luxury Voucher Ticket Cards in Panel */
+.coupon-popup-ticket {
+  position: relative;
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.22) 0%, rgba(255, 255, 255, 0.98) 100%);
+  border: 1.5px dashed rgba(212, 175, 55, 0.65);
+  border-radius: 14px;
+  padding: 1.05rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .coupon-popup-ticket {
+  background: linear-gradient(135deg, rgba(32, 22, 28, 0.95) 0%, rgba(22, 18, 24, 0.98) 100%);
+  border-color: rgba(245, 208, 97, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.coupon-popup-ticket:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-gold, #D4AF37);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.22);
+}
+
+.coupon-popup-ticket.ticket-applied {
+  border-style: solid;
+  border-color: #10B981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0.98) 100%);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.18);
+}
+
+[data-theme="dark"] .coupon-popup-ticket.ticket-applied {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(20, 16, 22, 0.98) 100%);
+  border-color: #10B981;
+}
+
+.coupon-popup-ticket.ticket-unavailable {
+  opacity: 0.6;
+  border-style: dotted;
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.coupon-ticket-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.coupon-ticket-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.55rem;
+  background: linear-gradient(135deg, #7A0C2E, #5A0620);
+  color: #FFF2B2;
+  border-radius: 6px;
+  border: 1px solid var(--color-gold, #D4AF37);
+}
+
+.coupon-ticket-expiry {
+  font-size: 0.72rem;
+  color: var(--text-muted, #6B7280);
+  font-weight: 500;
+}
+
+.coupon-ticket-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.coupon-ticket-headline-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.coupon-ticket-value {
+  font-family: var(--font-serif-display, Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-crimson, #7A0C2E);
+}
+
+[data-theme="dark"] .coupon-ticket-value {
+  color: #FDE68A;
+}
+
+.coupon-ticket-title {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-heading, #111827);
+  font-family: var(--font-serif-display, Georgia, serif);
+}
+
+[data-theme="dark"] .coupon-ticket-title {
+  color: #F9FAFB;
+}
+
+.coupon-ticket-desc {
+  margin: 0;
+  font-size: 0.79rem;
+  color: var(--text-muted, #4B5563);
+  line-height: 1.4;
+}
+
+[data-theme="dark"] .coupon-ticket-desc {
+  color: #D1D5DB;
+}
+
+.coupon-ticket-meta-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.coupon-min-order-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #92400E;
+  background: #FEF3C7;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] .coupon-min-order-pill {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FCD34D;
+}
+
+.coupon-min-order-pill.free {
+  color: #065F46;
+  background: #D1FAE5;
+}
+
+[data-theme="dark"] .coupon-min-order-pill.free {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6EE7B7;
+}
+
+/* Action Row */
+.coupon-ticket-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed rgba(212, 175, 55, 0.35);
+  flex-wrap: wrap;
+}
+
+.coupon-ticket-code-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.75rem;
+  background: rgba(122, 12, 46, 0.08);
+  border: 1px dashed rgba(122, 12, 46, 0.35);
+  border-radius: 6px;
+  font-family: monospace, monospace;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-crimson, #7A0C2E);
+  cursor: pointer;
+  user-select: all;
+  transition: all 0.2s ease;
+}
+
+.coupon-ticket-code-tag:hover {
+  background: rgba(122, 12, 46, 0.14);
+  transform: scale(1.02);
+}
+
+[data-theme="dark"] .coupon-ticket-code-tag {
+  background: rgba(245, 208, 97, 0.1);
+  border-color: rgba(245, 208, 97, 0.4);
+  color: #FDE68A;
+}
+
+.code-scissors {
+  font-size: 0.85rem;
+}
+
+.coupon-ticket-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.coupon-ticket-apply-btn {
+  padding: 0.42rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--color-gold, #D4AF37);
+  background: linear-gradient(135deg, #7A0C2E, #5A0620);
+  color: #FFF2B2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.coupon-ticket-apply-btn:hover {
+  background: linear-gradient(135deg, #9E163E, #7A0C2E);
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(122, 12, 46, 0.3);
+}
+
+.coupon-ticket-apply-btn.applied {
+  background: linear-gradient(135deg, #10B981, #059669) !important;
+  color: #FFFFFF !important;
+  border-color: #047857 !important;
+  cursor: default !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.coupon-ticket-copy-btn {
+  padding: 0.42rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: var(--bg-surface-alt, #F9FAFB);
+  color: var(--text-heading, #1A0208);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .coupon-ticket-copy-btn {
+  background: #251e28;
+  color: #F9FAFB;
+}
+
+.coupon-ticket-copy-btn:hover {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  color: #1A0208;
+  border-color: var(--color-gold, #D4AF37);
+}
+
+.coupon-ticket-copy-btn.copied {
+  background: #10B981 !important;
+  color: #FFFFFF !important;
+  border-color: #059669 !important;
+}
+
+/* Panel Footer */
+.coupon-popup-footer {
+  padding: 0.9rem 1.35rem;
+  background: var(--bg-surface-alt, #F9FAFB);
+  border-top: 1px solid var(--border-color, rgba(212, 175, 55, 0.15));
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .coupon-popup-footer {
+  background: #140e16;
+}
+
+.coupon-popup-view-cart-btn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  background: var(--bg-surface, #FFFFFF);
+  color: var(--color-crimson, #7A0C2E);
+  border: 1.5px solid var(--color-gold, #D4AF37);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .coupon-popup-view-cart-btn {
+  background: #201923;
+  color: #FFF2B2;
+}
+
+.coupon-popup-view-cart-btn:hover {
+  background: var(--color-gold, #D4AF37);
+  color: #1A0208;
+  transform: translateY(-1px);
+}
+
+.coupon-popup-view-all-btn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7A0C2E 0%, #4A051A 100%);
+  color: #FFF2B2;
+  border: 1.5px solid var(--color-gold, #D4AF37);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.coupon-popup-view-all-btn:hover {
+  background: linear-gradient(135deg, #9E163E 0%, #7A0C2E 100%);
+  border-color: #FFF2B2;
+  color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(122, 12, 46, 0.4);
+}
+
+.coupon-popup-view-all-btn .btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.coupon-popup-view-all-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Cart Drawer Coupon Trigger Link */
+.cart-view-coupons-link {
+  width: 100%;
+  padding: 0.45rem 0.5rem;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px dashed var(--color-gold, #D4AF37);
+  border-radius: 8px;
+  color: var(--color-crimson, #7A0C2E);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0.35rem 0 0.65rem 0;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .cart-view-coupons-link {
+  background: rgba(245, 208, 97, 0.1);
+  color: #FDE68A;
+}
+
+.cart-view-coupons-link:hover {
+  background: linear-gradient(135deg, #7A0C2E, #5A0620);
+  color: #FFF2B2;
+  border-color: #FFF2B2;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE COUPON PANEL ENGINE (Bottom Sheet Experience)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .coupon-popup-overlay {
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+
+  .coupon-popup-dialog {
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: auto !important;
+    max-height: 88vh !important;
+    min-height: 58vh !important;
+    border-radius: 24px 24px 0 0 !important;
+    border: 1.5px solid var(--color-gold, #D4AF37) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -15px 45px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.3) !important;
+    transform: translate3d(0, 100%, 0) !important;
+    transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  .coupon-popup-overlay.active .coupon-popup-dialog {
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  /* Mobile Top Drag Handle Bar */
+  .coupon-panel-drag-handle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 0 3px 0 !important;
+    width: 100% !important;
+    cursor: grab !important;
+    background: transparent !important;
+    touch-action: none !important;
+  }
+
+  .coupon-drag-bar {
+    width: 44px !important;
+    height: 5px !important;
+    border-radius: 99px !important;
+    background: rgba(212, 175, 55, 0.5) !important;
+  }
+
+  .coupon-popup-header {
+    padding: 0.85rem 1.15rem !important;
+  }
+
+  .coupon-popup-icon-badge {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .coupon-popup-title {
+    font-size: 1.05rem !important;
+  }
+
+  .coupon-popup-close-btn {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 1rem !important;
+  }
+
+  .coupon-panel-apply-box {
+    padding: 0.65rem 1rem !important;
+  }
+
+  .coupon-panel-tabs {
+    padding: 0.5rem 1rem !important;
+  }
+
+  .coupon-popup-meta {
+    padding: 0.55rem 1rem !important;
+  }
+
+  .coupon-popup-body {
+    padding: 0.85rem 1rem !important;
+    max-height: calc(88vh - 270px) !important;
+    gap: 0.85rem !important;
+  }
+
+  .coupon-popup-ticket {
+    padding: 0.9rem 1rem !important;
+  }
+
+  .coupon-ticket-headline-row {
+    flex-direction: column !important;
+    gap: 0.2rem !important;
+  }
+
+  .coupon-ticket-action-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+  }
+
+  .coupon-ticket-code-tag {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .coupon-ticket-buttons {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .coupon-ticket-apply-btn {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 0.55rem 0.75rem !important;
+  }
+
+  .coupon-ticket-copy-btn {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 0.55rem 0.75rem !important;
+  }
+
+  .coupon-popup-footer {
+    padding: 0.75rem 1rem !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .coupon-popup-view-cart-btn,
+  .coupon-popup-view-all-btn {
+    width: 100% !important;
+    padding: 0.6rem 1rem !important;
+  }
+
+  /* Floating Coupon Pop Button on Mobile */
+  .floating-coupon-pill-container {
+    bottom: calc(var(--mobile-bottom-nav-height, 64px) + 16px) !important;
+    left: 14px !important;
+    z-index: 998 !important;
+  }
+
+  body.shop-page .floating-coupon-pill-container {
+    bottom: calc(var(--mobile-bottom-nav-height, 64px) + var(--mobile-sticky-action-height, 52px) + 16px) !important;
+  }
+
+  .floating-coupon-pill {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .floating-coupon-pill .pill-icon {
+    font-size: 1.4rem !important;
+  }
+}
+
+/* Pulsing highlight effect when scrolled into view */
+.festive-section-highlight {
+  animation: sectionHighlightPulse 1.8s ease-out;
+}
+
+@keyframes sectionHighlightPulse {
+  0% {
+    box-shadow: inset 0 0 0 3px rgba(212, 175, 55, 0.9), 0 0 40px rgba(212, 175, 55, 0.5);
+  }
+
+  100% {
+    box-shadow: inset 0 0 0 0 transparent, 0 0 0 transparent;
+  }
 }
 
 .festive-voucher-badge {
@@ -1156,69 +2490,201 @@
   transform: scale(1.05);
 }
 
-/* Festive Deals Grid */
-.festive-deals-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+/* Festive Deals Carousel Wrapper & Inner Curve Styling */
+.festive-deals-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  overflow: visible;
 }
 
+.festive-deals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 0;
+  transition: all 0.35s ease;
+  overflow: visible;
+}
+
+/* Carousel Mode (Active when > 4 products added or screen overflows) */
+.festive-deals-carousel-wrapper.has-carousel .festive-deals-grid,
+.festive-deals-grid.is-carousel {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory !important;
+  scrollbar-width: none !important;
+  gap: 1.25rem !important;
+  padding: 0.75rem 0.5rem 1.4rem 0.5rem !important;
+  contain: layout paint;
+  will-change: scroll-position;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.festive-deals-carousel-wrapper.has-carousel .festive-deals-grid::-webkit-scrollbar,
+.festive-deals-grid.is-carousel::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Cards inside Deals Carousel */
+.festive-deals-carousel-wrapper.has-carousel .festive-deal-card,
+.festive-deals-grid.is-carousel .festive-deal-card {
+  flex: 0 0 calc((100% - 3.75rem) / 4) !important;
+  min-width: 270px !important;
+  max-width: 320px !important;
+  scroll-snap-align: center !important;
+  scroll-snap-stop: always !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 1200px) {
+
+  .festive-deals-carousel-wrapper.has-carousel .festive-deal-card,
+  .festive-deals-grid.is-carousel .festive-deal-card {
+    flex: 0 0 calc((100% - 2.5rem) / 3) !important;
+    min-width: 260px !important;
+  }
+}
+
+@media (max-width: 860px) {
+
+  .festive-deals-carousel-wrapper.has-carousel .festive-deal-card,
+  .festive-deals-grid.is-carousel .festive-deal-card {
+    flex: 0 0 calc((100% - 1.25rem) / 2) !important;
+    min-width: 240px !important;
+  }
+}
+
+@media (max-width: 580px) {
+
+  .festive-deals-carousel-wrapper.has-carousel .festive-deals-grid,
+  .festive-deals-grid.is-carousel {
+    padding-left: calc((100vw - 82vw) / 2) !important;
+    padding-right: calc((100vw - 82vw) / 2) !important;
+    scroll-padding: 0 calc((100vw - 82vw) / 2) !important;
+  }
+
+  .festive-deals-carousel-wrapper.has-carousel .festive-deal-card,
+  .festive-deals-grid.is-carousel .festive-deal-card {
+    flex: 0 0 82vw !important;
+    width: 82vw !important;
+    max-width: 82vw !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Inner Curve Card Aesthetic */
 .festive-deal-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(212, 175, 55, 0.28);
+  border-radius: 22px;
+  /* Smooth luxury outer/inner rounded curve */
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-normal),
-              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              background-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  position: relative;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+[data-theme="dark"] .festive-deal-card {
+  background: #181B26;
+  border-color: rgba(245, 208, 97, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(245, 208, 97, 0.15);
 }
 
 .festive-deal-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 38px rgba(212, 175, 55, 0.25), inset 0 0 0 1.5px var(--color-gold);
   border-color: var(--color-gold);
 }
 
+/* Framed Inner Curve Image Container */
 .festive-deal-media {
   position: relative;
   height: 220px;
+  margin: 10px 10px 0 10px;
+  border-radius: 16px;
+  /* Elegant Inner Curve Framing */
   overflow: hidden;
-  background: #000;
+  background: #111;
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.2), 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .festive-deal-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 16px;
   display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.festive-deal-card:hover .festive-deal-media img {
+  transform: scale(1.06);
 }
 
 .festive-deal-badge {
   position: absolute;
   bottom: 0.75rem;
   left: 0.75rem;
-  background: rgba(45, 3, 16, 0.85);
+  background: rgba(45, 3, 16, 0.88);
   color: #FFF2B2;
-  border: 1px solid var(--color-gold);
+  border: 1.2px solid var(--color-gold);
   font-size: 0.75rem;
   font-weight: 800;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-full);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  /* Pill inner curve */
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .festive-deal-body {
-  padding: 1.5rem;
+  padding: 1.35rem 1.25rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   justify-content: space-between;
+}
+
+.festive-deal-body .btn {
+  border-radius: 14px;
+  /* Matching Inner Curve Pill Button */
+}
+
+/* Deals Navigation Side Arrows */
+.festive-deals-prev {
+  left: -24px;
+}
+
+.festive-deals-next {
+  right: -24px;
+}
+
+.festive-deals-carousel-wrapper.has-carousel .festive-carousel-btn {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .festive-deals-prev {
+    left: -8px;
+  }
+
+  .festive-deals-next {
+    right: -8px;
+  }
 }
 
 .festive-deal-title {
@@ -1306,24 +2772,64 @@
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  padding: 0.45rem 1rem;
-  text-align: center;
+  padding: 0.4rem 0;
   position: relative;
   z-index: 99;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
 }
 
-.festive-ticker-inner {
+.festive-ticker-track-wrap {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 2.5%, #000 97.5%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 2.5%, #000 97.5%, transparent 100%);
+}
+
+.festive-ticker-track {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  animation: festiveTickerGlow 3s infinite ease-in-out;
+  width: max-content;
+  will-change: transform;
+  animation: festiveTickerMarquee 20s linear infinite;
 }
 
-@keyframes festiveTickerGlow {
-  0%, 100% { opacity: 0.95; }
-  50% { opacity: 1; text-shadow: 0 0 10px rgba(255, 242, 178, 0.6); }
+.festive-ticker-track:hover,
+.festive-ticker-track:active {
+  animation-play-state: paused;
+}
+
+.festive-ticker-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-right: 3.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.festive-ticker-sparkle {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.festive-ticker-text {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #FFF2B2;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes festiveTickerMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 .festive-countdown-banner {
@@ -1331,7 +2837,7 @@
   border: 1.5px solid var(--color-gold);
   border-radius: var(--radius-md);
   padding: 1.25rem 2rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1362,52 +2868,77 @@
   color: #FFF2B2;
 }
 
+/* Timer Display Clock Blocks (Horizontal Row on Desktop) */
+.festive-timer-display,
+.sf-festive-timer {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex-wrap: nowrap !important;
+}
+
+.festive-timer-display .timer-box,
 .sf-festive-timer .timer-box {
   background: linear-gradient(145deg, #1C020A, #300414);
   border: 1.5px solid var(--color-gold);
   border-radius: var(--radius-sm);
-  padding: 0.6rem 0.9rem;
+  padding: 0.45rem 0.8rem;
   min-width: 65px;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
+[data-theme="light"] .festive-timer-display .timer-box,
 [data-theme="light"] .sf-festive-timer .timer-box {
   background: #FFFFFF;
   border-color: #D4AF37;
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
 }
 
+.festive-timer-display .timer-box .timer-num,
 .sf-festive-timer .timer-box .timer-num {
   font-family: 'Cinzel', serif;
-  font-size: 1.65rem;
+  font-size: 1.55rem;
   font-weight: 800;
   color: #FFF2B2;
   line-height: 1;
 }
 
+[data-theme="light"] .festive-timer-display .timer-box .timer-num,
 [data-theme="light"] .sf-festive-timer .timer-box .timer-num {
   color: #7A0C2E;
 }
 
+.festive-timer-display .timer-box .timer-lbl,
 .sf-festive-timer .timer-box .timer-lbl {
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   color: var(--color-gold);
   text-transform: uppercase;
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 @media (max-width: 768px) {
   .section {
-    padding: 1.5rem 0 !important;
+    padding: 1rem 0 !important;
   }
+
   .explore-cta-section {
-    padding: 1.75rem 0 !important;
+    padding: 1rem 0 !important;
   }
+
   .festive-offers-section {
-    padding: 1.5rem 0 !important;
+    padding: 1rem 0 !important;
+  }
+
+  .family-combo-carousel-wrap {
+    margin-bottom: 1.25rem !important;
   }
 }
 
@@ -1417,16 +2948,20 @@
 .family-combo-carousel-wrap {
   position: relative;
   width: 100%;
+  height: 500px;
+  min-height: 500px;
+  max-height: 500px;
   border-radius: var(--radius-lg, 12px);
   overflow: hidden;
   box-shadow: var(--shadow-lg, 0 10px 30px rgba(0, 0, 0, 0.35));
   background: var(--bg-surface);
   border: 2px solid var(--color-gold);
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
+  box-sizing: border-box;
 }
 
 /* Inner clip layer so rounded corners still apply */
-.family-combo-carousel-wrap > .family-combo-slides-viewport {
+.family-combo-carousel-wrap>.family-combo-slides-viewport {
   border-radius: inherit;
   overflow: hidden;
 }
@@ -1472,30 +3007,34 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Slides Viewport & Track with Smooth Height Adaptation */
+/* Slides Viewport & Track: fixed stable height, zero jumping or height transitions */
 .family-combo-slides-viewport {
   overflow: hidden;
   position: relative;
   width: 100%;
-  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  height: 100%;
+  min-height: 500px;
+  max-height: 500px;
   border-radius: inherit;
 }
 
 .combo-slides-track {
   display: flex;
   width: 100%;
-  align-items: flex-start;
+  height: 100%;
+  align-items: stretch;
   transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .combo-slide-item {
   width: 100%;
+  height: 100%;
   flex-shrink: 0;
   box-sizing: border-box;
   display: flex;
 }
 
-/* The actual banner inside each slide dynamically adapts its height to the image! */
+/* Stable Default Size across all carousel slides - Immune to image aspect ratio */
 .combo-slide-item .family-combo-banner {
   border: none !important;
   box-shadow: none !important;
@@ -1503,35 +3042,39 @@
   margin-bottom: 0 !important;
   background: transparent !important;
   display: grid !important;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) !important;
   align-items: stretch !important;
-  min-height: auto !important;
   width: 100% !important;
+  height: 500px !important;
+  min-height: 500px !important;
+  max-height: 500px !important;
   padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .combo-slide-item .combo-banner-image {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 320px;
-  max-height: 650px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: #0f0a0d;
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: #0f0a0d !important;
 }
 
 .combo-slide-item .combo-banner-image img {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: auto;
-  max-height: 650px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  margin: 0 !important;
 }
 
 .combo-image-badge {
@@ -1660,49 +3203,101 @@
 }
 
 @media (max-width: 992px) {
+  .family-combo-carousel-wrap {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  .family-combo-slides-viewport {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  .combo-slides-track {
+    height: auto !important;
+    align-items: flex-start !important;
+  }
+
+  .combo-slide-item {
+    height: auto !important;
+  }
+
   .family-combo-banner,
   .combo-slide-item .family-combo-banner {
     grid-template-columns: 1fr !important;
-    min-height: auto !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .combo-slide-item .family-combo-banner {
-    grid-template-columns: 1fr !important;
+    height: auto !important;
     min-height: auto !important;
     max-height: none !important;
     display: flex !important;
     flex-direction: column !important;
   }
+
   .combo-slide-item .combo-banner-image,
   .combo-banner-image {
-    min-height: 220px !important;
-    height: auto !important;
-    max-height: 480px !important;
     width: 100% !important;
+    height: 340px !important;
+    min-height: 340px !important;
+    max-height: 340px !important;
+    flex-shrink: 0 !important;
   }
+
   .combo-slide-item .combo-banner-image img,
   .combo-banner-image img {
     width: 100% !important;
-    height: auto !important;
-    max-height: 460px !important;
-    object-fit: contain !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
     display: block !important;
   }
+
+  .combo-slide-item .combo-banner-content {
+    height: auto !important;
+    overflow-y: visible !important;
+    padding: 1.75rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .combo-slide-item .combo-banner-image,
+  .combo-banner-image {
+    height: 280px !important;
+    min-height: 280px !important;
+    max-height: 280px !important;
+  }
+
   .combo-slide-item .combo-banner-content {
     padding: 1.5rem !important;
   }
+
   .combo-carousel-arrow {
     width: 36px;
     height: 36px;
     font-size: 1rem;
-    /* On mobile, keep arrows inside the card */
     left: auto;
     right: auto;
   }
-  .combo-arrow-prev { left: 8px !important; }
-  .combo-arrow-next { right: 8px !important; }
+
+  .combo-arrow-prev {
+    left: 8px !important;
+  }
+
+  .combo-arrow-next {
+    right: 8px !important;
+  }
 }
 
+@media (max-width: 480px) {
+  .combo-slide-item .combo-banner-image,
+  .combo-banner-image {
+    height: 240px !important;
+    min-height: 240px !important;
+    max-height: 240px !important;
+  }
 
+  .combo-slide-item .combo-banner-content {
+    padding: 1.25rem 1rem !important;
+  }
+}

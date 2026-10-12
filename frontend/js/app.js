@@ -4,18 +4,39 @@
 // ==========================================================================
 // ROYAL OPENING LOGO ANIMATION & SPLASH ENGINE
 // ==========================================================================
+function isPageReload() {
+  try {
+    const navEntries = performance.getEntriesByType && performance.getEntriesByType("navigation");
+    if (navEntries && navEntries.length > 0) {
+      return navEntries[0].type === "reload";
+    }
+    if (window.performance && window.performance.navigation) {
+      return window.performance.navigation.type === 1; // TYPE_RELOAD
+    }
+  } catch (e) {
+    console.warn("Navigation timing check error:", e);
+  }
+  return false;
+}
+
 function initOpeningLogoAnimation(forceReplay = false) {
   const preloader = document.getElementById("sitePreloader");
   if (!preloader) return;
 
-  // If user is navigating back between pages in the same session, enter seamlessly
-  if (!forceReplay && sessionStorage.getItem("st_intro_seen") === "true") {
+  // Check if head already flagged to skip for this single internal navigation
+  const isSkipActive = !forceReplay && document.documentElement.classList.contains("st-preloader-skip");
+  if (isSkipActive) {
+    document.documentElement.classList.remove("st-preloader-skip");
+    sessionStorage.removeItem("st_skip_intro_once");
     preloader.style.display = "none";
     document.body.classList.remove("preloader-active");
     window.dispatchEvent(new CustomEvent("siteOpened"));
     return;
   }
 
+  // Active opening sequence (initial visit or page refresh): ALWAYS PLAY
+  sessionStorage.removeItem("st_skip_intro_once");
+  document.documentElement.classList.remove("st-preloader-skip");
   preloader.style.display = "flex";
   preloader.classList.remove("fade-out", "curtain-open");
   document.body.classList.add("preloader-active");
@@ -31,7 +52,7 @@ function initOpeningLogoAnimation(forceReplay = false) {
     { pct: 30, text: "Spun from Pure Mulberry Silk...", time: 300 },
     { pct: 65, text: "Weaving Zari Borders & Warp...", time: 700 },
     { pct: 90, text: "Silk Mark (SMOI) Authenticated...", time: 1100 },
-    { pct: 100, text: "✨ Heritage Weave Complete • Tap to Enter", time: 1500 }
+    { pct: 100, text: "✨ Heritage Weave Complete • Click ENTER STORE to Explore", time: 1400 }
   ];
 
   let isDismissed = false;
@@ -39,7 +60,6 @@ function initOpeningLogoAnimation(forceReplay = false) {
   const dismissPreloader = () => {
     if (isDismissed) return;
     isDismissed = true;
-    sessionStorage.setItem("st_intro_seen", "true");
 
     if (progressFill) progressFill.style.width = "100%";
     if (statusText) statusText.textContent = "Entering Srinivasa Textiles...";
@@ -68,17 +88,13 @@ function initOpeningLogoAnimation(forceReplay = false) {
       if (isDismissed) return;
       if (progressFill) progressFill.style.width = `${step.pct}%`;
       if (statusText) statusText.textContent = step.text;
+      if (step.pct === 100 && enterBtn) {
+        enterBtn.classList.add("ready-pulse");
+      }
     }, step.time);
   });
 
-  // Auto-reveal the light-themed storefront smoothly once weave completes
-  setTimeout(() => {
-    if (!isDismissed) {
-      dismissPreloader();
-    }
-  }, 1900);
-
-  // ENTER STORE on button click
+  // STRICT REQUIREMENT: DO NOT auto-reveal. The store ONLY opens when the user clicks ENTER STORE!
   if (enterBtn) {
     enterBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -103,7 +119,7 @@ window.replayIntroLogoAnimation = function () {
   initOpeningLogoAnimation(true);
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+function initApp() {
   // Start Opening Logo Animation
   initOpeningLogoAnimation();
 
@@ -144,5 +160,73 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 400);
     }, 6000);
   }
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
+
+// ==========================================================================
+// INSTANT SPECULATIVE PREFETCHER & ZERO-LAG SMOOTH NAVIGATION
+// Pre-caches destination pages on hover/touch for instant 0ms load
+// ==========================================================================
+(function initZeroLagPrefetchEngine() {
+  const prefetched = new Set();
+  function prefetch(url) {
+    if (!url || prefetched.has(url)) return;
+    prefetched.add(url);
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = url;
+    link.as = "document";
+    document.head.appendChild(link);
+  }
+
+  // Preload on idle
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => {
+      prefetch(window.location.pathname.includes("shop.html") ? "index.html" : "shop.html");
+    });
+  } else {
+    setTimeout(() => {
+      prefetch(window.location.pathname.includes("shop.html") ? "index.html" : "shop.html");
+    }, 1200);
+  }
+
+  // Preload immediately on pointer hover or touch start
+  document.addEventListener("pointerover", (e) => {
+    const el = e.target.closest("a[href*='shop.html'], [onclick*='shop.html'], [data-tab-action='shop'], [data-page]");
+    if (el) prefetch("shop.html");
+  }, { passive: true });
+
+  document.addEventListener("touchstart", (e) => {
+    const el = e.target.closest("a[href*='shop.html'], [onclick*='shop.html'], [data-tab-action='shop'], [data-page]");
+    if (el) prefetch("shop.html");
+  }, { passive: true });
+
+  // Intercept clicks leading to shop.html or index.html for a silky smooth fade transition
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("a");
+    if (!link || link.target === "_blank") return;
+    const href = link.getAttribute("href");
+    if (!href) return;
+
+    if (href.startsWith("shop.html") && !window.location.pathname.includes("shop.html")) {
+      e.preventDefault();
+      document.body.classList.add("page-transitioning");
+      setTimeout(() => {
+        window.location.href = href;
+      }, 50);
+    } else if (href === "index.html" && window.location.pathname.includes("shop.html")) {
+      e.preventDefault();
+      sessionStorage.setItem("st_skip_intro_once", "true");
+      document.body.classList.add("page-transitioning");
+      setTimeout(() => {
+        window.location.href = href;
+      }, 50);
+    }
+  });
+})();
 

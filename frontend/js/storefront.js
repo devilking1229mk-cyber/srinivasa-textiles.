@@ -19,13 +19,20 @@ class StorefrontController {
     this.initTheme();
     this.bindEvents();
     this.handleRouteFromHash();
-    this.renderReviews();
-    this.renderHomePageFeatured();
+
+    // Guard home-page exclusive featured list
+    const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+    if (!isShopPage) {
+      this.renderReviews();
+      this.renderHomePageFeatured();
+    }
+
     this.renderFestiveVouchers();
     this.initFestiveCampaignSync();
-    this.renderFestiveCampaign();
+    this.setupFloatingCouponPill();
+    this.syncCouponPopupVisibility();
+    this.initFestiveDealsCarousel();
     this.initBulkOrdersSync();
-    this.renderBulkOrdersSection();
     this.setupBulkInquiryModal();
     this.updateCartUI();
     this.updateWishlistCount();
@@ -36,7 +43,6 @@ class StorefrontController {
     this.setupNotifyModal();
     this.setupDepartmentNavScroll();
     this.initScrollLockEngine();
-    this.renderCollection01Section();
   }
 
   // ==========================================
@@ -75,6 +81,7 @@ class StorefrontController {
       document.querySelector("#lightboxModal.active") ||
       document.querySelector("#searchBarModal.active") ||
       document.querySelector(".search-bar-modal.active") ||
+      document.querySelector("#couponPopupModal.active") ||
       document.querySelector("#familyComboBookingModal.active") ||
       (document.getElementById("familyComboBookingModal") && document.getElementById("familyComboBookingModal").style.display === "flex") ||
       (document.getElementById("feedbackModal") && document.getElementById("feedbackModal").style.display === "flex")
@@ -178,19 +185,26 @@ class StorefrontController {
     document.documentElement.setAttribute("data-theme", activeTheme);
     this.updateThemeButtonUI(activeTheme);
 
+    const handleThemeToggle = (btnEl) => {
+      if (btnEl) btnEl.classList.add("theme-rotating");
+      const newTheme = window.store.toggleTheme();
+      this.updateThemeButtonUI(newTheme);
+      setTimeout(() => {
+        if (btnEl) btnEl.classList.remove("theme-rotating");
+      }, 450);
+      setTimeout(() => {
+        this.showToast(`Switched to ${newTheme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}`, "info");
+      }, 120);
+    };
+
     const toggleBtn = document.getElementById("themeToggleBtn");
     if (toggleBtn) {
-      toggleBtn.addEventListener("click", () => {
-        toggleBtn.classList.add("theme-rotating");
-        const newTheme = window.store.toggleTheme();
-        this.updateThemeButtonUI(newTheme);
-        setTimeout(() => {
-          toggleBtn.classList.remove("theme-rotating");
-        }, 450);
-        setTimeout(() => {
-          this.showToast(`Switched to ${newTheme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}`, "info");
-        }, 120);
-      });
+      toggleBtn.addEventListener("click", () => handleThemeToggle(toggleBtn));
+    }
+
+    const drawerThemeBtn = document.getElementById("mobileDrawerThemeBtn");
+    if (drawerThemeBtn) {
+      drawerThemeBtn.addEventListener("click", () => handleThemeToggle(drawerThemeBtn));
     }
 
     window.addEventListener("themeChanged", (e) => {
@@ -201,18 +215,15 @@ class StorefrontController {
   }
 
   updateThemeButtonUI(theme) {
-    const btn = document.getElementById("themeToggleBtn");
-    if (!btn) return;
-
     const isDark = theme === "dark";
 
     // Hardcoded SVG icons — always render regardless of Icons.js load state
-    const moonSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;">
+    const moonSvg = `<svg class="theme-svg-icon theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      <path d="M19 4v3M20.5 5.5h-3" stroke-width="1.5"/>
+      <path d="M19 4v3M20.5 5.5h-3" stroke-width="1.8"/>
     </svg>`;
 
-    const sunSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;">
+    const sunSvg = `<svg class="theme-svg-icon theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;">
       <circle cx="12" cy="12" r="5"/>
       <line x1="12" y1="1" x2="12" y2="3"/>
       <line x1="12" y1="21" x2="12" y2="23"/>
@@ -227,27 +238,42 @@ class StorefrontController {
     const iconSvg = isDark ? moonSvg : sunSvg;
     const labelText = isDark ? " Dark" : " Light";
 
-    // Smooth icon-swap animation
-    btn.style.transition = "transform 0.18s cubic-bezier(0.34,1.56,0.64,1)";
-    btn.style.transform = "scale(0.88)";
+    // 1. Update Header Button (Both Desktop and Mobile Header)
+    const btn = document.getElementById("themeToggleBtn");
+    if (btn) {
+      btn.style.transition = "transform 0.18s cubic-bezier(0.34,1.56,0.64,1)";
+      btn.style.transform = "scale(0.88)";
 
-    let iconSpan = btn.querySelector(".theme-icon");
-    let labelSpan = btn.querySelector(".theme-label");
+      let iconSpan = btn.querySelector(".theme-icon");
+      let labelSpan = btn.querySelector(".theme-label");
 
-    if (!iconSpan || !labelSpan) {
-      btn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${labelText}</span>`;
-    } else {
-      iconSpan.innerHTML = iconSvg;
-      labelSpan.textContent = labelText;
+      if (!iconSpan || !labelSpan) {
+        btn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${labelText}</span>`;
+      } else {
+        iconSpan.innerHTML = iconSvg;
+        labelSpan.textContent = labelText;
+      }
+
+      btn.setAttribute("title", isDark ? "Current: Dark Mode (Click for Light Mode ☀️)" : "Current: Light Mode (Click for Dark Mode 🌙)");
+      btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
+
+      setTimeout(() => {
+        btn.style.transform = "scale(1)";
+      }, 180);
     }
 
-    btn.setAttribute("title", isDark ? "Current: Dark Mode (Click for Light Mode ☀️)" : "Current: Light Mode (Click for Dark Mode 🌙)");
-    btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
-
-    // Bounce back
-    setTimeout(() => {
-      btn.style.transform = "scale(1)";
-    }, 180);
+    // 2. Update Mobile Drawer Theme Tile
+    const drawerIcon = document.getElementById("mobileDrawerThemeIcon");
+    const drawerLabel = document.getElementById("mobileDrawerThemeLabel");
+    const drawerStatus = document.getElementById("mobileDrawerThemeStatus");
+    if (drawerIcon) drawerIcon.textContent = isDark ? "☀️" : "🌙";
+    if (drawerLabel) drawerLabel.textContent = isDark ? "Switch to Light Mode" : "Switch to Dark Mode";
+    if (drawerStatus) {
+      drawerStatus.textContent = isDark ? "Dark ON" : "Light";
+      drawerStatus.style.background = isDark ? "rgba(245, 208, 97, 0.2)" : "rgba(212, 175, 55, 0.15)";
+      drawerStatus.style.color = isDark ? "#F5D061" : "var(--color-gold, #C59B27)";
+      drawerStatus.style.borderColor = isDark ? "#F5D061" : "var(--color-gold, #C59B27)";
+    }
   }
 
   bindEvents() {
@@ -269,6 +295,7 @@ class StorefrontController {
           this.showToast(`🔄 Promo code "${valRes.coupon.code}" was updated in real time: Now ${benefit}!`, "success");
         }
       }
+      this.syncCouponPopupVisibility();
       this.updateCartUI();
       this.renderFestiveVouchers();
     });
@@ -304,12 +331,19 @@ class StorefrontController {
       bulkNavBtn.addEventListener("click", () => this.scrollToBulkSection());
     }
 
-    // Global Brand Logo Home Link (Always resets to Home page)
+    // Global Brand Logo Home Link (Resets to Home page smoothly)
     const brandLogo = document.getElementById("globalBrandLogo");
     if (brandLogo) {
       brandLogo.addEventListener("click", (e) => {
         e.preventDefault();
-        window.location.href = "index.html";
+        const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
+        if (isShopPage) {
+          sessionStorage.setItem("st_skip_intro_once", "true");
+          window.location.href = "index.html";
+        } else {
+          this.navigateToPage("home");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
       });
     }
 
@@ -711,56 +745,77 @@ class StorefrontController {
   }
 
   // ==========================================
-  // PAGE NAVIGATION & ROUTING
+  // PAGE NAVIGATION & ROUTING (High Performance Zero-Lag)
   // ==========================================
   handleRouteFromHash() {
     const hash = window.location.hash.replace("#", "").toLowerCase();
 
-    // Secret owner access routes: #adminbala
     if (hash === "adminbala" || hash === "admin") {
       const adminTarget = window.location.pathname.includes("/frontend/") ? "adminbala.html" : "frontend/adminbala.html";
       window.location.href = adminTarget;
       return;
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const deptParam = (urlParams.get("dept") || "").toLowerCase().trim();
+    const fabricParam = urlParams.get("fabric");
+
     const validPages = ["home", "explore", "all", "women", "men", "girls", "boys", "infants", "family", "family-combos"];
-    if (hash === "family-combos") {
-      this.navigateToPage("family", false);
+    let targetPage = null;
+
+    if (deptParam && validPages.includes(deptParam)) {
+      targetPage = deptParam;
+    } else if (hash === "family-combos") {
+      targetPage = "family";
     } else if (hash === "bulkordersstoresection" || hash === "bulk-orders") {
       if (window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop")) {
         this.navigateToPage("explore", false);
         setTimeout(() => {
           const sec = document.getElementById("bulkOrdersStoreSection");
           if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 200);
+        }, 60);
+        return;
       } else {
+        document.body.classList.add("page-transitioning");
         window.location.href = "shop.html#bulkOrdersStoreSection";
         return;
       }
     } else if (validPages.includes(hash)) {
-      this.navigateToPage(hash, false);
+      targetPage = hash;
     } else {
       if (window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop")) {
-        this.navigateToPage("explore", false);
+        targetPage = "explore";
       } else {
-        this.navigateToPage("home", false);
+        targetPage = "home";
       }
     }
+
+    if (fabricParam) {
+      this.currentFabricFilter = fabricParam;
+      const fabricSelect = document.getElementById("fabricFilter");
+      if (fabricSelect) fabricSelect.value = fabricParam;
+      if (!deptParam && !hash) targetPage = "all";
+    }
+
+    this.navigateToPage(targetPage, false);
   }
 
   navigateToPage(pageKey, updateHash = true) {
     const isShopPage = window.location.pathname.includes("shop.html") || window.location.pathname.endsWith("/shop");
     const isHomePage = !isShopPage && (window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/") || window.location.pathname.endsWith("/frontend") || window.location.pathname === "");
 
-    // If destination is home and we are not on index.html, navigate there
+    // If destination is home and we are not on index.html, navigate there smoothly
     if (pageKey === "home") {
       if (!isHomePage) {
+        sessionStorage.setItem("st_skip_intro_once", "true");
+        document.body.classList.add("page-transitioning");
         window.location.href = "index.html";
         return;
       }
     } else {
-      // If destination is a shop page and we are not on shop.html, navigate there
+      // If destination is a shop page and we are not on shop.html, navigate there smoothly
       if (!isShopPage) {
+        document.body.classList.add("page-transitioning");
         const destHash = pageKey === "family" ? "family-combos" : pageKey;
         window.location.href = "shop.html#" + destHash;
         return;
@@ -779,23 +834,26 @@ class StorefrontController {
       const p = link.getAttribute("data-page");
       const isActive = p === pageKey;
       link.classList.toggle("active", isActive);
-      if (isActive) {
+      if (isActive && this.hasInitializedPage) {
         setTimeout(() => {
           const scrollWrapper = document.getElementById("deptNavScrollWrapper");
           if (scrollWrapper) {
             link.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
           }
-        }, 60);
+        }, 40);
       }
     });
 
     this.renderCurrentPage();
-    if (updateHash) {
+    if (updateHash && this.hasInitializedPage) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
   renderCurrentPage() {
+    const isInteractive = !!this.hasInitializedPage;
+    this.hasInitializedPage = true;
+
     const homeSections = document.querySelectorAll(".home-only-section");
     const exploreSections = document.querySelectorAll(".explore-only-section");
     const deptBanner = document.getElementById("deptPageBanner");
@@ -812,7 +870,13 @@ class StorefrontController {
       this.renderCollection01Section();
     } else if (this.currentPage === "explore") {
       homeSections.forEach(s => s.style.display = "none");
-      exploreSections.forEach(s => s.style.display = "block");
+      exploreSections.forEach(s => {
+        s.style.display = "block";
+        if (isInteractive) {
+          s.classList.remove("dept-tab-animate");
+          s.classList.add("dept-tab-animate");
+        }
+      });
       if (deptBanner) deptBanner.style.display = "none";
       if (deptCatalogSection) deptCatalogSection.style.display = "none";
       this.renderExploreCollections();
@@ -820,8 +884,20 @@ class StorefrontController {
     } else {
       homeSections.forEach(s => s.style.display = "none");
       exploreSections.forEach(s => s.style.display = "none");
-      if (deptBanner) deptBanner.style.display = "block";
-      if (deptCatalogSection) deptCatalogSection.style.display = "block";
+      if (deptBanner) {
+        deptBanner.style.display = "block";
+        if (isInteractive) {
+          deptBanner.classList.remove("dept-tab-animate");
+          deptBanner.classList.add("dept-tab-animate");
+        }
+      }
+      if (deptCatalogSection) {
+        deptCatalogSection.style.display = "block";
+        if (isInteractive) {
+          deptCatalogSection.classList.remove("dept-tab-animate");
+          deptCatalogSection.classList.add("dept-tab-animate");
+        }
+      }
 
       const deptMeta = this.getDepartmentMeta(this.currentPage);
       if (deptTitle) deptTitle.innerHTML = deptMeta.title;
@@ -830,7 +906,13 @@ class StorefrontController {
 
       if (this.currentPage === "family") {
         const familySec = document.getElementById("familyCombosSection");
-        if (familySec) familySec.style.display = "block";
+        if (familySec) {
+          familySec.style.display = "block";
+          if (isInteractive) {
+            familySec.classList.remove("dept-tab-animate");
+            familySec.classList.add("dept-tab-animate");
+          }
+        }
         this.renderCollection01Section();
       }
 
@@ -1507,7 +1589,20 @@ class StorefrontController {
         e.preventDefault();
         if (authErrorMsg) authErrorMsg.style.display = "none";
         modal.classList.add("active");
-        if (usernameInput) usernameInput.focus();
+        if (usernameInput) {
+          usernameInput.setAttribute("autocomplete", "off");
+          usernameInput.setAttribute("data-lpignore", "true");
+          usernameInput.value = "";
+          setTimeout(() => {
+            usernameInput.removeAttribute("readonly");
+            usernameInput.focus();
+          }, 50);
+        }
+        if (passwordInput) {
+          passwordInput.setAttribute("autocomplete", "new-password");
+          passwordInput.setAttribute("data-lpignore", "true");
+          passwordInput.value = "";
+        }
       });
     }
 
@@ -1519,7 +1614,8 @@ class StorefrontController {
       togglePassBtn.addEventListener("click", () => {
         const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
         passwordInput.setAttribute("type", type);
-        togglePassBtn.textContent = type === "password" ? "👁️" : "🙈";
+        const iconName = type === "password" ? "eye" : "eye";
+        togglePassBtn.innerHTML = window.Icons ? window.Icons.get(iconName, { size: 14 }) : (type === "password" ? "Show" : "Hide");
       });
     }
 
@@ -2141,70 +2237,126 @@ class StorefrontController {
     this.updateCartUI();
   }
 
-  renderFestiveVouchers() {
-    const grid = document.getElementById("festiveVouchersGrid");
-    if (!grid) return;
-
-    if (!window.store) return;
-
+  getCombinedCouponsList() {
+    if (!window.store) return [];
     const liveCoupons = window.store.getCoupons() || [];
     const deletedCoupons = window.store.getDeletedCoupons() || [];
+    const campaign = (typeof window.store.getFestiveCampaign === "function") ? window.store.getFestiveCampaign() : null;
+    const campaignOffers = (campaign && Array.isArray(campaign.offers)) ? campaign.offers : [];
 
-    // The key festive vouchers from the storefront offer cards
-    const festivePreferredCodes = ["FESTIVE20", "BRIDAL15", "KIDSGIFT", "PREPAID500"];
+    const map = new Map();
 
-    let itemsToDisplay = [];
-
-    // 1. Add all live coupons that are turned ON (isActive === true)
-    // When turned OFF, the coupon is completely removed from the main store page!
-    const activeCoupons = liveCoupons.filter(c => c.isActive);
-    activeCoupons.forEach(c => {
-      itemsToDisplay.push({ coupon: c, isDeleted: false });
-    });
-
-    // 2. Add deleted coupons so they explicitly show as "Not Available" right where they were
-    deletedCoupons.forEach(dc => {
-      if (!itemsToDisplay.some(item => (item.coupon.code || "").toUpperCase() === (dc.code || "").toUpperCase())) {
-        itemsToDisplay.push({ coupon: dc, isDeleted: true });
+    // 1. Add all active coupons from window.store.getCoupons()
+    liveCoupons.filter(c => c && c.isActive).forEach(c => {
+      const code = (c.code || "").toUpperCase().trim();
+      if (code) {
+        map.set(code, {
+          id: c.id,
+          code: c.code,
+          badge: c.badge || (c.discountType === "flat" ? `FLAT ₹${c.discountAmount} OFF` : `${c.discountPercent}% OFF SPECIAL`),
+          title: c.title || `${c.code} Special Savings`,
+          description: c.description || (c.minOrderValue > 0 ? `Valid on orders over ₹${c.minOrderValue.toLocaleString('en-IN')}.` : 'Exclusive handloom silk privilege savings.'),
+          discount: c.discountType === "flat" ? `₹${c.discountAmount} OFF` : `${c.discountPercent}% OFF`,
+          discountType: c.discountType || (c.discountPercent > 0 ? "percent" : "flat"),
+          discountAmount: c.discountAmount || 0,
+          discountPercent: c.discountPercent || 0,
+          minOrderValue: c.minOrderValue || 0,
+          maxDiscount: c.maxDiscount || null,
+          isActive: true,
+          isDeleted: false,
+          validUntil: c.validUntil || ""
+        });
       }
     });
 
-    // 3. Sort so festive codes appear first in order, followed by other active coupons
-    itemsToDisplay.sort((a, b) => {
-      const codeA = (a.coupon.code || "").toUpperCase();
-      const codeB = (b.coupon.code || "").toUpperCase();
-      const idxA = festivePreferredCodes.indexOf(codeA);
-      const idxB = festivePreferredCodes.indexOf(codeB);
+    // 2. Add or overlay campaign offers from Festive Specials
+    campaignOffers.filter(o => o && o.isActive !== false).forEach(o => {
+      const code = (o.code || "").toUpperCase().trim();
+      if (code) {
+        const existing = map.get(code) || {};
+        map.set(code, {
+          id: o.id || existing.id,
+          code: o.code || existing.code,
+          badge: o.badge || existing.badge || "Festive Offer",
+          title: o.title || existing.title || "Festive Discount",
+          description: o.description || existing.description || "Special celebratory voucher for family handlooms.",
+          discount: o.discount || existing.discount || "Special Offer",
+          discountType: existing.discountType || (o.discount && o.discount.includes("%") ? "percent" : "flat"),
+          discountAmount: existing.discountAmount || 0,
+          discountPercent: existing.discountPercent || 0,
+          minOrderValue: existing.minOrderValue || 0,
+          maxDiscount: existing.maxDiscount || null,
+          isActive: true,
+          isDeleted: false,
+          validUntil: o.validUntil || existing.validUntil || ""
+        });
+      }
+    });
+
+    // 3. Mark deleted coupons explicitly if not active
+    deletedCoupons.forEach(dc => {
+      const code = (dc.code || "").toUpperCase().trim();
+      if (code && !map.has(code)) {
+        map.set(code, {
+          id: dc.id,
+          code: dc.code,
+          badge: "⚠️ NOT AVAILABLE",
+          title: dc.title || `${dc.code} Special Offer`,
+          description: "Removed by Store Management",
+          discount: "Not Available",
+          isActive: false,
+          isDeleted: true
+        });
+      }
+    });
+
+    // Order: canonical 4 festive preferred codes first, followed by any additional codes
+    const festivePreferredCodes = ["FESTIVE20", "BRIDAL15", "KIDSGIFT", "PREPAID500"];
+    const list = Array.from(map.values());
+
+    list.sort((a, b) => {
+      const idxA = festivePreferredCodes.indexOf((a.code || "").toUpperCase());
+      const idxB = festivePreferredCodes.indexOf((b.code || "").toUpperCase());
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
       if (idxA !== -1) return -1;
       if (idxB !== -1) return 1;
       return 0;
     });
 
-    // Take top 8 cards for clean grid presentation
-    itemsToDisplay = itemsToDisplay.slice(0, 8);
+    return list;
+  }
+
+  renderFestiveVouchers() {
+    const grid = document.getElementById("festiveVouchersGrid");
+    if (!grid) return;
+
+    if (!window.store) return;
+
+    const itemsToDisplay = this.getCombinedCouponsList();
 
     if (itemsToDisplay.length === 0) {
       grid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; background: var(--bg-surface-alt); border-radius: var(--radius-md); border: 1.5px dashed var(--border-color); color: var(--text-muted);">
+        <div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 2.5rem 1rem; background: var(--bg-surface-alt); border-radius: var(--radius-md); border: 1.5px dashed var(--border-color); color: var(--text-muted);">
           <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🏷️</span>
           <h4 style="margin: 0 0 0.35rem 0; color: var(--text-heading); font-family: var(--font-serif-display);">Festive Offers Update</h4>
           <p style="margin: 0; font-size: 0.85rem;">Seasonal vouchers are currently undergoing updates. Check back soon!</p>
         </div>
       `;
+      this.initFestiveVouchersCarousel();
+      this.updateFloatingCouponPill(0);
       return;
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    grid.innerHTML = itemsToDisplay.map(({ coupon: c, isDeleted }) => {
+    grid.innerHTML = itemsToDisplay.map((c, idx) => {
       const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
-      const isUnavailable = isDeleted || !c.isActive || isExpired;
+      const isUnavailable = c.isDeleted || !c.isActive || isExpired;
 
       const badgeText = isUnavailable
         ? "⚠️ NOT AVAILABLE"
-        : (c.badge || (c.discountType === "flat" ? "SPECIAL PRIVILEGE" : "FESTIVE OFFER"));
+        : (c.badge || "FESTIVE OFFER");
 
       const badgeStyle = isUnavailable
         ? "background: linear-gradient(135deg, #DC2626, #EF4444); color: #FFF;"
@@ -2216,28 +2368,31 @@ class StorefrontController {
         : "";
 
       const titleHtml = isUnavailable
-        ? `<h4 style="text-decoration: line-through; color: var(--text-muted); opacity: 0.85;">${c.title}</h4>`
-        : `<h4>${c.title}</h4>`;
+        ? `<h4 style="text-decoration: line-through; color: var(--text-muted); opacity: 0.85;">${this.escapeHtml(c.title)}</h4>`
+        : `<h4>${this.escapeHtml(c.title)}</h4>`;
 
       const descHtml = isUnavailable
-        ? `<p style="color: #DC2626; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.82rem;">⚠️ This coupon code is Not Available (${isDeleted ? 'Removed by Store Management' : (isExpired ? 'Expired' : 'Temporarily Disabled')})</p>
-           <p style="text-decoration: line-through; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">${c.description || ''}</p>`
-        : `<p>${c.description || (c.minOrderValue > 0 ? `Valid on orders over ₹${c.minOrderValue.toLocaleString('en-IN')}.` : 'Exclusive handloom silk privilege savings.')}</p>`;
+        ? `<p style="color: #DC2626; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.82rem;">⚠️ This coupon code is Not Available (${c.isDeleted ? 'Removed by Store Management' : (isExpired ? 'Expired' : 'Temporarily Disabled')})</p>
+           <p style="text-decoration: line-through; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">${this.escapeHtml(c.description || '')}</p>`
+        : `<p>${this.escapeHtml(c.description || 'Exclusive handloom silk privilege savings.')}</p>`;
 
       const codeRowHtml = isUnavailable
         ? `<div class="festive-code-row" style="border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.08);">
-            <span class="festive-code-text" style="text-decoration: line-through; color: #DC2626; opacity: 0.75;">${c.code}</span>
+            <span class="festive-code-text" style="text-decoration: line-through; color: #DC2626; opacity: 0.75;">${this.escapeHtml(c.code)}</span>
             <button type="button" class="festive-copy-btn disabled" disabled style="background: rgba(239, 68, 68, 0.15); color: #DC2626; border: 1px solid rgba(239, 68, 68, 0.4); cursor: not-allowed; opacity: 0.9; font-weight: 700;">Not Available</button>
            </div>`
         : `<div class="festive-code-row">
-            <span class="festive-code-text">${c.code}</span>
+            <span class="festive-code-text">${this.escapeHtml(c.code)}</span>
             <button type="button" class="festive-copy-btn"
-              onclick="navigator.clipboard?.writeText('${c.code}'); window.storefront.showToast('Copied voucher code ${c.code}!', 'success');">Copy Code</button>
+              onclick="navigator.clipboard?.writeText('${this.escapeHtml(c.code)}'); window.storefront.showToast('Copied voucher code ${this.escapeHtml(c.code)}!', 'success');">Copy Code</button>
            </div>`;
 
+      // Floating animation staggered delay for organic float wave
+      const floatDelay = ((idx % 4) * 0.5).toFixed(2);
+
       return `
-        <div class="${cardClass}" style="${cardStyle}">
-          <span class="festive-voucher-badge" style="${badgeStyle}">${badgeText}</span>
+        <div class="${cardClass}" style="${cardStyle} animation-delay: ${floatDelay}s;">
+          <span class="festive-voucher-badge" style="${badgeStyle}">${this.escapeHtml(badgeText)}</span>
           <div class="festive-voucher-content">
             ${titleHtml}
             ${descHtml}
@@ -2246,41 +2401,831 @@ class StorefrontController {
         </div>
       `;
     }).join("");
+
+    this.initFestiveVouchersCarousel();
+    this.updateFloatingCouponPill(itemsToDisplay.filter(c => !c.isDeleted && c.isActive).length);
+  }
+
+  initFestiveVouchersCarousel() {
+    const wrapper = document.getElementById("festiveVouchersCarouselWrapper") || document.querySelector(".festive-vouchers-carousel-wrapper");
+    const grid = document.getElementById("festiveVouchersGrid") || (wrapper && wrapper.querySelector(".festive-vouchers-grid"));
+    if (!grid) return;
+
+    const prevBtn = document.getElementById("festiveVouchersPrevBtn") || (wrapper && wrapper.querySelector(".festive-carousel-prev"));
+    const nextBtn = document.getElementById("festiveVouchersNextBtn") || (wrapper && wrapper.querySelector(".festive-carousel-next"));
+
+    const cards = grid.querySelectorAll(".festive-voucher-card");
+    const count = cards.length;
+
+    let isCarouselActive = false;
+
+    const syncCarouselMode = () => {
+      const isOverflowing = grid.scrollWidth > grid.clientWidth + 8;
+      isCarouselActive = count > 4 || isOverflowing;
+
+      if (wrapper) {
+        wrapper.classList.toggle("has-carousel", isCarouselActive);
+        grid.classList.toggle("is-carousel", isCarouselActive);
+      }
+
+      if (prevBtn && nextBtn) {
+        prevBtn.style.display = isCarouselActive ? "flex" : "none";
+        nextBtn.style.display = isCarouselActive ? "flex" : "none";
+      }
+
+      syncArrows();
+    };
+
+    const syncArrows = () => {
+      if (!isCarouselActive || !prevBtn || !nextBtn) return;
+      const atStart = grid.scrollLeft <= 4;
+      const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 8;
+
+      if (prevBtn.disabled !== atStart) {
+        prevBtn.disabled = atStart;
+        prevBtn.classList.toggle("disabled", atStart);
+      }
+      if (nextBtn.disabled !== atEnd) {
+        nextBtn.disabled = atEnd;
+        nextBtn.classList.toggle("disabled", atEnd);
+      }
+    };
+
+    const getCardList = () => Array.from(grid.querySelectorAll(".festive-voucher-card"));
+
+    const getClosestCardIndex = () => {
+      const cardList = getCardList();
+      if (!cardList.length) return 0;
+      const gridRect = grid.getBoundingClientRect();
+      const gridCenter = gridRect.left + gridRect.width / 2;
+      let closestIdx = 0;
+      let minDiff = Infinity;
+      cardList.forEach((card, idx) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const diff = Math.abs(cardCenter - gridCenter);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = idx;
+        }
+      });
+      return closestIdx;
+    };
+
+    const scrollToCardIndex = (targetIdx) => {
+      const cardList = getCardList();
+      if (!cardList.length) return;
+      const safeIdx = Math.max(0, Math.min(targetIdx, cardList.length - 1));
+      cardList[safeIdx].scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+      });
+      setTimeout(syncArrows, 400);
+    };
+
+    if (prevBtn && !prevBtn._boundCarousel) {
+      prevBtn._boundCarousel = true;
+      prevBtn.addEventListener("click", () => {
+        const curr = getClosestCardIndex();
+        scrollToCardIndex(curr - 1);
+      });
+    }
+
+    if (nextBtn && !nextBtn._boundCarousel) {
+      nextBtn._boundCarousel = true;
+      nextBtn.addEventListener("click", () => {
+        const curr = getClosestCardIndex();
+        scrollToCardIndex(curr + 1);
+      });
+    }
+
+    if (!grid._boundCarouselScroll) {
+      grid._boundCarouselScroll = true;
+      let scrollTicking = false;
+      grid.addEventListener("scroll", () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          requestAnimationFrame(() => {
+            syncArrows();
+            scrollTicking = false;
+          });
+        }
+      }, { passive: true });
+    }
+
+    if (!window._festiveCarouselResizeBound) {
+      window._festiveCarouselResizeBound = true;
+      let resizeTicking = false;
+      window.addEventListener("resize", () => {
+        if (!resizeTicking) {
+          resizeTicking = true;
+          requestAnimationFrame(() => {
+            syncCarouselMode();
+            resizeTicking = false;
+          });
+        }
+      }, { passive: true });
+    }
+
+    syncCarouselMode();
+    requestAnimationFrame(syncCarouselMode);
+  }
+
+  initFestiveDealsCarousel() {
+    const wrapper = document.getElementById("festiveDealsCarouselWrapper") || document.querySelector(".festive-deals-carousel-wrapper");
+    const grid = document.getElementById("festiveDealsGrid") || (wrapper && wrapper.querySelector(".festive-deals-grid"));
+    if (!grid) return;
+
+    const prevBtn = document.getElementById("festiveDealsPrevBtn") || (wrapper && wrapper.querySelector(".festive-deals-prev"));
+    const nextBtn = document.getElementById("festiveDealsNextBtn") || (wrapper && wrapper.querySelector(".festive-deals-next"));
+
+    const cards = grid.querySelectorAll(".festive-deal-card");
+    const count = cards.length;
+
+    let isDealsCarouselActive = false;
+
+    const syncDealsCarouselMode = () => {
+      const isOverflowing = grid.scrollWidth > grid.clientWidth + 8;
+      isDealsCarouselActive = count > 4 || isOverflowing;
+
+      if (wrapper) {
+        wrapper.classList.toggle("has-carousel", isDealsCarouselActive);
+        grid.classList.toggle("is-carousel", isDealsCarouselActive);
+      }
+
+      if (prevBtn && nextBtn) {
+        prevBtn.style.display = isDealsCarouselActive ? "flex" : "none";
+        nextBtn.style.display = isDealsCarouselActive ? "flex" : "none";
+      }
+
+      syncDealsArrows();
+    };
+
+    const syncDealsArrows = () => {
+      if (!isDealsCarouselActive || !prevBtn || !nextBtn) return;
+      const atStart = grid.scrollLeft <= 4;
+      const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 8;
+
+      if (prevBtn.disabled !== atStart) {
+        prevBtn.disabled = atStart;
+        prevBtn.classList.toggle("disabled", atStart);
+      }
+      if (nextBtn.disabled !== atEnd) {
+        nextBtn.disabled = atEnd;
+        nextBtn.classList.toggle("disabled", atEnd);
+      }
+    };
+
+    const getDealsCardList = () => Array.from(grid.querySelectorAll(".festive-deal-card"));
+
+    const getClosestDealsCardIndex = () => {
+      const cardList = getDealsCardList();
+      if (!cardList.length) return 0;
+      const gridRect = grid.getBoundingClientRect();
+      const gridCenter = gridRect.left + gridRect.width / 2;
+      let closestIdx = 0;
+      let minDiff = Infinity;
+      cardList.forEach((card, idx) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const diff = Math.abs(cardCenter - gridCenter);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = idx;
+        }
+      });
+      return closestIdx;
+    };
+
+    const scrollToDealsCardIndex = (targetIdx) => {
+      const cardList = getDealsCardList();
+      if (!cardList.length) return;
+      const safeIdx = Math.max(0, Math.min(targetIdx, cardList.length - 1));
+      cardList[safeIdx].scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+      });
+      setTimeout(syncDealsArrows, 400);
+    };
+
+    if (prevBtn && !prevBtn._boundDealsCarousel) {
+      prevBtn._boundDealsCarousel = true;
+      prevBtn.addEventListener("click", () => {
+        const curr = getClosestDealsCardIndex();
+        scrollToDealsCardIndex(curr - 1);
+      });
+    }
+
+    if (nextBtn && !nextBtn._boundDealsCarousel) {
+      nextBtn._boundDealsCarousel = true;
+      nextBtn.addEventListener("click", () => {
+        const curr = getClosestDealsCardIndex();
+        scrollToDealsCardIndex(curr + 1);
+      });
+    }
+
+    if (!grid._boundDealsScroll) {
+      grid._boundDealsScroll = true;
+      let scrollTicking = false;
+      grid.addEventListener("scroll", () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          requestAnimationFrame(() => {
+            syncDealsArrows();
+            scrollTicking = false;
+          });
+        }
+      }, { passive: true });
+    }
+
+    if (!window._festiveDealsResizeBound) {
+      window._festiveDealsResizeBound = true;
+      let resizeTicking = false;
+      window.addEventListener("resize", () => {
+        if (!resizeTicking) {
+          resizeTicking = true;
+          requestAnimationFrame(() => {
+            syncDealsCarouselMode();
+            resizeTicking = false;
+          });
+        }
+      }, { passive: true });
+    }
+
+    syncDealsCarouselMode();
+    requestAnimationFrame(syncDealsCarouselMode);
+  }
+
+  setupFloatingCouponPill() {
+    const pill = document.getElementById("floatingCouponPill");
+    if (pill && !pill._boundCouponPill) {
+      pill._boundCouponPill = true;
+      let lastTrigger = 0;
+      const handleTrigger = (e) => {
+        const now = Date.now();
+        if (now - lastTrigger < 350) return;
+        lastTrigger = now;
+        e.preventDefault();
+        this.openCouponPopup();
+      };
+      pill.addEventListener("click", handleTrigger);
+      pill.addEventListener("touchend", handleTrigger, { passive: false });
+    }
+
+    // Bind any global coupon triggers (e.g. cart drawer "Browse All Coupons" button)
+    document.querySelectorAll(".cart-view-coupons-link, .open-coupon-panel-btn, [data-action='open-coupons']").forEach(btn => {
+      if (!btn._boundCouponOpen) {
+        btn._boundCouponOpen = true;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.openCouponPopup();
+        });
+      }
+    });
+
+    // Panel overlay click: clicking on backdrop closes the panel smoothly
+    const modal = document.getElementById("couponPopupModal");
+    if (modal && !modal._boundOverlayClose) {
+      modal._boundOverlayClose = true;
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal || e.target.id === "couponPopupBackdrop") {
+          e.preventDefault();
+          this.closeCouponPopup();
+        }
+      });
+    }
+
+    // Bind Close button and Backdrop clicks
+    const closeBtn = document.getElementById("couponPopupCloseBtn");
+    if (closeBtn && !closeBtn._bound) {
+      closeBtn._bound = true;
+      closeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.closeCouponPopup();
+      });
+    }
+
+    const backdrop = document.getElementById("couponPopupBackdrop");
+    if (backdrop && !backdrop._bound) {
+      backdrop._bound = true;
+      backdrop.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.closeCouponPopup();
+      });
+    }
+
+    // Bind Footer "View Shopping Bag" button
+    const viewCartBtn = document.getElementById("couponPopupViewCartBtn");
+    if (viewCartBtn && !viewCartBtn._bound) {
+      viewCartBtn._bound = true;
+      viewCartBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.closeCouponPopup();
+        setTimeout(() => {
+          this.openCartDrawer();
+        }, 180);
+      });
+    }
+
+    // Bind Footer "View Festive Showcase" button
+    const scrollBtn = document.getElementById("couponPopupScrollBtn");
+    if (scrollBtn && !scrollBtn._bound) {
+      scrollBtn._bound = true;
+      scrollBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.closeCouponPopup();
+        const section = document.getElementById("festiveOffersSection") || document.getElementById("festiveVouchersCarouselWrapper");
+        if (section && section.style.display !== "none") {
+          setTimeout(() => {
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+            section.classList.add("festive-section-highlight");
+            setTimeout(() => section.classList.remove("festive-section-highlight"), 2000);
+          }, 150);
+        } else {
+          window.location.href = "shop.html#festiveOffersSection";
+        }
+      });
+    }
+
+    // Bind Category Filter Tabs in Panel
+    const tabsContainer = document.getElementById("couponPanelTabs");
+    if (tabsContainer && !tabsContainer._bound) {
+      tabsContainer._bound = true;
+      tabsContainer.addEventListener("click", (e) => {
+        const tabBtn = e.target.closest(".coupon-filter-tab");
+        if (!tabBtn) return;
+        e.preventDefault();
+        tabsContainer.querySelectorAll(".coupon-filter-tab").forEach(t => t.classList.remove("active"));
+        tabBtn.classList.add("active");
+        const filter = tabBtn.getAttribute("data-filter") || "all";
+        this.renderCouponPopupList(filter);
+      });
+    }
+
+    // Bind Direct Promo Input inside Panel
+    const directApplyBtn = document.getElementById("couponPanelDirectApplyBtn");
+    const directInput = document.getElementById("couponPanelDirectInput");
+    if (directApplyBtn && directInput && !directApplyBtn._bound) {
+      directApplyBtn._bound = true;
+      const handleDirectApply = (e) => {
+        e.preventDefault();
+        const val = directInput.value.trim().toUpperCase();
+        if (!val) {
+          this.showToast("Please enter a promo code to apply.", "warning");
+          return;
+        }
+        this.applyCouponFromPanel(val, directApplyBtn);
+        directInput.value = "";
+      };
+      directApplyBtn.addEventListener("click", handleDirectApply);
+      directInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleDirectApply(e);
+        }
+      });
+    }
+
+    // Mobile Swipe-Down to Dismiss on bottom sheet panel
+    const dialog = document.getElementById("couponPopupDialog");
+    const dragHandle = document.getElementById("couponPanelDragHandle");
+    if (dialog && !dialog._boundSwipe) {
+      dialog._boundSwipe = true;
+      let startY = 0;
+      let currentY = 0;
+      let isDragging = false;
+
+      const onTouchStart = (e) => {
+        // Only initiate drag if touch is on drag handle or dialog top
+        if (window.innerWidth > 768) return;
+        const touch = e.touches[0];
+        if (e.target.closest("#couponPanelDragHandle") || e.target.closest(".coupon-popup-header")) {
+          startY = touch.clientY;
+          isDragging = true;
+        }
+      };
+
+      const onTouchMove = (e) => {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+        if (deltaY > 0) {
+          dialog.style.transform = `translate3d(0, ${deltaY}px, 0)`;
+        }
+      };
+
+      const onTouchEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        const deltaY = currentY - startY;
+        dialog.style.transform = "";
+        if (deltaY > 70) {
+          this.closeCouponPopup();
+        }
+      };
+
+      dialog.addEventListener("touchstart", onTouchStart, { passive: true });
+      dialog.addEventListener("touchmove", onTouchMove, { passive: true });
+      dialog.addEventListener("touchend", onTouchEnd, { passive: true });
+    }
+
+    // Escape key dismissal
+    if (!window._couponPopupEscBound) {
+      window._couponPopupEscBound = true;
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const m = document.getElementById("couponPopupModal");
+          if (m && m.classList.contains("active")) {
+            this.closeCouponPopup();
+          }
+        }
+      });
+    }
+
+    // Sync coupon panel state when cart updates
+    if (!window._couponPanelCartSyncBound) {
+      window._couponPanelCartSyncBound = true;
+      window.addEventListener("cartUpdated", () => {
+        const modal = document.getElementById("couponPopupModal");
+        if (modal && modal.classList.contains("active")) {
+          this.renderCouponPopupList(this._activeCouponFilter || "all");
+        }
+      });
+    }
+
+    this.updateFloatingCouponPill();
+    this.syncCouponPopupVisibility();
+  }
+
+  openCouponPopup() {
+    const campaign = (window.store && typeof window.store.getFestiveCampaign === "function") ? window.store.getFestiveCampaign() : null;
+    const isCampaignEnabled = !campaign || campaign.enabled !== false;
+    const items = typeof this.getCombinedCouponsList === "function" ? this.getCombinedCouponsList() : [];
+    const activeCoupons = items.filter(c => !c.isDeleted && c.isActive);
+
+    if (!isCampaignEnabled || activeCoupons.length === 0) {
+      this.syncCouponPopupVisibility();
+      this.showToast("Promotional coupon session is currently paused by store management.", "info");
+      return;
+    }
+
+    const modal = document.getElementById("couponPopupModal");
+    if (!modal) return;
+
+    if (this._couponCloseTimeout) {
+      clearTimeout(this._couponCloseTimeout);
+      this._couponCloseTimeout = null;
+    }
+
+    // Reset filter to all on open
+    this._activeCouponFilter = "all";
+    const tabsContainer = document.getElementById("couponPanelTabs");
+    if (tabsContainer) {
+      tabsContainer.querySelectorAll(".coupon-filter-tab").forEach(t => {
+        t.classList.toggle("active", t.getAttribute("data-filter") === "all");
+      });
+    }
+
+    this.renderCouponPopupList("all");
+
+    modal.style.display = "flex";
+    // Trigger layout reflow for clean CSS transition without flicker
+    void modal.offsetWidth;
+    modal.classList.add("active");
+    this.syncBodyScrollLock();
+  }
+
+  closeCouponPopup() {
+    const modal = document.getElementById("couponPopupModal");
+    if (!modal) return;
+
+    modal.classList.remove("active");
+    this.syncBodyScrollLock();
+
+    if (this._couponCloseTimeout) {
+      clearTimeout(this._couponCloseTimeout);
+    }
+    this._couponCloseTimeout = setTimeout(() => {
+      if (!modal.classList.contains("active")) {
+        modal.style.display = "none";
+      }
+    }, 280);
+  }
+
+  renderCouponPopupList(filter = "all") {
+    const body = document.getElementById("couponPopupBody");
+    if (!body) return;
+
+    this._activeCouponFilter = filter || "all";
+    const items = typeof this.getCombinedCouponsList === "function" ? this.getCombinedCouponsList() : [];
+    const activeCoupons = items.filter(c => !c.isDeleted && c.isActive);
+
+    const countElem = document.getElementById("couponPopupAvailableText");
+    if (countElem) {
+      countElem.textContent = `${activeCoupons.length} Active Festive Coupons`;
+    }
+
+    const tabCountAll = document.getElementById("couponTabCountAll");
+    if (tabCountAll) {
+      tabCountAll.textContent = activeCoupons.length;
+    }
+
+    // Filter coupons by category
+    let displayedCoupons = activeCoupons;
+    if (filter === "flat") {
+      displayedCoupons = activeCoupons.filter(c => c.discountType === "flat" || (c.discountAmount && c.discountAmount > 0));
+    } else if (filter === "percent") {
+      displayedCoupons = activeCoupons.filter(c => c.discountType === "percent" || (c.discountPercent && c.discountPercent > 0));
+    } else if (filter === "festive") {
+      displayedCoupons = activeCoupons.filter(c => {
+        const str = `${c.code || ""} ${c.badge || ""} ${c.title || ""}`.toUpperCase();
+        return str.includes("FESTIVE") || str.includes("BRIDAL") || str.includes("KIDS") || str.includes("PREPAID") || str.includes("HERITAGE");
+      });
+    }
+
+    if (displayedCoupons.length === 0) {
+      body.innerHTML = `
+        <div style="text-align: center; padding: 2.8rem 1rem; color: var(--text-muted);">
+          <span style="font-size: 2.6rem; display: block; margin-bottom: 0.5rem;">🏷️</span>
+          <h4 style="margin: 0 0 0.35rem; color: var(--text-heading); font-family: var(--font-serif-display); font-size: 1.05rem;">No Coupons in this Category</h4>
+          <p style="margin: 0; font-size: 0.85rem;">Select "All Offers" to view our complete festive privilege collection!</p>
+        </div>
+      `;
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const currentActiveCode = (window.store && window.store.activeCoupon && window.store.activeCoupon.code)
+      ? window.store.activeCoupon.code.toUpperCase()
+      : null;
+
+    body.innerHTML = displayedCoupons.map((c) => {
+      const isExpired = c.validUntil ? new Date(c.validUntil) < today : false;
+      const expiryText = c.validUntil
+        ? (isExpired ? "⚠️ Expired" : `Valid till ${new Date(c.validUntil).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`)
+        : "Limited Time Privilege";
+
+      const badgeText = c.badge || (c.discount || "FESTIVE PRIVILEGE");
+      const title = c.title || `${c.code} Special Savings`;
+      const desc = c.description || "Exclusive handloom silk privilege savings.";
+      const code = (c.code || "").toUpperCase();
+
+      const discountTag = c.discountType === "flat" && c.discountAmount
+        ? `₹${c.discountAmount} FLAT OFF`
+        : (c.discountPercent ? `${c.discountPercent}% OFF` : (c.discount || "SPECIAL OFFER"));
+
+      const minOrderText = (c.minOrderValue && c.minOrderValue > 0)
+        ? `Min. Order: ₹${c.minOrderValue.toLocaleString('en-IN')}`
+        : null;
+
+      const isCurrentActive = currentActiveCode === code;
+
+      return `
+        <div class="coupon-popup-ticket ${isExpired ? 'ticket-unavailable' : ''} ${isCurrentActive ? 'ticket-applied' : ''}">
+          <div class="coupon-ticket-top">
+            <span class="coupon-ticket-badge">${this.escapeHtml(badgeText)}</span>
+            <span class="coupon-ticket-expiry">${this.escapeHtml(expiryText)}</span>
+          </div>
+
+          <div class="coupon-ticket-main">
+            <div class="coupon-ticket-headline-row">
+              <span class="coupon-ticket-value">${this.escapeHtml(discountTag)}</span>
+              <h4 class="coupon-ticket-title">${this.escapeHtml(title)}</h4>
+            </div>
+            <p class="coupon-ticket-desc">${this.escapeHtml(desc)}</p>
+            <div class="coupon-ticket-meta-info">
+              ${minOrderText ? `<span class="coupon-min-order-pill">🛒 ${this.escapeHtml(minOrderText)}</span>` : '<span class="coupon-min-order-pill free">✨ No Minimum Order</span>'}
+              ${isCurrentActive ? '<span class="coupon-min-order-pill free">🟢 Active in Cart</span>' : ''}
+            </div>
+          </div>
+
+          <div class="coupon-ticket-action-row">
+            <div class="coupon-ticket-code-tag" title="Click to copy code" onclick="window.storefront.copyCouponCode(this, '${this.escapeHtml(code)}')">
+              <span class="code-scissors">✂️</span>
+              <strong>${this.escapeHtml(code)}</strong>
+            </div>
+
+            <div class="coupon-ticket-buttons">
+              ${isCurrentActive
+                ? `<button type="button" class="coupon-ticket-apply-btn applied" disabled title="Currently active in your shopping bag">
+                     <span>Applied ✓</span>
+                   </button>`
+                : `<button type="button" class="coupon-ticket-apply-btn" onclick="window.storefront.applyCouponFromPanel('${this.escapeHtml(code)}', this)">
+                     <span>Apply to Bag</span>
+                   </button>`
+              }
+              <button type="button" class="coupon-ticket-copy-btn" data-code="${this.escapeHtml(code)}" onclick="window.storefront.copyCouponCode(this, '${this.escapeHtml(code)}')">
+                <span>Copy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  applyCouponFromPanel(code, btn) {
+    if (!code || !window.store) return;
+    const res = window.store.applyCoupon(code);
+    if (res.success) {
+      if (btn) {
+        btn.innerHTML = "<span>Applied ✓</span>";
+        btn.classList.add("applied");
+        btn.disabled = true;
+      }
+      this.showToast(res.message || `🎉 Coupon "${code}" applied to bag!`, "success");
+      this.updateCartUI();
+      // Re-render list to reflect updated active state across all coupons
+      setTimeout(() => {
+        this.renderCouponPopupList(this._activeCouponFilter || "all");
+      }, 250);
+    } else {
+      // If code cannot be directly applied (e.g. cart empty or min order not reached), copy code to clipboard
+      this.copyCouponCode(null, code);
+      this.showToast(`Code "${code}" copied! Note: ${res.message}`, "warning");
+    }
+  }
+
+  copyCouponCode(btn, code) {
+    if (!code) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).catch(() => {});
+    }
+    if (btn) {
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "<span>Copied! ✓</span>";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove("copied");
+      }, 2000);
+    }
+    this.showToast(`Copied coupon code ${code}! Paste at checkout to save.`, "success");
+  }
+
+  updateFloatingCouponPill(count) {
+    const campaign = (window.store && typeof window.store.getFestiveCampaign === "function") ? window.store.getFestiveCampaign() : null;
+    const isCampaignEnabled = !campaign || campaign.enabled !== false;
+    const items = typeof this.getCombinedCouponsList === "function" ? this.getCombinedCouponsList() : [];
+    const activeCoupons = (count !== undefined) ? count : (items.filter(c => !c.isDeleted && c.isActive).length);
+    const isSessionLive = Boolean(isCampaignEnabled && activeCoupons > 0);
+
+    const pillContainers = document.querySelectorAll("#floatingCouponPillContainer, .floating-coupon-pill-container");
+    if (!isSessionLive) {
+      pillContainers.forEach(container => {
+        container.style.display = "none";
+        container.classList.add("coupon-session-disabled");
+        container.setAttribute("hidden", "true");
+        container.setAttribute("data-session-active", "false");
+      });
+    } else {
+      pillContainers.forEach(container => {
+        container.style.display = "block";
+        container.classList.remove("coupon-session-disabled");
+        container.removeAttribute("hidden");
+        container.setAttribute("data-session-active", "true");
+      });
+    }
+
+    const badge = document.getElementById("floatingCouponCount");
+    if (badge) {
+      badge.textContent = activeCoupons;
+    }
+    const tabCountAll = document.getElementById("couponTabCountAll");
+    if (tabCountAll) {
+      tabCountAll.textContent = activeCoupons;
+    }
+    const modalCount = document.getElementById("couponPopupAvailableText");
+    if (modalCount) {
+      modalCount.textContent = `${activeCoupons} Active Festive Coupons`;
+    }
+    const modal = document.getElementById("couponPopupModal");
+    if (modal && modal.classList.contains("active")) {
+      if (!isSessionLive) {
+        this.closeCouponPopup();
+      } else {
+        this.renderCouponPopupList(this._activeCouponFilter || "all");
+      }
+    }
+  }
+
+  syncCouponPopupVisibility(customCampaign) {
+    const campaign = customCampaign || (window.store && typeof window.store.getFestiveCampaign === "function" ? window.store.getFestiveCampaign() : null);
+    const isCampaignEnabled = !campaign || campaign.enabled !== false;
+
+    const items = typeof this.getCombinedCouponsList === "function" ? this.getCombinedCouponsList() : [];
+    const activeCoupons = items.filter(c => !c.isDeleted && c.isActive);
+    const hasActiveCoupons = activeCoupons.length > 0;
+
+    const isSessionLive = Boolean(isCampaignEnabled && hasActiveCoupons);
+
+    const pillContainers = document.querySelectorAll("#floatingCouponPillContainer, .floating-coupon-pill-container");
+    const couponModal = document.getElementById("couponPopupModal");
+    const cartBrowseCouponLinks = document.querySelectorAll(".cart-view-coupons-link, .open-coupon-panel-btn, [data-action='open-coupons']");
+
+    if (isSessionLive) {
+      pillContainers.forEach(container => {
+        container.style.display = "block";
+        container.classList.remove("coupon-session-disabled");
+        container.removeAttribute("hidden");
+        container.setAttribute("data-session-active", "true");
+      });
+
+      cartBrowseCouponLinks.forEach(link => {
+        link.style.display = "";
+        link.removeAttribute("hidden");
+      });
+
+      const badge = document.getElementById("floatingCouponCount");
+      if (badge) badge.textContent = activeCoupons.length;
+
+      const tabCountAll = document.getElementById("couponTabCountAll");
+      if (tabCountAll) tabCountAll.textContent = activeCoupons.length;
+
+      const modalCount = document.getElementById("couponPopupAvailableText");
+      if (modalCount) modalCount.textContent = `${activeCoupons.length} Active Festive Coupons`;
+    } else {
+      pillContainers.forEach(container => {
+        container.style.display = "none";
+        container.classList.add("coupon-session-disabled");
+        container.setAttribute("hidden", "true");
+        container.setAttribute("data-session-active", "false");
+      });
+
+      cartBrowseCouponLinks.forEach(link => {
+        link.style.display = "none";
+      });
+
+      if (couponModal && (couponModal.classList.contains("active") || couponModal.style.display === "flex")) {
+        this.closeCouponPopup();
+      }
+
+      const badge = document.getElementById("floatingCouponCount");
+      if (badge) badge.textContent = "0";
+    }
+
+    return isSessionLive;
   }
 
   // ==========================================================================
   // "LIMITED TIME FESTIVE SPECIAL 2026" REAL-TIME STOREFRONT ENGINE
   // ==========================================================================
   initFestiveCampaignSync() {
-    // 1. Cross-tab BroadcastChannel for 0ms instant sync
+    // 1. Cross-tab BroadcastChannel for 0ms instant sync (festive campaign channel)
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
       try {
         const channel = new BroadcastChannel("st_festive_channel_v1");
         channel.onmessage = (event) => {
           if (event.data && event.data.type === "FESTIVE_CAMPAIGN_UPDATED") {
             this.renderFestiveCampaign(event.data.campaign);
+            this.syncCouponPopupVisibility(event.data.campaign);
           }
         };
       } catch (e) {
         console.warn("[Storefront] Festive BroadcastChannel notice:", e);
       }
+
+      // Also listen to main inventory & coupon channel
+      try {
+        const invChannel = new BroadcastChannel("st_inventory_channel_v2");
+        invChannel.onmessage = (event) => {
+          const d = event.data;
+          if (d && (d.type === "COUPONS_UPDATED" || d.type === "FESTIVE_CAMPAIGN_UPDATED")) {
+            this.syncCouponPopupVisibility();
+            this.renderFestiveVouchers();
+            this.renderFestiveCampaign();
+          }
+        };
+      } catch (e) {
+        console.warn("[Storefront] Inventory BroadcastChannel notice:", e);
+      }
     }
 
     // 2. Storage event listener (when admin toggles or edits in another tab/window)
     window.addEventListener("storage", (e) => {
-      if (e.key === "st_festive_campaign_v1") {
+      if (e.key === "st_festive_campaign_v1" || e.key === "st_coupons_data_v2" || e.key === "st_deleted_coupons_data_v2") {
         this.renderFestiveCampaign();
+        this.syncCouponPopupVisibility();
       }
     });
 
     // 3. Same-window custom event
     window.addEventListener("festiveCampaignUpdated", (e) => {
       this.renderFestiveCampaign(e.detail);
+      this.syncCouponPopupVisibility(e.detail);
     });
   }
 
   renderFestiveCampaign(customCampaign) {
     if (!window.store || typeof window.store.getFestiveCampaign !== "function") return;
+
+    // Always synchronize coupon popup visibility across all storefront pages (index.html and shop.html)
+    this.syncCouponPopupVisibility(customCampaign);
 
     // "LIMITED TIME FESTIVE SPECIAL 2026" session is strictly exclusive to shop.html
     const isShopPage = (window.location.pathname.includes("shop.html") || 
@@ -2336,12 +3281,20 @@ class StorefrontController {
     if (ticker) {
       if (campaign.topBannerEnabled && campaign.topBannerText) {
         ticker.style.display = "block";
+        const safeText = this.escapeHtml(campaign.topBannerText);
         ticker.innerHTML = `
-          <div class="container">
-            <div class="festive-ticker-inner">
-              <span class="festive-ticker-sparkle">🎉</span>
-              <span class="festive-ticker-text">${this.escapeHtml(campaign.topBannerText)}</span>
-              <span class="festive-ticker-sparkle">✨</span>
+          <div class="festive-ticker-track-wrap">
+            <div class="festive-ticker-track">
+              <div class="festive-ticker-content">
+                <span class="festive-ticker-sparkle">🎉</span>
+                <span class="festive-ticker-text">${safeText}</span>
+                <span class="festive-ticker-sparkle">✨</span>
+              </div>
+              <div class="festive-ticker-content" aria-hidden="true">
+                <span class="festive-ticker-sparkle">🎉</span>
+                <span class="festive-ticker-text">${safeText}</span>
+                <span class="festive-ticker-sparkle">✨</span>
+              </div>
             </div>
           </div>
         `;
@@ -2454,17 +3407,41 @@ class StorefrontController {
             </div>
           </div>
 
-          <!-- Interactive Click-to-Copy Festival Vouchers -->
-          ${activeOffers.length > 0 ? `
-            <div class="festive-vouchers-grid">
-              ${vouchersHtml}
+          <!-- Interactive Click-to-Copy Festival Vouchers Carousel Wrapper -->
+          <div class="festive-vouchers-carousel-wrapper" id="festiveVouchersCarouselWrapper">
+            <button type="button" class="festive-carousel-btn festive-carousel-prev" id="festiveVouchersPrevBtn" aria-label="Previous coupons" title="Previous Coupons">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <div class="festive-vouchers-grid" id="festiveVouchersGrid">
+              <!-- Populated and synchronized by renderFestiveVouchers -->
             </div>
-          ` : ""}
+            <button type="button" class="festive-carousel-btn festive-carousel-next" id="festiveVouchersNextBtn" aria-label="Next coupons" title="Next Coupons">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
 
-          <!-- Featured Festive Deal Cards Grid -->
+          <!-- Featured Festive Deal Cards Carousel Wrapper -->
           ${activeDeals.length > 0 ? `
-            <div class="festive-deals-grid">
-              ${dealsHtml}
+            <div class="festive-deals-carousel-wrapper" id="festiveDealsCarouselWrapper">
+              <button type="button" class="festive-carousel-btn festive-deals-prev" id="festiveDealsPrevBtn" aria-label="Previous festive deals" title="Previous Deals">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              <div class="festive-deals-grid" id="festiveDealsGrid">
+                ${dealsHtml}
+              </div>
+
+              <button type="button" class="festive-carousel-btn festive-deals-next" id="festiveDealsNextBtn" aria-label="Next festive deals" title="Next Deals">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
             </div>
           ` : ""}
 
@@ -2477,6 +3454,12 @@ class StorefrontController {
         </div>
       `;
     });
+
+    // Populate and initialize festive vouchers carousel
+    this.renderFestiveVouchers();
+
+    // Initialize festive deals carousel
+    this.initFestiveDealsCarousel();
 
     // Start Live Storefront Countdown Timer Interval
     this.startFestiveTimer(campaign.countdownEnd);
@@ -3378,7 +4361,7 @@ class StorefrontController {
     `).join("");
   }
 
-  showToast(message, type = "info") {
+  showToast(message, type = "info", duration = 3500) {
     let container = document.getElementById("toastContainer");
     if (!container) {
       container = document.createElement("div");
@@ -3388,14 +4371,43 @@ class StorefrontController {
     }
 
     const toast = document.createElement("div");
-    toast.className = "toast-message";
-    const icon = type === "success" ? "✓" : type === "warning" ? "⚠" : "ℹ";
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    toast.className = `toast-card toast-${type}`;
+    toast.setAttribute("role", "alert");
+
+    const icon = type === "success" ? "✓" : type === "warning" ? "⚠️" : type === "error" || type === "danger" ? "✕" : "ℹ️";
+
+    toast.innerHTML = `
+      <div class="toast-icon-wrap">${icon}</div>
+      <div class="toast-body">
+        <div class="toast-text">${message}</div>
+      </div>
+      <button type="button" class="toast-close-btn" aria-label="Dismiss notification" title="Dismiss">&times;</button>
+      <div class="toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
+    `;
+
+    const closeBtn = toast.querySelector(".toast-close-btn");
+    const dismiss = () => {
+      if (toast.classList.contains("toast-closing")) return;
+      toast.classList.add("toast-closing");
+      setTimeout(() => toast.remove(), 240);
+    };
+
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        dismiss();
+      };
+    }
+    toast.onclick = (e) => {
+      if (e.target === closeBtn) return;
+      dismiss();
+    };
+
     container.appendChild(toast);
 
     setTimeout(() => {
-      toast.remove();
-    }, 4000);
+      dismiss();
+    }, duration);
   }
 
   // ==========================================================================
@@ -3525,8 +4537,6 @@ class StorefrontController {
         <div class="bulk-store-card" id="bulk-card-${pkg.id}" onclick="window.storefront.openBulkPackageModal('${pkg.id}')" style="cursor: pointer;" title="Click to view full specifications &amp; place order">
           <div class="bulk-card-media">
             <img src="${pkg.image || 'assets/images/family_matching_combo.jpg'}" alt="${pkg.title}" loading="lazy" onerror="this.src='assets/images/hero_banner.jpg'" />
-            <span class="bulk-card-badge">${pkg.badge || '✨ Verified Lot'}</span>
-            <span class="bulk-card-discount-tag">${discount}% WHOLESALE SAVINGS</span>
             <div class="bulk-card-hover-prompt"><span>🔍 Click to View Full Details &amp; Order</span></div>
           </div>
 
@@ -3554,6 +4564,29 @@ class StorefrontController {
         </div>
       `;
     }).join("");
+
+    this.setupBulkPackagesCarouselEvents();
+  }
+
+  setupBulkPackagesCarouselEvents() {
+    const prevBtn = document.getElementById("bulkPackagesPrevBtn");
+    const nextBtn = document.getElementById("bulkPackagesNextBtn");
+    const grid = document.getElementById("bulkPackagesStoreGrid");
+    if (!grid) return;
+
+    if (prevBtn && !prevBtn._bound) {
+      prevBtn._bound = true;
+      prevBtn.addEventListener("click", () => {
+        grid.scrollBy({ left: -320, behavior: "smooth" });
+      });
+    }
+
+    if (nextBtn && !nextBtn._bound) {
+      nextBtn._bound = true;
+      nextBtn.addEventListener("click", () => {
+        grid.scrollBy({ left: 320, behavior: "smooth" });
+      });
+    }
   }
 
   // ==========================================
@@ -3683,27 +4716,27 @@ class StorefrontController {
           <span class="combo-badge-tag">
             ${combo.badge || '👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE'}
           </span>
-          <h3 style="font-size: 1.85rem; color: var(--color-primary); margin: 0 0 0.5rem 0; font-family: var(--font-serif-display); line-height: 1.25;">
+          <h3 style="font-size: 1.75rem; color: var(--color-primary); margin: 0 0 0.35rem 0; font-family: var(--font-serif-display); line-height: 1.25;">
             ${combo.title}
           </h3>
-          <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.85rem;">
             ${combo.subtitle || combo.description || ''}
           </p>
 
-          <ul class="combo-features-list" style="margin-bottom: 1.25rem; list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">✨ <strong>Mother:</strong> ${mother}</li>
-            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">👨 <strong>Father:</strong> ${father}</li>
-            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">👧 <strong>Daughter:</strong> ${daughter}</li>
-            <li style="margin-bottom: 0.4rem; font-size: 0.9rem;">👦 <strong>Son:</strong> ${son}</li>
+          <ul class="combo-features-list" style="margin-bottom: 0.95rem; list-style: none; padding: 0;">
+            <li style="margin-bottom: 0.35rem; font-size: 0.88rem;">✨ <strong>Mother:</strong> ${mother}</li>
+            <li style="margin-bottom: 0.35rem; font-size: 0.88rem;">👨 <strong>Father:</strong> ${father}</li>
+            <li style="margin-bottom: 0.35rem; font-size: 0.88rem;">👧 <strong>Daughter:</strong> ${daughter}</li>
+            <li style="margin-bottom: 0.35rem; font-size: 0.88rem;">👦 <strong>Son:</strong> ${son}</li>
           </ul>
 
-          <div style="display: flex; align-items: baseline; gap: 0.85rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-            <span style="font-size: 2.1rem; font-weight: 800; color: var(--color-primary);">${priceStr}</span>
-            ${origPriceStr ? `<span style="font-size: 1.1rem; color: var(--text-muted); text-decoration: line-through;">${origPriceStr}</span>` : ''}
+          <div style="display: flex; align-items: baseline; gap: 0.85rem; margin-bottom: 1.15rem; flex-wrap: wrap;">
+            <span style="font-size: 1.95rem; font-weight: 800; color: var(--color-primary);">${priceStr}</span>
+            ${origPriceStr ? `<span style="font-size: 1.05rem; color: var(--text-muted); text-decoration: line-through;">${origPriceStr}</span>` : ''}
             ${savingsStr ? `<span style="font-size: 0.85rem; font-weight: 800; color: var(--color-success); background: rgba(16,185,129,0.12); padding: 3px 8px; border-radius: 4px;">${savingsStr}</span>` : ''}
           </div>
 
-          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
             <button class="btn btn-gold btn-lg" onclick="window.storefront.openFamilyComboBookingModal('${combo.id}')"
               style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800;">
               <span>🛍️</span> Book This Family Bundle ➔
@@ -3751,12 +4784,22 @@ class StorefrontController {
 
     const syncViewportHeight = () => {
       const viewport = wrap.querySelector(".family-combo-slides-viewport");
-      const slides = track.querySelectorAll(".combo-slide-item");
-      if (viewport && slides && slides[state.currentIndex]) {
-        const activeSlide = slides[state.currentIndex];
-        const h = activeSlide.offsetHeight;
-        if (h > 0) {
-          viewport.style.height = `${h}px`;
+      if (!viewport) return;
+      if (window.innerWidth > 992) {
+        // Desktop: locked to default stable 500px, completely immune to image dimension changes
+        viewport.style.height = "500px";
+      } else {
+        // Tablet / Mobile: compute uniform max height once across all slides so transitions never jump
+        const slides = track.querySelectorAll(".combo-slide-item");
+        if (slides && slides.length > 0) {
+          let maxH = 0;
+          slides.forEach(s => {
+            const h = s.offsetHeight;
+            if (h > maxH) maxH = h;
+          });
+          if (maxH > 0) {
+            viewport.style.height = `${maxH}px`;
+          }
         }
       }
     };
@@ -3777,7 +4820,6 @@ class StorefrontController {
         });
       }
 
-      syncViewportHeight();
       resetProgress();
     };
 

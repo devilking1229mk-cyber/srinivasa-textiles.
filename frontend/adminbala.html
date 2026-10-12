@@ -34,10 +34,22 @@
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/admin.css" />
   <link rel="stylesheet" href="css/mobile-ui.css" />
+  <link rel="stylesheet" href="css/scroll-animations.css" />
 
   <style>
-    /* High-Contrast Luxury Lock Screen Engine (Guaranteed Zero-Cache Visibility) */
-    .admin-lock-card {
+    /* Strict Light Theme Lockdown for Admin Security Portal Gate (Immune to All Dark Theme Settings) */
+    .admin-lock-overlay,
+    .admin-lock-overlay[data-theme="light"],
+    [data-theme="dark"] .admin-lock-overlay,
+    html[data-theme="dark"] .admin-lock-overlay,
+    body[data-theme="dark"] .admin-lock-overlay {
+      color-scheme: light !important;
+    }
+
+    .admin-lock-card,
+    [data-theme="dark"] .admin-lock-card,
+    html[data-theme="dark"] .admin-lock-card,
+    body[data-theme="dark"] .admin-lock-card {
       background: #FFFFFF !important;
       border: 2px solid #D4AF37 !important;
       box-shadow: 0 25px 65px rgba(0, 0, 0, 0.4), 0 0 35px rgba(212, 175, 55, 0.25) !important;
@@ -47,30 +59,48 @@
       max-width: 450px !important;
       text-align: center !important;
       color: #1F242E !important;
+      color-scheme: light !important;
     }
 
-    [data-theme="dark"] .admin-lock-card {
-      background: #14161D !important;
-      border-color: rgba(212, 175, 55, 0.85) !important;
-      color: #F3F4F6 !important;
-      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 35px rgba(212, 175, 55, 0.2) !important;
+    .lock-brand-icon,
+    [data-theme="dark"] .lock-brand-icon,
+    html[data-theme="dark"] .lock-brand-icon,
+    body[data-theme="dark"] .lock-brand-icon {
+      width: 66px !important;
+      height: 66px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(77, 5, 27, 0.9)) !important;
+      border: 2px solid #D4AF37 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 2rem !important;
+      margin: 0 auto 1.25rem auto !important;
+      box-shadow: 0 0 24px rgba(212, 175, 55, 0.45) !important;
     }
 
-    .admin-lock-card .lock-title {
+    .lock-brand-icon svg,
+    [data-theme="dark"] .lock-brand-icon svg,
+    html[data-theme="dark"] .lock-brand-icon svg {
+      color: #D4AF37 !important;
+      filter: none !important;
+    }
+
+    .admin-lock-card .lock-title,
+    [data-theme="dark"] .admin-lock-card .lock-title,
+    html[data-theme="dark"] .admin-lock-card .lock-title {
       font-family: 'Cinzel', 'Playfair Display', Georgia, serif !important;
       color: #7A0C2E !important;
       margin-bottom: 0.25rem !important;
       font-size: 1.65rem !important;
       font-weight: 800 !important;
       letter-spacing: 0.03em !important;
+      text-shadow: none !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .lock-title {
-      color: #FFF2B2 !important;
-      text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3) !important;
-    }
-
-    .admin-lock-card .lock-subtitle {
+    .admin-lock-card .lock-subtitle,
+    [data-theme="dark"] .admin-lock-card .lock-subtitle,
+    html[data-theme="dark"] .admin-lock-card .lock-subtitle {
       color: #A67C1E !important;
       font-size: 0.825rem !important;
       margin-bottom: 1.5rem !important;
@@ -79,11 +109,9 @@
       font-weight: 800 !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .lock-subtitle {
-      color: #F5D061 !important;
-    }
-
-    .admin-lock-card .lock-info-box {
+    .admin-lock-card .lock-info-box,
+    [data-theme="dark"] .admin-lock-card .lock-info-box,
+    html[data-theme="dark"] .admin-lock-card .lock-info-box {
       background: #FFFBEB !important;
       border: 1.5px solid #FCD34D !important;
       border-radius: 6px !important;
@@ -92,23 +120,18 @@
       text-align: left !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .lock-info-box {
-      background: rgba(212, 175, 55, 0.12) !important;
-      border-color: rgba(212, 175, 55, 0.4) !important;
-    }
-
-    .admin-lock-card .lock-info-header {
+    .admin-lock-card .lock-info-header,
+    [data-theme="dark"] .admin-lock-card .lock-info-header,
+    html[data-theme="dark"] .admin-lock-card .lock-info-header {
       font-size: 0.85rem !important;
       color: #7A0C2E !important;
       display: block !important;
       font-weight: 800 !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .lock-info-header {
-      color: #FFF6EC !important;
-    }
-
-    .admin-lock-card .lock-info-desc {
+    .admin-lock-card .lock-info-desc,
+    [data-theme="dark"] .admin-lock-card .lock-info-desc,
+    html[data-theme="dark"] .admin-lock-card .lock-info-desc {
       font-size: 0.775rem !important;
       color: #374151 !important;
       display: block !important;
@@ -117,11 +140,9 @@
       font-weight: 500 !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .lock-info-desc {
-      color: #D1D5DB !important;
-    }
-
-    .admin-lock-card label {
+    .admin-lock-card label,
+    [data-theme="dark"] .admin-lock-card label,
+    html[data-theme="dark"] .admin-lock-card label {
       color: #0F172A !important;
       font-size: 0.85rem !important;
       font-weight: 700 !important;
@@ -129,11 +150,9 @@
       margin-bottom: 0.35rem !important;
     }
 
-    [data-theme="dark"] .admin-lock-card label {
-      color: #F3F4F6 !important;
-    }
-
-    .admin-lock-card .form-control {
+    .admin-lock-card .form-control,
+    [data-theme="dark"] .admin-lock-card .form-control,
+    html[data-theme="dark"] .admin-lock-card .form-control {
       width: 100% !important;
       padding: 0.85rem 1rem !important;
       background: #F8FAFC !important;
@@ -142,35 +161,28 @@
       color: #0F172A !important;
       font-size: 0.95rem !important;
       outline: none !important;
+      box-shadow: none !important;
+      color-scheme: light !important;
     }
 
-    .admin-lock-card .form-control:focus {
+    .admin-lock-card .form-control:focus,
+    [data-theme="dark"] .admin-lock-card .form-control:focus,
+    html[data-theme="dark"] .admin-lock-card .form-control:focus {
       border-color: #7A0C2E !important;
       box-shadow: 0 0 0 3px rgba(122, 12, 46, 0.2) !important;
       background: #FFFFFF !important;
+      color: #0F172A !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .form-control {
-      background: #1E232E !important;
-      border-color: #4B5563 !important;
-      color: #FFFFFF !important;
-    }
-
-    [data-theme="dark"] .admin-lock-card .form-control:focus {
-      border-color: #F5D061 !important;
-      box-shadow: 0 0 0 3px rgba(245, 208, 97, 0.25) !important;
-      background: #252B38 !important;
-    }
-
-    .admin-lock-card .form-control::placeholder {
+    .admin-lock-card .form-control::placeholder,
+    [data-theme="dark"] .admin-lock-card .form-control::placeholder,
+    html[data-theme="dark"] .admin-lock-card .form-control::placeholder {
       color: #64748B !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .form-control::placeholder {
-      color: #9CA3AF !important;
-    }
-
-    .admin-lock-card .pass-toggle-btn {
+    .admin-lock-card .pass-toggle-btn,
+    [data-theme="dark"] .admin-lock-card .pass-toggle-btn,
+    html[data-theme="dark"] .admin-lock-card .pass-toggle-btn {
       background: none !important;
       border: none !important;
       color: #7A0C2E !important;
@@ -179,28 +191,33 @@
       font-weight: 800 !important;
     }
 
-    [data-theme="dark"] .admin-lock-card .pass-toggle-btn {
-      color: #F5D061 !important;
+    .admin-lock-card .pass-toggle-btn:hover,
+    [data-theme="dark"] .admin-lock-card .pass-toggle-btn:hover {
+      color: #9E103C !important;
     }
 
-    .admin-lock-card .return-link {
+    .admin-lock-card .btn-gold,
+    [data-theme="dark"] .admin-lock-card .btn-gold {
+      background: linear-gradient(135deg, #D4AF37 0%, #C59B27 50%, #A67C1E 100%) !important;
+      color: #1A1A1A !important;
+      border: 1px solid rgba(212, 175, 55, 0.6) !important;
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45) !important;
+    }
+
+    .admin-lock-card .return-link,
+    [data-theme="dark"] .admin-lock-card .return-link,
+    html[data-theme="dark"] .admin-lock-card .return-link {
       color: #475569 !important;
       font-size: 0.85rem !important;
       text-decoration: none !important;
       font-weight: 600 !important;
+      transition: color 0.2s !important;
     }
 
-    .admin-lock-card .return-link:hover {
+    .admin-lock-card .return-link:hover,
+    [data-theme="dark"] .admin-lock-card .return-link:hover {
       color: #7A0C2E !important;
       text-decoration: underline !important;
-    }
-
-    [data-theme="dark"] .admin-lock-card .return-link {
-      color: #9CA3AF !important;
-    }
-
-    [data-theme="dark"] .admin-lock-card .return-link:hover {
-      color: #FFF2B2 !important;
     }
   </style>
 </head>
@@ -242,8 +259,30 @@
           <span data-icon="cart" data-icon-size="16"></span> Public Store
         </a>
 
-        <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Current: Light Mode (Click for Dark Mode 🌙)">
-          <span class="theme-icon" data-icon="themeSun"></span><span class="theme-label"> Light</span>
+        <button id="adminThemeToggleBtn" class="theme-toggle-btn" title="Current: Light Mode (Click for Dark Mode)"
+          aria-label="Toggle Theme">
+          <span class="theme-icon">
+            <svg class="theme-svg-icon theme-icon-sun" width="18" height="18" viewBox="0 0 24 24"
+              fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-svg-icon theme-icon-moon" width="18" height="18" viewBox="0 0 24 24"
+              fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              <path d="M19 4v3M20.5 5.5h-3" stroke-width="1.8"></path>
+            </svg>
+          </span>
+          <span class="theme-label"> Light</span>
         </button>
 
         <button id="exitAdminBtn" class="exit-admin-btn">
@@ -261,7 +300,8 @@
             <span data-icon="crown" data-icon-size="18"></span> Admin Tabs
           </div>
           <button id="adminSidebarCloseBtn" class="admin-sidebar-close-btn" aria-label="Close Navigation Tabs"
-            onclick="if(window.admin && window.admin.closeMobileSidebar){window.admin.closeMobileSidebar()}else if(window.closeAdminMobileMenu){window.closeAdminMobileMenu()}"><span data-icon="close"></span></button>
+            onclick="if(window.admin && window.admin.closeMobileSidebar){window.admin.closeMobileSidebar()}else if(window.closeAdminMobileMenu){window.closeAdminMobileMenu()}"><span
+              data-icon="close"></span></button>
         </div>
         <div class="admin-sidebar-nav">
 
@@ -435,7 +475,7 @@
                 <span>Console</span> <span>/</span> <span>Dashboard Overview</span>
               </div>
               <h1 class="admin-section-title">
-                <span>📊</span> Store Operations &amp; Performance Ledger
+                <span data-icon="chart"></span> Store Operations &amp; Performance Ledger
               </h1>
               <p class="admin-section-subtitle">
                 Real-time tracking of family heirloom sales, inventory stock levels, courier dispatches, and customer
@@ -447,7 +487,7 @@
           <!-- WELCOME HERO BANNER -->
           <div class="admin-welcome-hero">
             <div class="admin-welcome-text">
-              <h2>VANAKKAM MASTER WEAVER 🙏</h2>
+              <h2>VANAKKAM MASTER WEAVER <span data-icon="namaste" data-icon-size="20"></span></h2>
               <p>Welcome to Srinivasa Textiles Owner Operations Command Center. Real-time control of heirloom inventory,
                 1-click GST invoice generation, and courier dispatches.</p>
             </div>
@@ -456,7 +496,7 @@
               <button class="btn btn-outline-gold btn-sm" onclick="window.admin.switchTab('orders')">View Orders
                 (2)</button>
               <button class="btn btn-outline-gold btn-sm" id="supabaseSeedBtn" onclick="handleSupabaseSeed()"
-                title="Upload Initial Master Catalog to Supabase Database">⚡ Sync to Supabase</button>
+                title="Upload Initial Master Catalog to Supabase Database"><span data-icon="bolt"></span> Sync to Supabase</button>
             </div>
           </div>
 
@@ -466,7 +506,7 @@
             <div
               style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem;">
               <div style="display: flex; align-items: center; gap: 0.85rem; flex: 1; min-width: 280px;">
-                <span style="font-size: 2rem;">👨‍👩‍👧‍👦</span>
+                <span data-icon="family" data-icon-size="32"></span>
                 <div>
                   <h3
                     style="margin: 0 0 0.25rem 0; color: var(--color-gold); font-size: 1.05rem; font-weight: 800; letter-spacing: 0.03em;">
@@ -517,7 +557,7 @@
               <div class="kpi-info">
                 <h3 id="kpiActiveOrders">2</h3>
                 <p>Active Orders</p>
-                <span class="kpi-trend positive">✓ Same-day ready</span>
+                <span class="kpi-trend positive"><span data-icon="check" data-icon-size="12"></span> Same-day ready</span>
               </div>
             </div>
 
@@ -526,7 +566,7 @@
               <div class="kpi-info">
                 <h3 id="kpiLowStock">3</h3>
                 <p>Low Stock Alerts</p>
-                <span class="kpi-trend warning">⚠ Re-loom priority</span>
+                <span class="kpi-trend warning"><span data-icon="warning" data-icon-size="12"></span> Re-loom priority</span>
               </div>
             </div>
 
@@ -535,7 +575,7 @@
               <div class="kpi-info">
                 <h3 id="kpiTotalSKUs">12</h3>
                 <p>Family SKUs</p>
-                <span class="kpi-trend neutral">✦ 100% Verified</span>
+                <span class="kpi-trend neutral"><span data-icon="sparkle" data-icon-size="12"></span> 100% Verified</span>
               </div>
             </div>
 
@@ -544,9 +584,9 @@
                 style="background: rgba(212, 175, 55, 0.15); color: #F59E0B; border: 1px solid rgba(212, 175, 55, 0.4);">
               </div>
               <div class="kpi-info">
-                <h3 id="kpiAvgRating">5.0 ★</h3>
+                <h3 id="kpiAvgRating">5.0 <span data-icon="star" data-icon-size="14"></span></h3>
                 <p>Customer Feedback (<span id="kpiTotalFeedbacks">3</span>)</p>
-                <span class="kpi-trend positive">★ 100% 5-Star Reviews</span>
+                <span class="kpi-trend positive"><span data-icon="star" data-icon-size="12"></span> 100% 5-Star Reviews</span>
               </div>
             </div>
           </div>
@@ -651,9 +691,8 @@
               <div class="admin-card"
                 style="background: linear-gradient(135deg, var(--bg-surface), var(--bg-surface-alt));">
                 <div class="admin-card-header">
-                  <h3><span>🛡️</span> Safety &amp; Quality Compliance</h3>
-                  <span style="color: var(--color-success); font-weight: 700; font-size: 0.8rem;">✓ 100%
-                    Compliant</span>
+                  <h3><span data-icon="shield"></span> Safety &amp; Quality Compliance</h3>
+                  <span style="color: var(--color-success); font-weight: 700; font-size: 0.8rem;"><span data-icon="check" data-icon-size="12"></span> 100% Compliant</span>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -708,7 +747,7 @@
                 <span>Inventory</span> <span>/</span> <span>Product SKU Upload</span>
               </div>
               <h1 class="admin-section-title">
-                <span>📸</span> Add New Family Textile SKU
+                <span data-icon="camera"></span> Add New Family Textile SKU
               </h1>
               <p class="admin-section-subtitle">
                 Publish heirloom handloom products directly to the live customer storefront.
@@ -726,7 +765,7 @@
                   <h3 class="form-section-title">Product Image &amp; Media Upload</h3>
                 </div>
                 <div class="media-uploader-box" id="mediaDropzone" style="cursor: pointer;">
-                  <div class="media-uploader-icon">📸</div>
+                  <div class="media-uploader-icon" data-icon="camera"></div>
                   <strong
                     style="display: block; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.35rem;">
                     Click or Drag &amp; Drop Product Photos from your Device / Phone
@@ -737,7 +776,7 @@
                   </span>
                   <button type="button" class="btn btn-outline-gold btn-sm"
                     onclick="document.getElementById('productMediaFiles').click();">
-                    📁 Choose Images from Device
+                    <span data-icon="folder"></span> Choose Images from Device
                   </button>
                   <input type="file" id="productMediaFiles" multiple accept="image/*" style="display: none;" />
                 </div>
@@ -868,7 +907,7 @@
                   <label class="safety-badge-card">
                     <input type="checkbox" id="pSoftLiningCheckbox" checked />
                     <div>
-                      <strong style="display: block; font-size: 0.85rem; color: var(--text-heading);">🛡️ Soft
+                      <strong style="display: block; font-size: 0.85rem; color: var(--text-heading);"><span data-icon="shield"></span> Soft
                         Inner-Lining Guarantee</strong>
                       <span style="font-size: 0.75rem; color: var(--text-muted);">Itch-free protection for sensitive
                         skin</span>
@@ -877,7 +916,7 @@
                   <label class="safety-badge-card">
                     <input type="checkbox" id="pOrganicCottonCheckbox" />
                     <div>
-                      <strong style="display: block; font-size: 0.85rem; color: var(--text-heading);">🌿 100%
+                      <strong style="display: block; font-size: 0.85rem; color: var(--text-heading);"><span data-icon="leaf"></span> 100%
                         Skin-Friendly Organic Cotton</strong>
                       <span style="font-size: 0.75rem; color: var(--text-muted);">Zero harmful chemical dyes</span>
                     </div>
@@ -889,7 +928,7 @@
               <div style="margin-top: 1.5rem;">
                 <button type="submit" class="btn btn-primary btn-lg"
                   style="width: 100%; font-size: 1rem; font-weight: 700;">
-                  Publish Family SKU to Live Storefront ➔
+                  Publish Family SKU to Live Storefront <span data-icon="arrowRight"></span>
                 </button>
               </div>
 
@@ -913,7 +952,7 @@
                 <span>Inventory &amp; Wholesale</span> <span>/</span> <span>Bulk Products Catalog</span>
               </div>
               <h1 class="admin-section-title">
-                <span>📦</span> Add Bulk Product SKU &amp; Wholesale Catalog
+                <span data-icon="box"></span> Add Bulk Product SKU &amp; Wholesale Catalog
               </h1>
               <p class="admin-section-subtitle">
                 Publish heirloom wholesale products, bridal troupe combo sets, and boutique packs directly to the live
@@ -923,11 +962,11 @@
             <div class="admin-card-header-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <a href="shop.html" target="_blank" class="btn btn-outline btn-sm"
                 style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
-                <span>👁️</span> Live Website Showroom
+                <span data-icon="eye"></span> Live Website Showroom
               </a>
               <button type="button" class="btn btn-gold btn-sm"
                 onclick="window.admin && window.admin.switchTab('bulk-orders')" style="font-weight: 700;">
-                <span>📋</span> View Customer Bulk Orders ➔
+                <span data-icon="receipt"></span> View Customer Bulk Orders <span data-icon="arrowRight"></span>
               </button>
             </div>
           </div>
@@ -938,7 +977,7 @@
             <div
               style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <span style="font-size: 1.5rem;">🏬</span>
+                <span data-icon="building" data-icon-size="24"></span>
                 <div>
                   <h4 style="margin: 0; color: var(--color-gold); font-size: 1rem; font-weight: 800;">
                     LIVE WEBSITE WHOLESALE CATALOG
@@ -971,7 +1010,7 @@
               <div>
                 <h3 id="bulkPackageFormHeading"
                   style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold); margin: 0 0 0.25rem 0;">
-                  <span>➕</span> Add New Bulk Product SKU
+                  <span data-icon="plus"></span> Add New Bulk Product SKU
                 </h3>
                 <span style="font-size: 0.825rem; color: var(--text-muted);">
                   Publish wholesale packages, trousseau combo lots, and boutique sets to be showcased directly on the
@@ -996,7 +1035,7 @@
 
                 <div class="media-uploader-box" id="bulkPkgDropzone" style="cursor: pointer;"
                   onclick="document.getElementById('bulkPkgMediaFile').click()">
-                  <div class="media-uploader-icon">📸</div>
+                  <div class="media-uploader-icon" data-icon="camera"></div>
                   <strong style="display: block; color: var(--color-primary); font-size: 1rem; margin-bottom: 0.25rem;">
                     Click or Drag &amp; Drop Bulk Lot Photos from your Device / Phone
                   </strong>
@@ -1005,7 +1044,7 @@
                   </span>
                   <button type="button" class="btn btn-outline-gold btn-sm"
                     onclick="event.stopPropagation(); document.getElementById('bulkPkgMediaFile').click();">
-                    📁 Choose Photo from Device
+                    <span data-icon="folder"></span> Choose Photo from Device
                   </button>
                   <input type="file" id="bulkPkgMediaFile" accept="image/*" style="display: none;"
                     onchange="window.admin && window.admin.handleBulkPkgImageUpload(this)" />
@@ -1060,7 +1099,7 @@
                       <button type="button" class="btn btn-outline btn-xs"
                         onclick="window.admin && window.admin.generateBulkSku()"
                         style="padding: 0.15rem 0.45rem; font-size: 0.7rem;">
-                        🔄 Generate SKU
+                        <span data-icon="refresh"></span> Generate SKU
                       </button>
                     </label>
                     <input type="text" id="bulkPkgSku" class="form-control" placeholder="e.g. BLK-KANCHI-001"
@@ -1085,20 +1124,20 @@
                   <div class="form-group">
                     <label for="bulkPkgCategory">Bulk Department / Category *</label>
                     <select id="bulkPkgCategory" class="form-control" required>
-                      <option value="Wedding Troupe">👑 Wedding Troupe Special</option>
-                      <option value="Boutique Reseller">🛍️ Boutique Reseller Pack</option>
-                      <option value="Wholesale Lot">📦 Master Wholesale Lot</option>
-                      <option value="Family Combo Lot">👨‍👩‍👧‍👦 Family Combo Wholesale Lot</option>
-                      <option value="Corporate Gifting">🎁 Corporate &amp; Institutional Gifting</option>
-                      <option value="Custom Pitloom Weave">🏛️ Custom Temple / Academy Weave</option>
+                      <option value="Wedding Troupe">Wedding Troupe Special</option>
+                      <option value="Boutique Reseller">Boutique Reseller Pack</option>
+                      <option value="Wholesale Lot">Master Wholesale Lot</option>
+                      <option value="Family Combo Lot">Family Combo Wholesale Lot</option>
+                      <option value="Corporate Gifting">Corporate &amp; Institutional Gifting</option>
+                      <option value="Custom Pitloom Weave">Custom Temple / Academy Weave</option>
                     </select>
                   </div>
 
                   <div class="form-group">
                     <label for="bulkPkgBadge">Package Badge Motif</label>
                     <input type="text" id="bulkPkgBadge" class="form-control"
-                      placeholder="e.g. 👑 Bridal Troupe Favorite or 🔥 Best Seller"
-                      value="👑 Bridal Troupe Favorite" />
+                      placeholder="e.g. Bridal Troupe Favorite or Best Seller"
+                      value="Bridal Troupe Favorite" />
                   </div>
 
                   <div class="form-group">
@@ -1164,9 +1203,9 @@
                   <div class="form-group">
                     <label for="bulkPkgAvailability">Stock &amp; Loom Availability</label>
                     <select id="bulkPkgAvailability" class="form-control">
-                      <option value="Ready Stock">🟢 Ready Stock in Master Warehouse</option>
-                      <option value="Active on Loom">⏳ Active Pitloom Weaving (Under Production)</option>
-                      <option value="Made-to-Order">🧵 Made-to-Order on Loom (Custom Dye Lot)</option>
+                      <option value="Ready Stock">Ready Stock in Master Warehouse</option>
+                      <option value="Active on Loom">Active Pitloom Weaving (Under Production)</option>
+                      <option value="Made-to-Order">Made-to-Order on Loom (Custom Dye Lot)</option>
                     </select>
                   </div>
                 </div>
@@ -1190,7 +1229,7 @@
                     style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600; font-size: 0.85rem;">
                     <input type="checkbox" id="bulkPkgSilkMark" checked
                       style="width: 16px; height: 16px; accent-color: #D4AF37;" />
-                    <span>🏛️ Silk Mark SMOI Certified 100% Pure Natural Silk Guaranteed</span>
+                    <span><span data-icon="building"></span> Silk Mark SMOI Certified 100% Pure Natural Silk Guaranteed</span>
                   </label>
                 </div>
 
@@ -1210,11 +1249,11 @@
                 <div class="form-group">
                   <label for="bulkPkgPackaging">Packaging &amp; Presentation Style</label>
                   <select id="bulkPkgPackaging" class="form-control">
-                    <option value="Royal Velvet Presentation Boxes">👑 Royal Velvet Heirloom Presentation Gift Boxes
+                    <option value="Royal Velvet Presentation Boxes">Royal Velvet Heirloom Presentation Gift Boxes
                     </option>
-                    <option value="Weather-proof Corrugated Export Carton">📦 Weather-proof Corrugated Master Export
+                    <option value="Weather-proof Corrugated Export Carton">Weather-proof Corrugated Master Export
                       Carton</option>
-                    <option value="Eco-Friendly Cotton Muslin Bags">🌿 Traditional Handloom Muslin Storage Bags</option>
+                    <option value="Eco-Friendly Cotton Muslin Bags">Traditional Handloom Muslin Storage Bags</option>
                   </select>
                 </div>
               </div>
@@ -1236,7 +1275,7 @@
                   </button>
                   <button type="submit" class="btn btn-gold btn-md" id="saveBulkPkgSubmitBtn"
                     style="font-weight: 800; min-width: 240px;">
-                    <span>🚀</span> Publish Bulk Product to Website
+                    <span data-icon="rocket"></span> Publish Bulk Product to Website
                   </button>
                 </div>
               </div>
@@ -1282,7 +1321,7 @@
                 <span>Logistics &amp; Wholesale</span> <span>/</span> <span>Customer Orders</span>
               </div>
               <h1 class="admin-section-title">
-                <span>📑</span> Customer Bulk Orders &amp; Inquiries Ledger
+                <span data-icon="receipt"></span> Customer Bulk Orders &amp; Inquiries Ledger
               </h1>
               <p class="admin-section-subtitle">
                 Review incoming customer bulk inquiries, track advance payments, manage production deadlines, and
@@ -1292,16 +1331,16 @@
             <div class="admin-card-header-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <button type="button" class="btn btn-outline-gold btn-sm"
                 onclick="window.admin && window.admin.switchTab('bulk-products')" style="font-weight: 700;">
-                <span>➕</span> Add Bulk Product
+                <span data-icon="plus"></span> Add Bulk Product
               </button>
               <button type="button" class="btn btn-outline btn-sm" id="downloadBulkOrderTemplateBtn">
                 <span>⬇️</span> CSV Template
               </button>
               <button type="button" class="btn btn-outline-gold btn-sm" id="exportBulkOrdersBtn">
-                <span>📤</span> Export CSV
+                <span data-icon="upload"></span> Export CSV
               </button>
               <button type="button" class="btn btn-gold btn-sm" id="openAddBulkOrderModalBtn" style="font-weight: 700;">
-                <span>➕</span> Manual B2B Order
+                <span data-icon="plus"></span> Manual B2B Order
               </button>
             </div>
           </div>
@@ -1313,7 +1352,7 @@
               style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem;">
               <div style="flex: 1; min-width: 280px;">
                 <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.35rem;">
-                  <span style="font-size: 1.35rem;">🏬</span>
+                  <span data-icon="building" data-icon-size="22"></span>
                   <h3
                     style="margin: 0; color: var(--color-gold); font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em;">
                     STOREFRONT BULK ORDERS SESSION MASTER SWITCH
@@ -1340,17 +1379,17 @@
 
                 <a href="shop.html" target="_blank" class="btn btn-gold btn-sm"
                   style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
-                  <span>👁️</span> View on Website
+                  <span data-icon="eye"></span> View on Website
                 </a>
               </div>
             </div>
           </div>
 
           <!-- BULK ORDERS LIVE METRICS KPI BAR -->
-          <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="admin-stat-grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
             <div class="admin-stat-card" style="border-left: 4px solid var(--color-primary);">
-              <div class="admin-stat-icon">🏢</div>
+              <div class="admin-stat-icon" data-icon="building"></div>
               <div class="admin-stat-info">
                 <span class="admin-stat-label">Total Bulk Orders</span>
                 <h3 class="admin-stat-value" id="bulkKpiOrdersCount">4 Active</h3>
@@ -1359,7 +1398,7 @@
             </div>
 
             <div class="admin-stat-card" style="border-left: 4px solid var(--color-gold);">
-              <div class="admin-stat-icon">📦</div>
+              <div class="admin-stat-icon" data-icon="box"></div>
               <div class="admin-stat-info">
                 <span class="admin-stat-label">Total Bulk Volume</span>
                 <h3 class="admin-stat-value" id="bulkKpiPiecesCount">360 Pcs</h3>
@@ -1368,7 +1407,7 @@
             </div>
 
             <div class="admin-stat-card" style="border-left: 4px solid #10B981;">
-              <div class="admin-stat-icon">💰</div>
+              <div class="admin-stat-icon" data-icon="revenue"></div>
               <div class="admin-stat-info">
                 <span class="admin-stat-label">Wholesale Order Value</span>
                 <h3 class="admin-stat-value" id="bulkKpiTotalValue">₹67,22,625</h3>
@@ -1377,7 +1416,7 @@
             </div>
 
             <div class="admin-stat-card" style="border-left: 4px solid #F59E0B;">
-              <div class="admin-stat-icon">⏳</div>
+              <div class="admin-stat-icon" data-icon="hourglass"></div>
               <div class="admin-stat-info">
                 <span class="admin-stat-label">Pending Balance Due</span>
                 <h3 class="admin-stat-value" id="bulkKpiPendingBalance">₹30,96,000</h3>
@@ -1394,7 +1433,7 @@
               <div>
                 <h3
                   style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold); margin: 0 0 0.25rem 0;">
-                  <span>⚡</span> Bulk Orders Upload &amp; Batch Sync Center
+                  <span data-icon="bolt"></span> Bulk Orders Upload &amp; Batch Sync Center
                 </h3>
                 <span style="font-size: 0.825rem; color: var(--text-muted);">
                   Upload wholesale spreadsheets (CSV) to automatically synchronize B2B client contracts, advance
@@ -1404,10 +1443,10 @@
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button type="button" class="btn btn-outline btn-sm" id="resetSampleBulkOrdersBtn"
                   title="Restore sample verified B2B orders for demonstration">
-                  <span>🔄</span> Reload Sample Orders
+                  <span data-icon="refresh"></span> Reload Sample Orders
                 </button>
                 <button type="button" class="btn btn-outline btn-sm" id="toggleCatalogSyncSectionBtn">
-                  <span>📦</span> Master Catalog SKU Sync ▾
+                  <span data-icon="box"></span> Master Catalog SKU Sync ▾
                 </button>
               </div>
             </div>
@@ -1417,7 +1456,7 @@
               <!-- CSV UPLOAD BOX -->
               <div
                 style="background: var(--bg-surface-alt); border: 2px dashed rgba(212, 175, 55, 0.5); border-radius: var(--radius-md); padding: 1.5rem; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.2s ease;">
-                <div style="font-size: 2.25rem; margin-bottom: 0.5rem;">📂</div>
+                <div data-icon="folder" data-icon-size="36" style="margin-bottom: 0.5rem;"></div>
                 <h4 style="margin: 0 0 0.35rem 0; color: var(--color-primary); font-size: 1.05rem;">Upload Bulk Orders
                   CSV</h4>
                 <p
@@ -1426,7 +1465,7 @@
                 </p>
                 <input type="file" id="importBulkOrdersCsvInput" accept=".csv" class="form-control"
                   style="font-size: 0.85rem; max-width: 280px; margin-bottom: 0.5rem;" />
-                <span style="font-size: 0.725rem; color: #10B981; font-weight: 600;">✓ Automated Schema Validation &amp;
+                <span style="font-size: 0.725rem; color: #10B981; font-weight: 600;"><span data-icon="check" data-icon-size="12"></span> Automated Schema Validation &amp;
                   Instant Table Sync</span>
               </div>
 
@@ -1435,7 +1474,7 @@
                 style="background: var(--bg-surface-alt); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <span style="font-size: 1.25rem;">📋</span>
+                    <span data-icon="fileText" data-icon-size="20"></span>
                     <h4 style="margin: 0; color: var(--color-primary); font-size: 1rem;">Official CSV Column Format</h4>
                   </div>
                   <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 0.75rem;">
@@ -1462,7 +1501,7 @@
                   </button>
                   <button type="button" class="btn btn-gold btn-sm" id="openAddBulkOrderModalBtn2"
                     style="flex: 1; min-width: 140px;">
-                    ➕ Quick Manual Entry
+                    <span data-icon="plus"></span> Quick Manual Entry
                   </button>
                 </div>
               </div>
@@ -1475,12 +1514,12 @@
                 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                 <h4
                   style="margin: 0; color: var(--color-primary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                  <span>📦</span> Master Family Product Catalog CSV Sync (SKU Sync)
+                  <span data-icon="box"></span> Master Family Product Catalog CSV Sync (SKU Sync)
                 </h4>
                 <div style="display: flex; gap: 0.5rem;">
                   <button type="button" class="btn btn-outline btn-xs" id="downloadTemplateBtn">⬇️ Catalog
                     Template</button>
-                  <button type="button" class="btn btn-gold btn-xs" id="exportCsvBtn">📤 Export Catalog CSV</button>
+                  <button type="button" class="btn btn-gold btn-xs" id="exportCsvBtn"><span data-icon="upload"></span> Export Catalog CSV</button>
                 </div>
               </div>
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
@@ -1498,10 +1537,7 @@
             <div
               style="padding: 1.25rem 1.5rem; background: var(--bg-surface); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div style="display: flex; align-items: center; gap: 0.85rem;">
-                <div
-                  style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(122, 12, 46, 0.35)); border: 1.5px solid var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
-                  🏢
-                </div>
+                <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(122, 12, 46, 0.35)); border: 1.5px solid var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;" data-icon="building" data-icon-size="24"></div>
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
                     <h3
@@ -1523,7 +1559,7 @@
                 <button type="button" class="btn btn-gold btn-sm"
                   onclick="document.getElementById('openAddBulkOrderModalBtn')?.click()"
                   style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700;">
-                  <span>➕</span> Book New Bulk Order
+                  <span data-icon="plus"></span> Book New Bulk Order
                 </button>
               </div>
             </div>
@@ -1535,7 +1571,7 @@
                 style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; flex: 1; min-width: 300px;">
                 <div style="position: relative; flex: 2; min-width: 240px;">
                   <input type="text" id="bulkOrderSearchInput"
-                    placeholder="🔍 Search Customer, Company, Phone, GSTIN, Order ID..."
+                    placeholder="Search Customer, Company, Phone, GSTIN, Order ID..."
                     style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
                 </div>
 
@@ -1552,12 +1588,12 @@
                 <select id="bulkOrderStatusFilter" class="form-control"
                   style="flex: 1; min-width: 150px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
                   <option value="ALL">All Statuses</option>
-                  <option value="New Inquiry">✨ New Inquiry</option>
-                  <option value="Quote Sent">💬 Quote Sent</option>
-                  <option value="Under Production">⏳ Under Production</option>
-                  <option value="Ready to Ship">📦 Ready to Ship</option>
-                  <option value="Dispatched">🚚 Dispatched</option>
-                  <option value="Delivered">✅ Delivered</option>
+                  <option value="New Inquiry">New Inquiry</option>
+                  <option value="Quote Sent">Quote Sent</option>
+                  <option value="Under Production">Under Production</option>
+                  <option value="Ready to Ship">Ready to Ship</option>
+                  <option value="Dispatched">Dispatched</option>
+                  <option value="Delivered">Delivered</option>
                 </select>
               </div>
 
@@ -1605,7 +1641,7 @@
                   Orders</span>
               </div>
               <h1 class="admin-section-title">
-                <span>👨‍👩‍👧‍👦</span> Family Combos &amp; Sets Command Center
+                <span data-icon="family"></span> Family Combos &amp; Sets Command Center
               </h1>
               <p class="admin-section-subtitle">
                 Create luxury big poster ensembles, alter &amp; remove combos in real-time, and manage customer family
@@ -1615,11 +1651,11 @@
             <div class="admin-card-header-actions">
               <a href="shop.html#familyCombosSection" target="_blank" class="btn btn-outline btn-sm"
                 style="border-color: #10B981; color: #10B981; display: inline-flex; align-items: center; gap: 0.35rem;">
-                🌐 View on Website
+                <span data-icon="globe"></span> View on Website
               </a>
               <button class="btn btn-gold btn-sm"
                 onclick="window.admin && window.admin.switchFamilyCombosSubTab('combos', true)">
-                ➕ Add New Combo
+                <span data-icon="plus"></span> Add New Combo
               </button>
             </div>
           </div>
@@ -1630,12 +1666,12 @@
             <button type="button" id="famSubTabBtn-combos" class="btn btn-gold btn-sm"
               style="font-weight: 800; border-radius: 30px; padding: 0.5rem 1.25rem;"
               onclick="window.admin && window.admin.switchFamilyCombosSubTab('combos')">
-              🎨 1. Manage Combos &amp; Big Posters (<span id="famCombosCountTabBadge">2</span>)
+              <span data-icon="palette"></span> 1. Manage Combos &amp; Big Posters (<span id="famCombosCountTabBadge">2</span>)
             </button>
             <button type="button" id="famSubTabBtn-orders" class="btn btn-outline btn-sm"
               style="font-weight: 800; border-radius: 30px; padding: 0.5rem 1.25rem; color: var(--text-main); border-color: rgba(212, 175, 55, 0.4);"
               onclick="window.admin && window.admin.switchFamilyCombosSubTab('orders')">
-              📦 2. Customer Combo Orders (<span id="famOrdersCountTabBadge">2</span>)
+              <span data-icon="box"></span> 2. Customer Combo Orders (<span id="famOrdersCountTabBadge">2</span>)
             </button>
           </div>
 
@@ -1650,7 +1686,7 @@
               <div
                 style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                 <div style="display: flex; align-items: center; gap: 0.85rem;">
-                  <span style="font-size: 1.5rem;">👨‍👩‍👧‍👦</span>
+                  <span data-icon="family" data-icon-size="24"></span>
                   <div>
                     <h4 style="margin: 0; color: var(--color-gold); font-size: 0.95rem; font-weight: 800;">
                       STOREFRONT "COLLECTION 01: FAMILY MATCHING COMBOS" LIVE VISIBILITY
@@ -1691,12 +1727,14 @@
                       <span>WEBSITE AUTO-ROTATION SLIDESHOW TIMER</span>
                       <span id="famRotationLiveBadge"
                         style="font-size: 0.72rem; padding: 2px 8px; border-radius: 12px; background: rgba(16, 185, 129, 0.18); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.35); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+                        <span
+                          style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
                         Auto-Rotating (5s)
                       </span>
                     </h4>
                     <span style="font-size: 0.825rem; color: var(--text-muted);">
-                      Set how many seconds each Family Combo product displays before automatically replacing with the next combo on the website.
+                      Set how many seconds each Family Combo product displays before automatically replacing with the
+                      next combo on the website.
                     </span>
                   </div>
                 </div>
@@ -1709,7 +1747,8 @@
                       <span class="festive-toggle-slider"></span>
                     </label>
                     <span id="famAutoRotateToggleLabel"
-                      style="font-weight: 800; font-size: 0.8rem; letter-spacing: 0.04em; color: var(--color-success);">AUTO-ROTATION ON</span>
+                      style="font-weight: 800; font-size: 0.8rem; letter-spacing: 0.04em; color: var(--color-success);">AUTO-ROTATION
+                      ON</span>
                   </div>
                 </div>
               </div>
@@ -1718,7 +1757,8 @@
               <div
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; align-items: center;">
                 <!-- Interval Input in Seconds -->
-                <div style="background: rgba(0, 0, 0, 0.25); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.25);">
+                <div
+                  style="background: rgba(0, 0, 0, 0.25); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.25);">
                   <label
                     style="font-size: 0.825rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">
                     ⏱️ Auto-Change Speed (Seconds) *
@@ -1736,20 +1776,21 @@
                 </div>
 
                 <!-- Quick Preset Pills -->
-                <div style="background: rgba(0, 0, 0, 0.25); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.25);">
+                <div
+                  style="background: rgba(0, 0, 0, 0.25); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.25);">
                   <label
                     style="font-size: 0.825rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">
-                    ⚡ Quick Speed Presets:
+                    <span data-icon="bolt"></span> Quick Speed Presets:
                   </label>
                   <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
                     <button type="button" class="btn btn-outline btn-xs"
-                      onclick="window.admin && window.admin.setRotationInterval(3)">⚡ 3s (Fast)</button>
+                      onclick="window.admin && window.admin.setRotationInterval(3)"><span data-icon="bolt"></span> 3s (Fast)</button>
                     <button type="button" class="btn btn-outline btn-xs"
                       onclick="window.admin && window.admin.setRotationInterval(5)">⭐ 5s (Standard)</button>
                     <button type="button" class="btn btn-outline btn-xs"
-                      onclick="window.admin && window.admin.setRotationInterval(7)">🌿 7s (Smooth)</button>
+                      onclick="window.admin && window.admin.setRotationInterval(7)"><span data-icon="leaf"></span> 7s (Smooth)</button>
                     <button type="button" class="btn btn-outline btn-xs"
-                      onclick="window.admin && window.admin.setRotationInterval(10)">🛋️ 10s (Relaxed)</button>
+                      onclick="window.admin && window.admin.setRotationInterval(10)"><span data-icon="cart"></span> 10s (Relaxed)</button>
                   </div>
                 </div>
 
@@ -1764,7 +1805,7 @@
                 <div>
                   <h3 id="famComboFormHeading"
                     style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold); margin: 0 0 0.25rem 0;">
-                    <span>➕</span> Add New Family Combo Set
+                    <span data-icon="plus"></span> Add New Family Combo Set
                   </h3>
                   <span id="famComboFormSubheading" style="font-size: 0.825rem; color: var(--text-muted);">
                     Publish high-impact big poster combos with 4-piece coordinated matching sets for Father, Mother, Son
@@ -1807,8 +1848,8 @@
                       Luxury Badge Tag
                     </label>
                     <input type="text" id="famComboFormBadge" class="admin-input"
-                      placeholder="e.g. 👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE"
-                      value="👨‍👩‍👧‍👦 HIGH VALUE FAMILY BUNDLE" style="width: 100%;" />
+                      placeholder="e.g. HIGH VALUE FAMILY BUNDLE"
+                      value="HIGH VALUE FAMILY BUNDLE" style="width: 100%;" />
                   </div>
 
                   <!-- Color Theme -->
@@ -1849,43 +1890,57 @@
                   </div>
 
                   <!-- Grand Big Poster Image URL, Upload & Live Preview Box Setup -->
-                  <div class="admin-form-group" style="grid-column: 1 / -1; background: rgba(0, 0, 0, 0.28); border: 1.5px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 1.25rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
-                      <label style="font-weight: 800; color: var(--color-gold); font-size: 0.95rem; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
-                        <span>🖼️</span> Grand Family Poster Image &amp; Display Box *
+                  <div class="admin-form-group"
+                    style="grid-column: 1 / -1; background: rgba(0, 0, 0, 0.28); border: 1.5px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 1.25rem;">
+                    <div
+                      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+                      <label
+                        style="font-weight: 800; color: var(--color-gold); font-size: 0.95rem; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                        <span data-icon="camera"></span> Grand Family Poster Image &amp; Display Box *
                       </label>
-                      <span style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 3px 9px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
-                        ✨ Recommended: HD Portrait / 16:10 Ratio
+                      <span
+                        style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 3px 9px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+                        <span data-icon="sparkle"></span> Recommended: HD Portrait / 16:10 Ratio
                       </span>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: minmax(220px, 260px) 1fr; gap: 1.5rem; align-items: start;" class="admin-poster-box-layout">
+                    <div
+                      style="display: grid; grid-template-columns: minmax(220px, 260px) 1fr; gap: 1.5rem; align-items: start;"
+                      class="admin-poster-box-layout">
                       <!-- Live Image Preview Box -->
                       <div id="famComboPosterPreviewBox"
                         style="position: relative; width: 100%; height: 220px; border-radius: 8px; overflow: hidden; border: 2px solid var(--color-gold); background: #0c080a; box-shadow: 0 8px 24px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; text-align: center;">
-                        <img id="famComboPosterImgPreview" src="assets/images/family_matching_combo.jpg" alt="Family Combo Poster Preview"
+                        <img id="famComboPosterImgPreview" src="assets/images/family_matching_combo.jpg"
+                          alt="Family Combo Poster Preview"
                           style="width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.3s ease;"
                           onerror="this.onerror=null; this.src='assets/images/family_matching_combo.jpg';" />
-                        
+
                         <!-- Overlay Pill -->
-                        <div style="position: absolute; bottom: 8px; left: 8px; right: 8px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(212,175,55,0.4); display: flex; justify-content: space-between; align-items: center;">
-                          <span style="font-size: 0.7rem; color: var(--color-gold); font-weight: 800;">✨ Live Preview</span>
-                          <span id="famComboPosterStatusPill" style="font-size: 0.65rem; color: #10B981; font-weight: 700; background: rgba(16,185,129,0.15); padding: 2px 6px; border-radius: 3px;">Ready</span>
+                        <div
+                          style="position: absolute; bottom: 8px; left: 8px; right: 8px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(212,175,55,0.4); display: flex; justify-content: space-between; align-items: center;">
+                          <span style="font-size: 0.7rem; color: var(--color-gold); font-weight: 800;"><span data-icon="sparkle"></span> Live
+                            Preview</span>
+                          <span id="famComboPosterStatusPill"
+                            style="font-size: 0.65rem; color: #10B981; font-weight: 700; background: rgba(16,185,129,0.15); padding: 2px 6px; border-radius: 3px;">Ready</span>
                         </div>
                       </div>
 
                       <!-- Upload Controls, URL Input & Quick Presets -->
                       <div style="display: flex; flex-direction: column; gap: 0.85rem;">
                         <!-- Device File Upload -->
-                        <div style="background: rgba(212, 175, 55, 0.05); border: 1.5px dashed rgba(212, 175, 55, 0.4); border-radius: 8px; padding: 0.9rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                        <div
+                          style="background: rgba(212, 175, 55, 0.05); border: 1.5px dashed rgba(212, 175, 55, 0.4); border-radius: 8px; padding: 0.9rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
                           <div>
-                            <strong style="display: block; font-size: 0.875rem; color: #FFF; margin-bottom: 0.15rem;">📁 Upload Image from Device</strong>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">Select from phone or PC (JPG, PNG, WebP)</span>
+                            <strong style="display: block; font-size: 0.875rem; color: #FFF; margin-bottom: 0.15rem;"><span data-icon="folder"></span>
+                              Upload Image from Device</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Select from phone or PC (JPG,
+                              PNG, WebP)</span>
                           </div>
                           <div>
-                            <button type="button" class="btn btn-gold btn-sm" onclick="document.getElementById('famComboPosterFileInput').click()"
+                            <button type="button" class="btn btn-gold btn-sm"
+                              onclick="document.getElementById('famComboPosterFileInput').click()"
                               style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
-                              <span>📂</span> Choose File
+                              <span data-icon="folder"></span> Choose File
                             </button>
                             <input type="file" id="famComboPosterFileInput" accept="image/*" style="display: none;"
                               onchange="window.admin && window.admin.handleFamilyPosterFileUpload(event)" />
@@ -1894,7 +1949,8 @@
 
                         <!-- Direct Image URL / Path -->
                         <div>
-                          <label for="famComboFormPoster" style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.25rem;">
+                          <label for="famComboFormPoster"
+                            style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.25rem;">
                             Or Direct Image URL / Local Asset Path:
                           </label>
                           <input type="text" id="famComboFormPoster" class="admin-input" required
@@ -1912,13 +1968,13 @@
                   style="background: rgba(212, 175, 55, 0.04); border: 1px dashed rgba(212, 175, 55, 0.4); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem;">
                   <h4
                     style="margin: 0 0 1rem 0; color: var(--color-gold); font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 0.4rem;">
-                    <span>🧵</span> Synchronized Family Member Inclusions
+                    <span data-icon="thread"></span> Synchronized Family Member Inclusions
                   </h4>
                   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
                     <div>
                       <label
                         style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.25rem;">
-                        ✨ Mother's Saree &amp; Blouse *
+                        <span data-icon="ladies"></span> Mother's Saree &amp; Blouse *
                       </label>
                       <input type="text" id="famComboMotherItem" class="admin-input" required
                         placeholder="e.g. Rajasi Heavy Gold Zari Kanchipuram Silk Saree (6.3m with Blouse Piece)"
@@ -1928,7 +1984,7 @@
                     <div>
                       <label
                         style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.25rem;">
-                        👨 Father's Shirt &amp; Dhoti *
+                        <span data-icon="mens"></span> Father's Shirt &amp; Dhoti *
                       </label>
                       <input type="text" id="famComboFatherItem" class="admin-input" required
                         placeholder="e.g. Pure Mulberry Silk Shirt (Full Sleeve) & 8-Muzham Pure Zari Dhoti Set"
@@ -1938,7 +1994,7 @@
                     <div>
                       <label
                         style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.25rem;">
-                        👧 Daughter's Pattu Pavadai *
+                        <span data-icon="girls"></span> Daughter's Pattu Pavadai *
                       </label>
                       <input type="text" id="famComboDaughterItem" class="admin-input" required
                         placeholder="e.g. Matching Mayuri Pattu Pavadai with Soft Cotton Lining"
@@ -1948,7 +2004,7 @@
                     <div>
                       <label
                         style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.25rem;">
-                        👦 Son's Kurta &amp; Dhoti *
+                        <span data-icon="boys"></span> Son's Kurta &amp; Dhoti *
                       </label>
                       <input type="text" id="famComboSonItem" class="admin-input" required
                         placeholder="e.g. Royal Silk Jacquard Kurta & Elastic Adjust Dhoti Pant Set"
@@ -1983,7 +2039,7 @@
                     </button>
                     <button type="submit" id="famComboFormSubmitBtn" class="btn btn-gold btn-sm"
                       style="font-weight: 800; min-width: 180px;">
-                      ➕ Publish Family Combo
+                      <span data-icon="plus"></span> Publish Family Combo
                     </button>
                   </div>
                 </div>
@@ -1994,11 +2050,12 @@
             <div class="admin-card">
               <div class="admin-card-header"
                 style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.75rem;">
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.75rem;">
                   <div>
                     <h3
                       style="margin: 0; color: var(--color-gold); font-size: 1.05rem; display: flex; align-items: center; gap: 0.4rem;">
-                      <span>🏛️</span> Active Family Matching Combos (<span id="adminFamilyCombosListCount">0</span>)
+                      <span data-icon="building"></span> Active Family Matching Combos (<span id="adminFamilyCombosListCount">0</span>)
                     </h3>
                     <span style="font-size: 0.825rem; color: var(--text-muted);">
                       Each combo rotates automatically on the website. Click "Alter" to edit or "Remove" to delete.
@@ -2006,7 +2063,7 @@
                   </div>
                   <div id="famListRotationIndicator"
                     style="font-size: 0.75rem; color: var(--color-gold); background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span>🔄 Website Auto-Rotation:</span> <strong id="famListRotationSpeedText">5s Interval</strong>
+                    <span><span data-icon="refresh"></span> Website Auto-Rotation:</span> <strong id="famListRotationSpeedText">5s Interval</strong>
                   </div>
                 </div>
               </div>
@@ -2024,10 +2081,10 @@
           <div id="famSubView-orders" style="display: none;">
 
             <!-- ORDERS KPI BAR -->
-            <div
-              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="admin-stat-grid"
+              style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
               <div class="admin-stat-card" style="border-left: 4px solid var(--color-gold);">
-                <div class="admin-stat-icon">📦</div>
+                <div class="admin-stat-icon" data-icon="box"></div>
                 <div class="admin-stat-info">
                   <span class="admin-stat-label">Total Orders</span>
                   <h3 class="admin-stat-value" id="famKpiTotalOrders">0</h3>
@@ -2035,7 +2092,7 @@
               </div>
 
               <div class="admin-stat-card" style="border-left: 4px solid #F59E0B;">
-                <div class="admin-stat-icon">⏳</div>
+                <div class="admin-stat-icon" data-icon="hourglass"></div>
                 <div class="admin-stat-info">
                   <span class="admin-stat-label">Pending Review</span>
                   <h3 class="admin-stat-value" id="famKpiPendingOrders">0</h3>
@@ -2043,7 +2100,7 @@
               </div>
 
               <div class="admin-stat-card" style="border-left: 4px solid #3B82F6;">
-                <div class="admin-stat-icon">🧵</div>
+                <div class="admin-stat-icon" data-icon="thread"></div>
                 <div class="admin-stat-info">
                   <span class="admin-stat-label">In Weaving / Packing</span>
                   <h3 class="admin-stat-value" id="famKpiInProgressOrders">0</h3>
@@ -2051,7 +2108,7 @@
               </div>
 
               <div class="admin-stat-card" style="border-left: 4px solid #10B981;">
-                <div class="admin-stat-icon">✅</div>
+                <div class="admin-stat-icon" data-icon="check"></div>
                 <div class="admin-stat-info">
                   <span class="admin-stat-label">Delivered</span>
                   <h3 class="admin-stat-value" id="famKpiDeliveredOrders">0</h3>
@@ -2059,7 +2116,7 @@
               </div>
 
               <div class="admin-stat-card" style="border-left: 4px solid #8B5CF6;">
-                <div class="admin-stat-icon">💰</div>
+                <div class="admin-stat-icon" data-icon="revenue"></div>
                 <div class="admin-stat-info">
                   <span class="admin-stat-label">Combo Revenue</span>
                   <h3 class="admin-stat-value" id="famKpiRevenue">₹0</h3>
@@ -2073,7 +2130,7 @@
                 style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
                 <div style="flex: 1; min-width: 260px;">
                   <input type="text" id="famOrderSearchInput" class="admin-input"
-                    placeholder="🔍 Search orders by customer name, phone, order ID, or combo..."
+                    placeholder="Search orders by customer name, phone, order ID, or combo..."
                     style="width: 100%; font-size: 0.85rem;"
                     oninput="window.admin && window.admin.renderFamilyComboOrdersTable()" />
                 </div>
@@ -2083,11 +2140,11 @@
                     style="font-size: 0.85rem; padding: 0.5rem 0.75rem;"
                     onchange="window.admin && window.admin.renderFamilyComboOrdersTable()">
                     <option value="ALL">All Order Statuses</option>
-                    <option value="Pending">⏳ Pending</option>
-                    <option value="Confirmed">✓ Confirmed</option>
-                    <option value="In Weaving / Packing">🧵 In Weaving / Packing</option>
-                    <option value="Dispatched">🚚 Dispatched</option>
-                    <option value="Delivered">✅ Delivered</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="In Weaving / Packing">In Weaving / Packing</option>
+                    <option value="Dispatched">Dispatched</option>
+                    <option value="Delivered">Delivered</option>
                   </select>
 
                   <button type="button" class="btn btn-outline btn-sm"
@@ -2135,7 +2192,7 @@
                 <span>Inventory</span> <span>/</span> <span>Real-Time Stock</span>
               </div>
               <h1 class="admin-section-title">
-                <span>📦</span> Real-Time Stock &amp; Inventory Control
+                <span data-icon="box"></span> Real-Time Stock &amp; Inventory Control
               </h1>
               <p class="admin-section-subtitle">
                 Update stock units here and watch them reflect across customer storefronts (Home, Shop &amp; PDP) in
@@ -2145,11 +2202,11 @@
             <div class="admin-card-header-actions">
               <a href="index.html" target="_blank" class="btn btn-outline btn-sm"
                 style="border-color: #10B981; color: #10B981; display: inline-flex; align-items: center; gap: 0.35rem;">
-                🌐 Live Website
+                <span data-icon="globe"></span> Live Website
               </a>
               <a href="shop.html" target="_blank" class="btn btn-gold btn-sm"
                 style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                🛍️ Live Shop
+                <span data-icon="cart"></span> Live Shop
               </a>
               <button class="btn btn-primary btn-sm" onclick="window.admin.switchTab('uploader')">+ Add New SKU</button>
             </div>
@@ -2164,7 +2221,7 @@
                 <span
                   style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10B981; box-shadow: 0 0 10px #10B981;"></span>
                 <div>
-                  <strong style="color: #10B981; font-size: 0.95rem; display: block;">🟢 Real-Time Storefront Live Sync
+                  <strong style="color: #10B981; font-size: 0.95rem; display: block;"><span data-icon="statusLive"></span> Real-Time Storefront Live Sync
                     Active (BroadcastChannel + LocalStorage)</strong>
                   <span style="font-size: 0.8rem; color: var(--text-muted);">
                     Any stock units you update below automatically propagate with 0-delay to all visitor screens without
@@ -2175,10 +2232,10 @@
               <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                 <button id="quickRestockLowBtn" class="btn btn-outline btn-sm"
                   style="border-color: #D4AF37; color: var(--color-gold);">
-                  ⚡ Restock All Low Items (+5)
+                  <span data-icon="bolt"></span> Restock All Low Items (+5)
                 </button>
                 <button id="resetSampleStockBtn" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
-                  🔄 Reset Default Stock
+                  <span data-icon="refresh"></span> Reset Default Stock
                 </button>
               </div>
             </div>
@@ -2190,7 +2247,7 @@
             <div
               style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div style="display: flex; align-items: center; gap: 0.85rem;">
-                <span style="font-size: 1.5rem;">👨‍👩‍👧‍👦</span>
+                <span data-icon="family" data-icon-size="24"></span>
                 <div>
                   <h4 style="margin: 0; color: var(--color-gold); font-size: 0.95rem; font-weight: 800;">
                     COLLECTION 01: FAMILY MATCHING COMBOS SESSION VISIBILITY
@@ -2249,7 +2306,7 @@
               style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
               <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1; min-width: 280px;">
                 <input type="text" id="inventorySearchInput"
-                  placeholder="🔍 Search SKU, title, department, or fabric..." class="form-control"
+                  placeholder="Search SKU, title, department, or fabric..." class="form-control"
                   style="flex: 2; min-width: 220px; font-size: 0.85rem;" />
                 <select id="inventoryDeptFilter" class="form-control"
                   style="flex: 1; min-width: 160px; font-size: 0.85rem;">
@@ -2303,7 +2360,7 @@
           <div class="admin-section-header">
             <div>
               <div class="admin-breadcrumb">LOGISTICS / ORDER FULFILLMENT</div>
-              <h2 class="admin-section-title"><span>📄</span> ORDER FULFILLMENT &amp; 1-CLICK GST INVOICING</h2>
+              <h2 class="admin-section-title"><span data-icon="fileText"></span> ORDER FULFILLMENT &amp; 1-CLICK GST INVOICING</h2>
               <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
                 Real-time customer storefront orders with instant PDF invoice generator.
               </p>
@@ -2316,7 +2373,7 @@
             <div class="admin-card-header" style="flex-wrap: wrap; gap: 1rem;">
               <div>
                 <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gold);">
-                  <span>📑</span> Real-Time Orders PDF Export &amp; Print Center
+                  <span data-icon="receipt"></span> Real-Time Orders PDF Export &amp; Print Center
                 </h3>
                 <span style="font-size: 0.8rem; color: var(--text-muted);">
                   Instant 1-Click Official PDF Reports • GST Invoices
@@ -2325,11 +2382,11 @@
               <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
                 <button type="button" class="btn btn-gold btn-sm" id="printAllOrdersReportBtn"
                   style="display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 800;">
-                  <span>🖨️</span> Print Orders Report (PDF)
+                  <span data-icon="printer"></span> Print Orders Report (PDF)
                 </button>
                 <button type="button" class="btn btn-outline-gold btn-sm" id="printAllInvoicesBtn"
                   style="display: inline-flex; align-items: center; gap: 0.45rem;">
-                  <span>🧾</span> Print All Invoices (PDF)
+                  <span data-icon="receipt"></span> Print All Invoices (PDF)
                 </button>
               </div>
             </div>
@@ -2351,7 +2408,7 @@
           <!-- ORDERS DATA TABLE -->
           <div class="admin-card">
             <div class="admin-card-header">
-              <h3><span>📦</span> Customer Orders Stream</h3>
+              <h3><span data-icon="box"></span> Customer Orders Stream</h3>
               <span style="font-size: 0.8rem; color: var(--text-muted);">Real-time storefront checkout entries</span>
             </div>
             <div class="admin-table-wrapper">
@@ -2385,7 +2442,7 @@
                 <span>Sales &amp; Promotions</span> <span>/</span> <span>Coupons &amp; Offers</span>
               </div>
               <h1 class="admin-section-title">
-                <span>🏷️</span> Promotional Coupons &amp; Discount Privileges
+                <span data-icon="tag"></span> Promotional Coupons &amp; Discount Privileges
               </h1>
               <p class="admin-section-subtitle">
                 Create, alter, and toggle discount vouchers in real time. Modifications immediately synchronize with
@@ -2396,8 +2453,50 @@
               <button class="btn btn-gold btn-sm" id="openAddCouponBtn"
                 onclick="window.admin && window.admin.openCouponModal()"
                 style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
-                <span>➕</span> Create New Coupon
+                <span data-icon="plus"></span> Create New Coupon
               </button>
+            </div>
+          </div>
+
+          <!-- MASTER COUPONS & FLOATING POPUP LIVE CONTROLLER CARD -->
+          <div class="admin-card coupon-master-card"
+            style="border: 2px solid var(--color-gold); background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(122,12,46,0.12) 100%); margin-bottom: 1.5rem;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+              <div style="max-width: 620px;">
+                <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.35rem;">
+                  <span data-icon="tag" data-icon-size="22"></span>
+                  <h3
+                    style="margin: 0; font-family: var(--font-serif-display); font-size: 1.25rem; color: var(--color-gold);">
+                    Master Coupon Session &amp; Floating Popup Visibility
+                  </h3>
+                  <span id="couponMasterStatusPill" class="festive-status-pill live">
+                    <span class="admin-pulse-dot"></span> <span data-icon="statusLive"></span> LIVE ON STOREFRONT
+                  </span>
+                </div>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                  Toggle this master switch to show or completely remove the floating coupon pop and discount vouchers
+                  across the website (<code>shop.html</code> and <code>index.html</code>) in real-time.
+                </p>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 1.25rem;">
+                <div class="festive-switch-wrapper">
+                  <label class="festive-toggle-switch" title="Toggle Coupon Session On/Off">
+                    <input type="checkbox" id="couponMasterToggle" checked
+                      onchange="window.admin && window.admin.handleMasterCouponToggle(this.checked)" />
+                    <span class="festive-toggle-slider"></span>
+                  </label>
+                  <span id="couponMasterToggleLabel"
+                    style="font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; color: var(--color-success);">SESSION
+                    ON</span>
+                </div>
+
+                <a href="shop.html" target="_blank" class="btn btn-gold btn-sm"
+                  style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
+                  <span data-icon="eye"></span> View Live Site
+                </a>
+              </div>
             </div>
           </div>
 
@@ -2407,7 +2506,7 @@
             <div class="kpi-card">
               <div class="kpi-header">
                 <span class="kpi-label">TOTAL COUPONS</span>
-                <span class="kpi-icon">🏷️</span>
+                <span class="kpi-icon" data-icon="tag"></span>
               </div>
               <div class="kpi-value" id="kpiTotalCoupons">6</div>
               <div class="kpi-subtext">Registered promo vouchers</div>
@@ -2415,7 +2514,7 @@
             <div class="kpi-card">
               <div class="kpi-header">
                 <span class="kpi-label">ACTIVE CODES</span>
-                <span class="kpi-icon">🟢</span>
+                <span class="kpi-icon" data-icon="statusLive"></span>
               </div>
               <div class="kpi-value" id="kpiActiveCoupons" style="color: #059669;">5</div>
               <div class="kpi-subtext">Live on customer storefront</div>
@@ -2431,7 +2530,7 @@
             <div class="kpi-card">
               <div class="kpi-header">
                 <span class="kpi-label">MAX DISCOUNT CAP</span>
-                <span class="kpi-icon">⚡</span>
+                <span class="kpi-icon" data-icon="bolt"></span>
               </div>
               <div class="kpi-value" id="kpiMaxCouponDiscount">20% OFF</div>
               <div class="kpi-subtext">Highest active customer privilege</div>
@@ -2445,15 +2544,15 @@
               <div
                 style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; flex: 1; min-width: 300px;">
                 <div style="position: relative; flex: 2; min-width: 220px;">
-                  <input type="text" id="couponSearchInput" placeholder="🔍 Search Coupon Code, Title, Discount..."
+                  <input type="text" id="couponSearchInput" placeholder="Search Coupon Code, Title, Discount..."
                     style="width: 100%; padding: 0.5rem 0.85rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main);" />
                 </div>
 
                 <select id="couponStatusFilter" class="form-control"
                   style="flex: 1; min-width: 140px; padding: 0.5rem 0.75rem; font-size: 0.825rem; background: var(--bg-surface); color: var(--text-main); border: 1.5px solid var(--border-color);">
                   <option value="ALL">All Statuses</option>
-                  <option value="ACTIVE">🟢 Active Only</option>
-                  <option value="INACTIVE">🔴 Inactive / Disabled</option>
+                  <option value="ACTIVE">Active Only</option>
+                  <option value="INACTIVE">Inactive / Disabled</option>
                 </select>
 
                 <select id="couponTypeFilter" class="form-control"
@@ -2507,7 +2606,7 @@
                 <span>Customer Relations</span> <span>/</span> <span>Restock Waitlist</span>
               </div>
               <h1 class="admin-section-title">
-                <span>🔔</span> Customer Restock Waitlist &amp; Availability Alerts
+                <span data-icon="bell"></span> Customer Restock Waitlist &amp; Availability Alerts
               </h1>
               <p class="admin-section-subtitle">
                 Direct customer alerts submitted when clicking "Notify Me When Available" on out-of-stock garments.
@@ -2553,7 +2652,7 @@
                 <span>Customer Feedback</span> <span>/</span> <span>Customer Reviews</span>
               </div>
               <h1 class="admin-section-title">
-                <span>🌟</span> Customer Feedback, Quality Reviews &amp; Fabric Scores
+                <span data-icon="star"></span> Customer Feedback, Quality Reviews &amp; Fabric Scores
               </h1>
               <p class="admin-section-subtitle">
                 Confidential customer submissions &amp; fabric reviews. Exclusively visible to Store Owner.
@@ -2565,7 +2664,7 @@
                 <span id="btnFeedbackCount">3 Reviews</span>
               </span>
               <button type="button" class="btn btn-outline-gold btn-sm" id="exportFeedbacksCsvBtn">
-                <span>📥</span> Export Feedbacks CSV
+                <span data-icon="download"></span> Export Feedbacks CSV
               </button>
             </div>
           </div>
@@ -2574,8 +2673,8 @@
           <div class="feedback-stats-grid">
             <div class="feedback-stat-card">
               <span class="stat-label">Average Customer Rating</span>
-              <h3 class="stat-val" id="fbAvgRatingVal">5.0 ★</h3>
-              <span class="stat-sub">★★★★★ (100% Top Tier)</span>
+              <h3 class="stat-val" id="fbAvgRatingVal">5.0 <span data-icon="star" data-icon-size="14"></span></h3>
+              <span class="stat-sub"><span data-icon="star" data-icon-size="12"></span><span data-icon="star" data-icon-size="12"></span><span data-icon="star" data-icon-size="12"></span><span data-icon="star" data-icon-size="12"></span><span data-icon="star" data-icon-size="12"></span> (100% Top Tier)</span>
             </div>
             <div class="feedback-stat-card">
               <span class="stat-label">Total Verified Reviews</span>
@@ -2598,7 +2697,7 @@
           <div class="feedback-filter-bar">
             <div style="flex: 2; min-width: 240px;">
               <input type="text" id="feedbackSearchInput" class="form-control"
-                placeholder="🔍 Search customer name, city, review comments..." style="font-size: 0.85rem;" />
+                placeholder="Search customer name, city, review comments..." style="font-size: 0.85rem;" />
             </div>
             <div style="flex: 1.5; min-width: 220px;">
               <select id="feedbackDeptFilter" class="form-control" style="font-size: 0.85rem;">
@@ -2649,7 +2748,7 @@
                   2026</span>
               </div>
               <h1 class="admin-section-title">
-                <span>🎉</span> "LIMITED TIME FESTIVE SPECIAL 2026" Command Session
+                <span data-icon="party"></span> "LIMITED TIME FESTIVE SPECIAL 2026" Command Session
               </h1>
               <p class="admin-section-subtitle">
                 Comprehensive store owner control for the seasonal festival campaign. Manage festive discount vouchers,
@@ -2660,7 +2759,7 @@
               <button type="button" class="btn btn-outline-gold btn-sm" id="resetFestiveDefaultBtn"
                 onclick="window.admin && window.admin.handleResetFestiveDefaults()"
                 title="Restore default Festive 2026 campaign template">
-                🔄 Restore Defaults
+                <span data-icon="refresh"></span> Restore Defaults
               </button>
             </div>
           </div>
@@ -2672,13 +2771,13 @@
               style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
               <div style="max-width: 620px;">
                 <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.5rem;">
-                  <span style="font-size: 1.4rem;">👑</span>
+                  <span data-icon="crown" data-icon-size="22"></span>
                   <h3
                     style="margin: 0; font-family: var(--font-serif-display); font-size: 1.35rem; color: var(--color-gold);">
                     Master Festive Session Visibility
                   </h3>
                   <span id="festiveStatusPill" class="festive-status-pill live">
-                    <span class="admin-pulse-dot"></span> 🟢 LIVE ON STOREFRONT
+                    <span class="admin-pulse-dot"></span> <span data-icon="statusLive"></span> LIVE ON STOREFRONT
                   </span>
                 </div>
                 <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
@@ -2702,7 +2801,7 @@
 
                 <a href="shop.html" target="_blank" class="btn btn-gold btn-sm"
                   style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 800;">
-                  <span>👁️</span> View Live Site
+                  <span data-icon="eye"></span> View Live Site
                 </a>
               </div>
             </div>
@@ -2715,7 +2814,7 @@
             <!-- CARD 1: CAMPAIGN HEADLINE & METADATA -->
             <div class="admin-card">
               <div class="admin-card-header">
-                <h3><span>🏷️</span> Campaign Headlines &amp; Banners</h3>
+                <h3><span data-icon="tag"></span> Campaign Headlines &amp; Banners</h3>
                 <span style="font-size: 0.775rem; color: var(--text-muted);">Front-facing titles</span>
               </div>
               <form id="festiveMetaForm" onsubmit="window.admin && window.admin.handleSaveFestiveMeta(event)"
@@ -2737,7 +2836,7 @@
                     Section Tag / Badge Motif
                   </label>
                   <input type="text" id="festiveBadgeInput" class="form-control"
-                    value="🎉 LIMITED TIME FESTIVE SPECIAL 2026" />
+                    value="LIMITED TIME FESTIVE SPECIAL 2026" />
                 </div>
 
                 <div>
@@ -2765,12 +2864,12 @@
                     <span>Display Golden Top Announcement Bar on Storefront</span>
                   </label>
                   <input type="text" id="festiveTickerTextInput" class="form-control"
-                    value="✨ LIMITED TIME FESTIVE SPECIAL 2026: Up to 22% OFF Family Combos + Complimentary Pure Silver Silk Mark Gifts! ✨"
+                    value="LIMITED TIME FESTIVE SPECIAL 2026: Up to 22% OFF Family Combos + Complimentary Pure Silver Silk Mark Gifts!"
                     style="font-size: 0.8rem;" />
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
-                  <button type="submit" class="btn btn-gold btn-sm">💾 Save Campaign Details</button>
+                  <button type="submit" class="btn btn-gold btn-sm"><span data-icon="save"></span> Save Campaign Details</button>
                 </div>
               </form>
             </div>
@@ -2806,7 +2905,7 @@
                 style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1.25rem; text-align: center;">
                 <span
                   style="font-size: 0.75rem; color: var(--color-gold); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.65rem;">
-                  ✦ Storefront Countdown Live Preview ✦
+                  <span data-icon="sparkle" data-icon-size="12"></span> Storefront Countdown Live Preview <span data-icon="sparkle" data-icon-size="12"></span>
                 </span>
                 <div class="festive-timer-display" id="adminFestiveTimerPreview"
                   style="display: flex; justify-content: center; gap: 0.75rem;">
@@ -2828,7 +2927,7 @@
           <div class="admin-card" style="margin-bottom: 2rem;">
             <div class="admin-card-header" style="flex-wrap: wrap; gap: 0.75rem;">
               <div>
-                <h3><span>🏷️</span> Festival Discount Vouchers &amp; Promo Codes</h3>
+                <h3><span data-icon="tag"></span> Festival Discount Vouchers &amp; Promo Codes</h3>
                 <span style="font-size: 0.8rem; color: var(--text-muted);">
                   Interactive click-to-copy vouchers displayed inside the festive session (<span
                     id="festiveOffersCount">0</span> Offers)
@@ -2850,7 +2949,7 @@
           <div class="admin-card" style="margin-bottom: 2rem;">
             <div class="admin-card-header" style="flex-wrap: wrap; gap: 0.75rem;">
               <div>
-                <h3><span>🧵</span> Festival Collection Deals &amp; Milestone Bundles</h3>
+                <h3><span data-icon="thread"></span> Festival Collection Deals &amp; Milestone Bundles</h3>
                 <span style="font-size: 0.8rem; color: var(--text-muted);">
                   Featured handloom items &amp; combos with festive prices and savings badges (<span
                     id="festiveDealsCount">0</span> Deals)
@@ -2871,7 +2970,7 @@
           <!-- CARD 5: FESTIVE PATRON PERKS BAR -->
           <div class="admin-card">
             <div class="admin-card-header">
-              <h3><span>🎁</span> Festive Perks Strip</h3>
+              <h3><span data-icon="gift"></span> Festive Perks Strip</h3>
               <span style="font-size: 0.8rem; color: var(--text-muted);">4 Trust Badges displayed in the festive
                 session</span>
             </div>
@@ -2881,7 +2980,7 @@
                 <div
                   style="background: var(--bg-surface-alt); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
                   <div style="display: flex; gap: 0.4rem; margin-bottom: 0.4rem;">
-                    <input type="text" id="perkIcon0" class="form-control" value="✈️"
+                    <input type="text" id="perkIcon0" class="form-control" value="plane"
                       style="width: 50px; text-align: center; font-size: 1.1rem;" />
                     <input type="text" id="perkTitle0" class="form-control" value="Free Insured Air Delivery"
                       style="font-weight: 700; font-size: 0.8rem;" />
@@ -2893,7 +2992,7 @@
                 <div
                   style="background: var(--bg-surface-alt); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
                   <div style="display: flex; gap: 0.4rem; margin-bottom: 0.4rem;">
-                    <input type="text" id="perkIcon1" class="form-control" value="🎁"
+                    <input type="text" id="perkIcon1" class="form-control" value="gift"
                       style="width: 50px; text-align: center; font-size: 1.1rem;" />
                     <input type="text" id="perkTitle1" class="form-control" value="Complimentary Festive Gift Box"
                       style="font-weight: 700; font-size: 0.8rem;" />
@@ -2905,7 +3004,7 @@
                 <div
                   style="background: var(--bg-surface-alt); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
                   <div style="display: flex; gap: 0.4rem; margin-bottom: 0.4rem;">
-                    <input type="text" id="perkIcon2" class="form-control" value="🏛️"
+                    <input type="text" id="perkIcon2" class="form-control" value="building"
                       style="width: 50px; text-align: center; font-size: 1.1rem;" />
                     <input type="text" id="perkTitle2" class="form-control" value="SMOI Pure Silk Guarantee"
                       style="font-weight: 700; font-size: 0.8rem;" />
@@ -2917,7 +3016,7 @@
                 <div
                   style="background: var(--bg-surface-alt); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
                   <div style="display: flex; gap: 0.4rem; margin-bottom: 0.4rem;">
-                    <input type="text" id="perkIcon3" class="form-control" value="🛡️"
+                    <input type="text" id="perkIcon3" class="form-control" value="shield"
                       style="width: 50px; text-align: center; font-size: 1.1rem;" />
                     <input type="text" id="perkTitle3" class="form-control" value="Scratch-Free Inner Linings"
                       style="font-weight: 700; font-size: 0.8rem;" />
@@ -2927,7 +3026,7 @@
                 </div>
               </div>
               <div style="display: flex; justify-content: flex-end;">
-                <button type="submit" class="btn btn-gold btn-sm">💾 Save Perks</button>
+                <button type="submit" class="btn btn-gold btn-sm"><span data-icon="save"></span> Save Perks</button>
               </div>
             </form>
           </div>
@@ -2944,23 +3043,23 @@
   <div class="mobile-nav-drawer" id="adminMobileNavDrawer" role="dialog" aria-modal="true">
     <div class="mobile-nav-header">
       <div class="mobile-nav-title">
-        <span style="font-size: 1.35rem;">👑</span>
+        <span data-icon="crown" data-icon-size="22"></span>
         <div>
           <h3>Srinivasa Admin</h3>
           <small>Store Owner Navigation &amp; Logistics Hub</small>
         </div>
       </div>
       <button class="pdp-close-btn" id="adminMobileNavCloseBtn" title="Close Menu"
-        onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open');">✕</button>
+        onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open');"><span data-icon="close"></span></button>
     </div>
 
     <div class="mobile-nav-body" style="padding: 1.25rem 1rem; overflow-y: auto;">
-      <div class="mobile-nav-section-title">📊 OPERATIONAL DASHBOARD</div>
+      <div class="mobile-nav-section-title">OPERATIONAL DASHBOARD</div>
       <ul class="mobile-dept-list">
         <li>
           <button class="mobile-dept-btn active" data-tab="overview"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('overview');">
-            <span>📊 Dashboard Overview</span>
+            <span data-icon="dashboard"></span> Dashboard Overview
             <span class="admin-menu-badge" style="margin-left: auto;">Live</span>
           </button>
         </li>
@@ -2968,26 +3067,26 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <div class="mobile-nav-section-title">📦 INVENTORY &amp; CATALOG</div>
+      <div class="mobile-nav-section-title">INVENTORY &amp; CATALOG</div>
       <ul class="mobile-dept-list">
         <li>
           <button class="mobile-dept-btn" data-tab="uploader"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('uploader');">
-            <span>📸 Add New Product SKU</span>
+            <span data-icon="camera"></span> Add New Product SKU
             <span class="admin-menu-badge" style="margin-left: auto;">+New</span>
           </button>
         </li>
         <li>
           <button class="mobile-dept-btn" data-tab="inventory"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('inventory');">
-            <span>📦 Real-Time Stock Control</span>
+            <span data-icon="box"></span> Real-Time Stock Control
             <span class="admin-menu-badge" id="mobileSidebarStockBadge" style="margin-left: auto;">12 SKUs</span>
           </button>
         </li>
         <li>
           <button class="mobile-dept-btn" data-tab="bulk-products"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('bulk-products');">
-            <span>📦 Add Bulk Products</span>
+            <span data-icon="box"></span> Add Bulk Products
             <span class="admin-menu-badge" id="mobileSidebarBulkProductsBadge"
               style="margin-left: auto; background: var(--color-gold); color: #2D0310;">+Bulk SKU</span>
           </button>
@@ -2995,7 +3094,7 @@
         <li>
           <button class="mobile-dept-btn" data-tab="family-combos"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('family-combos');">
-            <span>👨‍👩‍👧‍👦 Family Combos &amp; Sets</span>
+            <span data-icon="family"></span> Family Combos &amp; Sets
             <span class="admin-menu-badge" id="mobileSidebarFamilyCombosBadge"
               style="margin-left: auto; background: var(--color-gold); color: #2D0310; font-weight: 800;">2 Sets</span>
           </button>
@@ -3004,12 +3103,12 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <div class="mobile-nav-section-title">🧾 LOGISTICS &amp; WHOLESALE</div>
+      <div class="mobile-nav-section-title">LOGISTICS &amp; WHOLESALE</div>
       <ul class="mobile-dept-list">
         <li>
           <button class="mobile-dept-btn" data-tab="bulk-orders"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('bulk-orders');">
-            <span>📑 Customer Bulk Orders</span>
+            <span data-icon="receipt"></span> Customer Bulk Orders
             <span class="admin-menu-badge" id="mobileSidebarBulkOrdersBadge"
               style="margin-left: auto; background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">4 B2B</span>
           </button>
@@ -3017,7 +3116,7 @@
         <li>
           <button class="mobile-dept-btn" data-tab="orders"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('orders');">
-            <span>🧾 Orders &amp; GST Invoicing</span>
+            <span data-icon="receipt"></span> Orders &amp; GST Invoicing
             <span class="admin-menu-badge" style="margin-left: auto; background: var(--color-gold); color: #2D0310;">2
               Orders</span>
           </button>
@@ -3025,7 +3124,7 @@
         <li>
           <button class="mobile-dept-btn" data-tab="coupons"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('coupons');">
-            <span>🏷️ Coupons &amp; Offers</span>
+            <span data-icon="tag"></span> Coupons &amp; Offers
             <span class="admin-menu-badge" id="mobileSidebarCouponsBadge"
               style="margin-left: auto; background: rgba(212, 175, 55, 0.2); color: var(--color-gold);">Offers</span>
           </button>
@@ -3033,7 +3132,7 @@
         <li>
           <button class="mobile-dept-btn" data-tab="subscribers"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('subscribers');">
-            <span>🔔 Restock Waitlist Alerts</span>
+            <span data-icon="bell"></span> Restock Waitlist Alerts
             <span class="admin-menu-badge" style="margin-left: auto;">1</span>
           </button>
         </li>
@@ -3041,12 +3140,12 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <div class="mobile-nav-section-title">🌟 CUSTOMER &amp; QUALITY</div>
+      <div class="mobile-nav-section-title">CUSTOMER &amp; QUALITY</div>
       <ul class="mobile-dept-list">
         <li>
           <button class="mobile-dept-btn" data-tab="feedbacks"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('feedbacks');">
-            <span>🌟 Customer Reviews &amp; Feedback</span>
+            <span data-icon="feedback"></span> Customer Reviews &amp; Feedback
             <span class="admin-menu-badge" id="mobileSidebarFeedbackBadge"
               style="margin-left: auto; background: var(--color-gold); color: #2D0310;">4 Reviews</span>
           </button>
@@ -3055,12 +3154,12 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <div class="mobile-nav-section-title">🎉 SPECIAL CAMPAIGNS</div>
+      <div class="mobile-nav-section-title">SPECIAL CAMPAIGNS</div>
       <ul class="mobile-dept-list">
         <li>
           <button class="mobile-dept-btn" data-tab="festive"
             onclick="document.getElementById('adminMobileNavDrawer')?.classList.remove('active'); document.getElementById('adminMobileNavOverlay')?.classList.remove('active'); document.body.classList.remove('admin-sidebar-open'); window.admin && window.admin.switchTab('festive');">
-            <span>🎉 Festive Special 2026</span>
+            <span data-icon="party"></span> Festive Special 2026
             <span class="admin-menu-badge" id="mobileSidebarFestiveBadge"
               style="margin-left: auto; background: linear-gradient(135deg, #10B981, #059669); color: #FFF; font-weight: 800;">LIVE</span>
           </button>
@@ -3069,12 +3168,12 @@
 
       <div class="mobile-nav-divider"></div>
 
-      <div class="mobile-nav-section-title">👑 STORE OWNER &amp; WEAVER</div>
+      <div class="mobile-nav-section-title">STORE OWNER &amp; WEAVER</div>
       <div class="mobile-nav-info-card">
-        <strong>👑 Master Weaver (Owner)</strong>
+        <span data-icon="crown"></span> <strong>Master Weaver (Owner)</strong>
         <p>Kanchipuram Heritage Pit-Looms</p>
         <div style="margin-top: 0.5rem;">
-          <span style="font-size: 0.75rem; color: var(--color-gold); font-weight: 700;">🏛️ Silk Mark SMOI
+          <span style="font-size: 0.75rem; color: var(--color-gold); font-weight: 700;"><span data-icon="building"></span> Silk Mark SMOI
             Certified</span>
         </div>
       </div>
@@ -3085,7 +3184,7 @@
   </div>
 
   <!-- OWNER AUTHENTICATION LOCK SCREEN (PROTECTED GATE - ALWAYS ACTIVE ON REFRESH) -->
-  <div class="admin-lock-overlay active" id="adminLockOverlay">
+  <div class="admin-lock-overlay active" id="adminLockOverlay" data-theme="light">
     <div class="admin-lock-card">
       <div class="lock-brand-icon" data-icon="crown"></div>
       <h2 class="lock-title">Srinivasa Textiles</h2>
@@ -3102,11 +3201,12 @@
         style="display: none; background: rgba(239, 68, 68, 0.2); border: 1px solid #DC2626; color: #DC2626; padding: 0.65rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem;">
       </div>
 
-      <form id="adminLockLoginForm">
+      <form id="adminLockLoginForm" autocomplete="off">
         <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
           <label for="adminLockUsernameInput">Owner ID / Username</label>
           <input type="text" id="adminLockUsernameInput" class="form-control"
-            placeholder="Enter owner username (e.g. admin)" required />
+            placeholder="Enter Owner ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other"
+            readonly onfocus="this.removeAttribute('readonly');" required />
         </div>
 
         <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
@@ -3117,7 +3217,8 @@
             </button>
           </div>
           <input type="password" id="adminLockPassInput" class="form-control" placeholder="Enter owner passcode"
-            required />
+            autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other"
+            readonly onfocus="this.removeAttribute('readonly');" required />
         </div>
 
         <button type="submit" class="btn btn-gold btn-lg"
@@ -3147,10 +3248,10 @@
         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
         <h3
           style="margin: 0; color: var(--color-primary); display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem;">
-          <span>🏢</span> Book New B2B Bulk Order
+          <span data-icon="building"></span> Book New B2B Bulk Order
         </h3>
         <button type="button" class="pdp-close-btn" id="closeAddBulkOrderModalBtn" title="Close"
-          style="font-size: 1.25rem; background: none; border: none; cursor: pointer; color: var(--text-muted);">✕</button>
+          style="font-size: 1.25rem; background: none; border: none; cursor: pointer; color: var(--text-muted);"><span data-icon="close"></span></button>
       </div>
 
       <form id="addBulkOrderForm" style="display: flex; flex-direction: column; gap: 1rem;">
@@ -3271,7 +3372,7 @@
         <div
           style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
           <button type="button" class="btn btn-outline btn-sm" id="cancelAddBulkOrderBtn">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;">💾 Save Bulk Order</button>
+          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;"><span data-icon="save"></span> Save Bulk Order</button>
         </div>
       </form>
     </div>
@@ -3287,14 +3388,14 @@
         <div>
           <h3 id="couponModalHeading"
             style="margin: 0; font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--color-primary); display: flex; align-items: center; gap: 0.5rem;">
-            <span>🏷️</span> <span id="couponModalTitleText">Create Promotional Coupon</span>
+            <span data-icon="tag"></span> <span id="couponModalTitleText">Create Promotional Coupon</span>
           </h3>
           <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: var(--text-muted);">
             Configure promo discount details. Updates reflect in customer carts immediately.
           </p>
         </div>
         <button type="button" id="closeCouponModalBtn" onclick="window.admin && window.admin.closeCouponModal()"
-          style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">✕</button>
+          style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);"><span data-icon="close"></span></button>
       </div>
 
       <form id="adminCouponForm" style="display: flex; flex-direction: column; gap: 1rem;">
@@ -3398,7 +3499,7 @@
           style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
           <button type="button" class="btn btn-outline btn-sm" id="cancelCouponModalBtn"
             onclick="window.admin && window.admin.closeCouponModal()">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;" id="saveCouponSubmitBtn">💾 Save
+          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;" id="saveCouponSubmitBtn"><span data-icon="save"></span> Save
             Coupon</button>
         </div>
       </form>
@@ -3417,13 +3518,13 @@
         <div>
           <h3 id="festiveOfferModalTitle"
             style="margin: 0; font-family: var(--font-serif-display); color: var(--color-gold); font-size: 1.25rem;">
-            🏷️ Add Festive Voucher
+            <span data-icon="tag"></span> Add Festive Voucher
           </h3>
           <span style="font-size: 0.75rem; color: var(--text-muted);">Configure 1-click copy promo code for the festive
             session</span>
         </div>
         <button type="button" onclick="window.admin && window.admin.closeFestiveOfferModal()"
-          style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;">✕</button>
+          style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;"><span data-icon="close"></span></button>
       </div>
 
       <form id="festiveOfferForm" onsubmit="window.admin && window.admin.handleSaveFestiveOffer(event)"
@@ -3486,7 +3587,7 @@
           style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
           <button type="button" class="btn btn-outline btn-sm"
             onclick="window.admin && window.admin.closeFestiveOfferModal()">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;">💾 Save Voucher</button>
+          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;"><span data-icon="save"></span> Save Voucher</button>
         </div>
       </form>
     </div>
@@ -3504,13 +3605,13 @@
         <div>
           <h3 id="festiveDealModalTitle"
             style="margin: 0; font-family: var(--font-serif-display); color: var(--color-gold); font-size: 1.25rem;">
-            🧵 Add Festival Collection Deal
+            <span data-icon="thread"></span> Add Festival Collection Deal
           </h3>
           <span style="font-size: 0.75rem; color: var(--text-muted);">Feature handlooms with special festive pricing and
             badges</span>
         </div>
         <button type="button" onclick="window.admin && window.admin.closeFestiveDealModal()"
-          style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;">✕</button>
+          style="background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;"><span data-icon="close"></span></button>
       </div>
 
       <form id="festiveDealForm" onsubmit="window.admin && window.admin.handleSaveFestiveDeal(event)"
@@ -3576,7 +3677,7 @@
             <label
               style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem;">Discount
               Badge</label>
-            <input type="text" id="formDealBadge" class="form-control" placeholder="🔥 Save ₹13,500 (19% OFF)" />
+            <input type="text" id="formDealBadge" class="form-control" placeholder="Save ₹13,500 (19% OFF)" />
           </div>
         </div>
 
@@ -3623,7 +3724,7 @@
           style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
           <button type="button" class="btn btn-outline btn-sm"
             onclick="window.admin && window.admin.closeFestiveDealModal()">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;">💾 Save Festive Deal</button>
+          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 800;"><span data-icon="save"></span> Save Festive Deal</button>
         </div>
       </form>
     </div>
@@ -3654,20 +3755,41 @@
       if (lockOverlay) lockOverlay.classList.add("active");
       document.getElementById("adminView")?.classList.remove("active");
 
+      if (lockUser) {
+        lockUser.setAttribute("autocomplete", "off");
+        lockUser.setAttribute("data-lpignore", "true");
+        lockUser.value = "";
+      }
+      if (lockPass) {
+        lockPass.setAttribute("autocomplete", "new-password");
+        lockPass.setAttribute("data-lpignore", "true");
+        lockPass.value = "";
+      }
+
       if (togglePassBtn && lockPass) {
         togglePassBtn.addEventListener("click", () => {
           const type = lockPass.getAttribute("type") === "password" ? "text" : "password";
           lockPass.setAttribute("type", type);
-          const eyeSvg = window.Icons ? window.Icons.get(type === "password" ? "eye" : "eye", { size: 14 }) : (type === "password" ? "👁️" : "🙈");
+          const eyeSvg = window.Icons ? window.Icons.get("eye", { size: 14 }) : "";
           togglePassBtn.innerHTML = `${eyeSvg} ${type === "password" ? "Show" : "Hide"}`;
         });
       }
 
       if (lockForm) {
-        lockForm.addEventListener("submit", (e) => {
+        lockForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const user = lockUser.value.trim();
           const pass = lockPass.value.trim();
+
+          // Obtain authentic JWT token from backend REST API
+          if (window.API && typeof window.API.login === "function") {
+            try {
+              await window.API.login(user, pass);
+            } catch (err) {
+              console.warn("Backend authentication sync:", err);
+            }
+          }
+
           const res = window.store.loginOwner(user, pass);
           if (res.success) {
             if (lockError) lockError.style.display = "none";
@@ -3679,6 +3801,7 @@
               window.admin.renderOrdersTable();
               window.admin.renderSubscribersTable();
               window.admin.renderFeedbacksTable();
+              window.admin.switchTab(window.admin.currentTab || "overview");
             }
           } else {
             if (lockError) {
@@ -3692,7 +3815,7 @@
       // Live clock (lightweight textContent update)
       const clock = document.getElementById("adminLiveClock");
       if (clock) {
-        const clockSvg = window.Icons ? window.Icons.get("clock", { size: 14 }) : "🕒";
+        const clockSvg = window.Icons ? window.Icons.get("clock", { size: 14 }) : "";
         const iconSpan = document.createElement("span");
         iconSpan.innerHTML = clockSvg;
         const textSpan = document.createElement("span");
@@ -3712,8 +3835,8 @@
       // Theme toggle
       const themeBtn = document.getElementById("adminThemeToggleBtn");
       if (themeBtn) {
-        const moonSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><path d="M19 4v3M20.5 5.5h-3" stroke-width="1.5"/></svg>`;
-        const sunSvg  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+        const moonSvg = `<svg class="theme-svg-icon theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><path d="M19 4v3M20.5 5.5h-3" stroke-width="1.8"/></svg>`;
+        const sunSvg = `<svg class="theme-svg-icon theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="rgba(252, 211, 77, 0.2)" stroke="#FCD34D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 
         const updateAdminThemeBtn = (theme) => {
           const isDark = theme === "dark";
@@ -3722,7 +3845,7 @@
 
           themeBtn.style.transform = "scale(0.88)";
           themeBtn.innerHTML = `<span class="theme-icon">${iconSvg}</span><span class="theme-label">${labelText}</span>`;
-          themeBtn.setAttribute("title", isDark ? "Current: Dark Mode (Click for Light Mode ☀️)" : "Current: Light Mode (Click for Dark Mode 🌙)");
+          themeBtn.setAttribute("title", isDark ? "Current: Dark Mode (Click for Light Mode)" : "Current: Light Mode (Click for Dark Mode)");
           setTimeout(() => { themeBtn.style.transform = "scale(1)"; }, 180);
         };
 
@@ -3764,7 +3887,7 @@
 
     async function handleSupabaseSeed() {
       if (!window.supabaseService || !window.supabaseService.isConfigured()) {
-        alert("⚠️ Supabase credentials not found!\n\nPlease open 'js/supabase-config.js' (or .env) and paste your Supabase URL and anonKey first.");
+        alert("Supabase credentials not found!\n\nPlease open 'js/supabase-config.js' (or .env) and paste your Supabase URL and anonKey first.");
         return;
       }
       const confirmSeed = confirm("Upload all master catalog products from data.js into your Supabase database?");
@@ -3774,13 +3897,13 @@
       if (btn) btn.textContent = "⏳ Syncing...";
 
       const result = await window.supabaseService.seedInitialCatalog(typeof INITIAL_CATALOG !== "undefined" ? INITIAL_CATALOG : window.store.getAllProducts());
-      if (btn) btn.textContent = "⚡ Sync to Supabase";
+      if (btn) btn.textContent = "Sync to Supabase";
 
       if (result.success) {
-        alert("✅ Success! " + result.message);
+        alert("Success! " + result.message);
         window.location.reload();
       } else {
-        alert("❌ Error syncing to Supabase: " + result.message);
+        alert("Error syncing to Supabase: " + result.message);
       }
     }
   </script>
@@ -3791,17 +3914,21 @@
   </button>
 
   <div class="admin-fab-menu" id="adminFABMenu">
-    <button type="button" class="admin-fab-action-btn" onclick="document.getElementById('openAddProductModalBtn')?.click() || (window.admin && window.admin.openAddProductModal && window.admin.openAddProductModal())">
-      <span>➕</span> Add New Product
+    <button type="button" class="admin-fab-action-btn"
+      onclick="document.getElementById('openAddProductModalBtn')?.click() || (window.admin && window.admin.openAddProductModal && window.admin.openAddProductModal())">
+      <span data-icon="plus"></span> Add New Product
     </button>
-    <button type="button" class="admin-fab-action-btn" onclick="document.getElementById('createManualOrderBtn')?.click() || (window.admin && window.admin.openManualOrderModal && window.admin.openManualOrderModal())">
-      <span>📦</span> Create Manual Order
+    <button type="button" class="admin-fab-action-btn"
+      onclick="document.getElementById('createManualOrderBtn')?.click() || (window.admin && window.admin.openManualOrderModal && window.admin.openManualOrderModal())">
+      <span data-icon="box"></span> Create Manual Order
     </button>
-    <button type="button" class="admin-fab-action-btn" onclick="document.getElementById('openCouponModalBtn')?.click() || (window.admin && window.admin.openCouponModal && window.admin.openCouponModal())">
-      <span>🏷️</span> Generate Coupon Code
+    <button type="button" class="admin-fab-action-btn"
+      onclick="document.getElementById('openCouponModalBtn')?.click() || (window.admin && window.admin.openCouponModal && window.admin.openCouponModal())">
+      <span data-icon="tag"></span> Generate Coupon Code
     </button>
   </div>
 
+  <script src="js/scroll-animations.js"></script>
   <script src="js/mobile-ui.js"></script>
 </body>
 

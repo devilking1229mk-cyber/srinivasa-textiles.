@@ -476,7 +476,7 @@ class TextileStore {
         localStorage.removeItem("st_active_theme_v3");
         localStorage.removeItem("st_user_theme_chosen");
       }
-    } catch (e) {}
+    } catch (e) { }
 
     const hasChosenTheme = localStorage.getItem(STORE_KEYS.THEME_CHOSEN) === "true";
     const storedTheme = this.load(STORE_KEYS.THEME, "light");
@@ -514,11 +514,14 @@ class TextileStore {
             window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: data }));
             window.dispatchEvent(new CustomEvent("stockUpdated", { detail: data }));
             window.dispatchEvent(new CustomEvent("productsUpdated", { detail: data }));
-          } else if (data && data.type === "COUPONS_UPDATED") {
+          } else if (data && (data.type === "COUPONS_UPDATED" || data.type === "FESTIVE_CAMPAIGN_UPDATED")) {
             this.coupons = this.load(STORE_KEYS.COUPONS, DEFAULT_COUPONS);
             this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
             this.validateActiveCoupon();
             window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons, ...(data.payload || {}) } }));
+            if (data.type === "FESTIVE_CAMPAIGN_UPDATED" || (data.payload && data.payload.campaign)) {
+              window.dispatchEvent(new CustomEvent("festiveCampaignUpdated", { detail: data.campaign || (data.payload && data.payload.campaign) || this.getFestiveCampaign() }));
+            }
           } else if (data && data.type === "COLLECTION01_UPDATED") {
             window.dispatchEvent(new CustomEvent("collection01Updated", { detail: data }));
           } else if (data && data.type === "FAMILY_COMBOS_UPDATED") {
@@ -527,6 +530,12 @@ class TextileStore {
             window.dispatchEvent(new CustomEvent("familyComboOrdersUpdated", { detail: data }));
           } else if (data && data.type === "FAMILY_COMBO_SETTINGS_UPDATED") {
             window.dispatchEvent(new CustomEvent("familyComboSettingsUpdated", { detail: { settings: data.settings || this.getFamilyComboSettings() } }));
+          } else if (data && data.type === "BULK_ORDERS_UPDATED") {
+            this.bulkOrders = this.load(STORE_KEYS.BULK_ORDERS, (typeof INITIAL_BULK_ORDERS !== "undefined") ? INITIAL_BULK_ORDERS : []);
+            window.dispatchEvent(new CustomEvent("bulkOrdersUpdated", { detail: data }));
+          } else if (data && data.type === "ORDERS_UPDATED") {
+            this.orders = this.load(STORE_KEYS.ORDERS, (typeof INITIAL_ORDERS !== "undefined") ? INITIAL_ORDERS : []);
+            window.dispatchEvent(new CustomEvent("ordersUpdated", { detail: data }));
           }
         };
       } catch (e) {
@@ -541,12 +550,22 @@ class TextileStore {
           this.deletedCoupons = this.load(STORE_KEYS.DELETED_COUPONS, []);
           this.validateActiveCoupon();
           window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { coupons: this.coupons, deletedCoupons: this.deletedCoupons } }));
+        } else if (e.key === STORE_KEYS.FESTIVE_CAMPAIGN) {
+          const campaign = this.getFestiveCampaign();
+          window.dispatchEvent(new CustomEvent("festiveCampaignUpdated", { detail: campaign }));
+          window.dispatchEvent(new CustomEvent("couponsUpdated", { detail: { action: "SESSION_TOGGLED", enabled: campaign.enabled, campaign } }));
         } else if (e.key === "st_collection01_enabled_v2") {
           window.dispatchEvent(new CustomEvent("collection01Updated", { detail: { enabled: this.isCollection01Enabled() } }));
         } else if (e.key === STORE_KEYS.FAMILY_COMBOS) {
           window.dispatchEvent(new CustomEvent("familyCombosUpdated", { detail: { combos: this.getFamilyCombos() } }));
         } else if (e.key === STORE_KEYS.FAMILY_COMBO_ORDERS) {
           window.dispatchEvent(new CustomEvent("familyComboOrdersUpdated", { detail: { orders: this.getFamilyComboOrders() } }));
+        } else if (e.key === STORE_KEYS.BULK_ORDERS) {
+          this.bulkOrders = this.load(STORE_KEYS.BULK_ORDERS, (typeof INITIAL_BULK_ORDERS !== "undefined") ? INITIAL_BULK_ORDERS : []);
+          window.dispatchEvent(new CustomEvent("bulkOrdersUpdated", { detail: { orders: this.bulkOrders } }));
+        } else if (e.key === STORE_KEYS.ORDERS) {
+          this.orders = this.load(STORE_KEYS.ORDERS, (typeof INITIAL_ORDERS !== "undefined") ? INITIAL_ORDERS : []);
+          window.dispatchEvent(new CustomEvent("ordersUpdated", { detail: { orders: this.orders } }));
         } else if (e.key === STORE_KEYS.CART) {
           this.cart = this.load(STORE_KEYS.CART, []);
           window.dispatchEvent(new CustomEvent("cartUpdated"));
@@ -635,7 +654,7 @@ class TextileStore {
               // Also sync this local product to Supabase so it becomes available to all devices
               try {
                 window.supabaseService.upsertProduct(lp);
-              } catch (e) {}
+              } catch (e) { }
             }
           }
 
@@ -759,7 +778,7 @@ class TextileStore {
     try {
       localStorage.setItem(STORE_KEYS.THEME_CHOSEN, "true");
       this.save(STORE_KEYS.THEME, validTheme);
-    } catch (e) {}
+    } catch (e) { }
     document.documentElement.setAttribute("data-theme", validTheme);
     window.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme: validTheme } }));
   }
@@ -859,8 +878,8 @@ class TextileStore {
     // Backend REST API Sync
     if (typeof window !== "undefined" && window.API && window.API.isOnline) {
       try {
-        window.API.createProduct(product).catch(() => {});
-      } catch (e) {}
+        window.API.createProduct(product).catch(() => { });
+      } catch (e) { }
     }
 
     window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { product, action: "add" } }));
@@ -880,18 +899,18 @@ class TextileStore {
             type: "CATALOG_UPDATED",
             payload: { action: "update", id, product: this.catalog[index] }
           });
-        } catch (e) {}
+        } catch (e) { }
       }
 
       if (typeof window !== "undefined" && window.supabaseService) {
         try {
           window.supabaseService.upsertProduct(this.catalog[index]);
-        } catch (e) {}
+        } catch (e) { }
       }
       if (typeof window !== "undefined" && window.API && window.API.isOnline) {
         try {
-          window.API.updateProduct(id, updatedFields).catch(() => {});
-        } catch (e) {}
+          window.API.updateProduct(id, updatedFields).catch(() => { });
+        } catch (e) { }
       }
 
       window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { id, product: this.catalog[index] } }));
@@ -911,18 +930,18 @@ class TextileStore {
           type: "CATALOG_UPDATED",
           payload: { action: "delete", id }
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (typeof window !== "undefined" && window.supabaseService) {
       try {
         window.supabaseService.deleteProduct(id);
-      } catch (e) {}
+      } catch (e) { }
     }
     if (typeof window !== "undefined" && window.API && window.API.isOnline) {
       try {
-        window.API.deleteProduct(id).catch(() => {});
-      } catch (e) {}
+        window.API.deleteProduct(id).catch(() => { });
+      } catch (e) { }
     }
 
     window.dispatchEvent(new CustomEvent("catalogUpdated", { detail: { id, action: "delete" } }));
@@ -1515,8 +1534,8 @@ class TextileStore {
     // Strictly sanitize to avoid duplicate or invalid IDs
     this.wishlist = Array.from(new Set(this.wishlist)).filter(id => !!id && !!this.getProductById(id));
     this.save(STORE_KEYS.WISHLIST, this.wishlist);
-    window.dispatchEvent(new CustomEvent("wishlistUpdated", { 
-      detail: { wishlist: this.wishlist, count: this.wishlist.length, productId: cleanId, isAdded } 
+    window.dispatchEvent(new CustomEvent("wishlistUpdated", {
+      detail: { wishlist: this.wishlist, count: this.wishlist.length, productId: cleanId, isAdded }
     }));
     return isAdded;
   }
@@ -1535,8 +1554,8 @@ class TextileStore {
   clearWishlist() {
     this.wishlist = [];
     this.save(STORE_KEYS.WISHLIST, this.wishlist);
-    window.dispatchEvent(new CustomEvent("wishlistUpdated", { 
-      detail: { wishlist: this.wishlist, count: 0, cleared: true } 
+    window.dispatchEvent(new CustomEvent("wishlistUpdated", {
+      detail: { wishlist: this.wishlist, count: 0, cleared: true }
     }));
   }
 
@@ -1615,13 +1634,7 @@ class TextileStore {
 
     // 1. Instantly Sync Order to Python REST API & Cloud Database
     if (typeof window !== "undefined" && window.API) {
-      window.API.createOrder(newOrder).then(res => {
-        if (res.ok) {
-          console.log("⚡ [Order Sync] Successfully saved to Backend Database:", res.data);
-        } else {
-          console.info("ℹ️ [Order Sync] Saved locally. Backend API response:", res);
-        }
-      }).catch(err => console.warn("[Order Sync API] Notice:", err));
+      window.API.createOrder(newOrder).catch(() => { });
     }
 
     // 2. Sync to Supabase Cloud if configured
@@ -2510,18 +2523,31 @@ class TextileStore {
   }
 
   broadcastFestiveCampaign(campaign) {
-    // 1. In-window custom event
+    // 1. In-window custom events
     try {
       window.dispatchEvent(new CustomEvent("festiveCampaignUpdated", { detail: campaign }));
-    } catch (e) {}
+      window.dispatchEvent(new CustomEvent("couponsUpdated", {
+        detail: { action: "SESSION_TOGGLED", enabled: campaign.enabled, campaign }
+      }));
+    } catch (e) { }
 
-    // 2. Cross-tab BroadcastChannel (instant 0ms synchronization)
+    // 2. Cross-tab BroadcastChannel (instant 0ms synchronization across both channels)
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
       try {
         const ch = new BroadcastChannel("st_festive_channel_v1");
         ch.postMessage({ type: "FESTIVE_CAMPAIGN_UPDATED", campaign: campaign });
         ch.close();
-      } catch (e) {}
+      } catch (e) { }
+
+      try {
+        if (this.broadcastChannel) {
+          this.broadcastChannel.postMessage({
+            type: "FESTIVE_CAMPAIGN_UPDATED",
+            campaign: campaign,
+            payload: { action: "SESSION_TOGGLED", enabled: campaign.enabled }
+          });
+        }
+      } catch (e) { }
     }
 
     // 3. Cloud Supabase Sync if active
@@ -2611,7 +2637,7 @@ class TextileStore {
       if (this.broadcastChannel) {
         try {
           this.broadcastChannel.postMessage({ type: "COLLECTION01_UPDATED", enabled: isLive });
-        } catch (e) {}
+        } catch (e) { }
       }
     }
     return isLive;
@@ -2641,7 +2667,7 @@ class TextileStore {
       if (this.broadcastChannel) {
         try {
           this.broadcastChannel.postMessage({ type: "FAMILY_COMBO_SETTINGS_UPDATED", settings: merged });
-        } catch (e) {}
+        } catch (e) { }
       }
     }
     return merged;
@@ -2670,7 +2696,7 @@ class TextileStore {
       if (this.broadcastChannel) {
         try {
           this.broadcastChannel.postMessage({ type: "FAMILY_COMBOS_UPDATED", combos: list });
-        } catch (e) {}
+        } catch (e) { }
       }
     }
     return list;
@@ -2781,7 +2807,7 @@ class TextileStore {
       if (this.broadcastChannel) {
         try {
           this.broadcastChannel.postMessage({ type: "FAMILY_COMBO_ORDERS_UPDATED", orders: list });
-        } catch (e) {}
+        } catch (e) { }
       }
     }
     return list;
